@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Dimar Admin</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/admin.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-logo">
+                <img src="../assets/images/logo-dimar.png" alt="Dimar Logo">
+                <h1>Painel Administrativo</h1>
+                <p>Entre com suas credenciais</p>
+            </div>
+
+            <!-- Alert de configuração -->
+            <div class="alert alert-info" id="configAlert" style="display: none;">
+                ⚠️ <strong>Atenção:</strong> Supabase configurado e pronto para uso!
+            </div>
+
+            <!-- Alert de erro -->
+            <div class="alert alert-danger" id="errorAlert" style="display: none;">
+                <span id="errorMessage"></span>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-control" 
+                        placeholder="admin@dimar.com.br"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-control" 
+                        placeholder="••••••••"
+                        required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Entrar
+                </button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px; font-size: 13px; color: #7f8c8d;">
+                <strong>Credenciais temporárias:</strong><br>
+                Email: admin@dimar.com.br<br>
+                Senha: admin123
+            </p>
+        </div>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    
+    <script>
+        // Verificar configuração do Supabase
+        window.addEventListener('DOMContentLoaded', () => {
+            const configured = checkSupabaseConfig();
+            const configAlert = document.getElementById('configAlert');
+            
+            if (configured) {
+                configAlert.style.display = 'none';
+            }
+        });
+
+        // Handle login form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+
+            try {
+                // LOGIN TEMPORÁRIO (sem Supabase Auth)
+                // Para usar Supabase Auth no futuro, descomente o código abaixo
+                
+                if (email === 'admin@dimar.com.br' && password === 'admin123') {
+                    localStorage.setItem('admin_logged_in', 'true');
+                    localStorage.setItem('admin_email', email);
+                    window.location.href = 'index.html';
+                } else {
+                    throw new Error('Credenciais inválidas. Use: admin@dimar.com.br / admin123');
+                }
+
+                /* DESCOMENTE PARA USAR SUPABASE AUTH:
+                // Login com Supabase
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                // Sucesso - redirecionar para dashboard
+                localStorage.setItem('admin_logged_in', 'true');
+                localStorage.setItem('admin_email', email);
+                window.location.href = 'index.html';
+                */
+
+            } catch (error) {
+                errorAlert.style.display = 'block';
+                errorMessage.textContent = '❌ ' + error.message;
+                
+                // Esconder após 5 segundos
+                setTimeout(() => {
+                    errorAlert.style.display = 'none';
+                }, 5000);
+            }
+        });
+
+        // Verificar se já está logado
+        if (localStorage.getItem('admin_logged_in') === 'true') {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
+

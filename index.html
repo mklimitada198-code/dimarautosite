@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <!-- Basic Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO Meta Tags -->
+    <title>Dimar - Auto Peças e Moto Peças | Qualidade e Melhor Preço</title>
+    <meta name="description" content="Encontre as melhores auto peças e moto peças na Dimar. Parachoques, peças de motor, freios e muito mais. Frete grátis acima de R$ 120. Parcele em até 10x sem juros.">
+    <meta name="keywords" content="auto peças, moto peças, parachoques, peças automotivas, peças para carro, peças para moto, Dimar">
+    <meta name="author" content="Dimar Auto Peças">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.dimar.com.br/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.dimar.com.br/">
+    <meta property="og:title" content="Dimar - Auto Peças e Moto Peças">
+    <meta property="og:description" content="Encontre as melhores auto peças e moto peças na Dimar. Frete grátis acima de R$ 120. Parcele em até 10x sem juros.">
+    <meta property="og:image" content="https://www.dimar.com.br/assets/images/og-image.jpg">
+    <meta property="og:site_name" content="Dimar Auto Peças">
+    <meta property="og:locale" content="pt_BR">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.dimar.com.br/">
+    <meta name="twitter:title" content="Dimar - Auto Peças e Moto Peças">
+    <meta name="twitter:description" content="Encontre as melhores auto peças e moto peças na Dimar. Frete grátis acima de R$ 120.">
+    <meta name="twitter:image" content="https://www.dimar.com.br/assets/images/twitter-image.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <!-- Skip Links (Accessibility) -->
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+    <a href="#main-nav" class="skip-link">Pular para navegação</a>
+
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <span>GANHE R$ 50 DE DESCONTO* NA SUA PRIMEIRA COMPRA!
+                <strong>BAIXE NOSSO APP E USE O CUPOM <span class="highlight-orange">50TAO</span></strong>
+            </span>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-menu" id="main-nav" aria-label="Navegação principal">
+        <div class="container">
+            <ul class="nav-items">
+                <li><a href="#cupons">Cupons de Desconto</a></li>
+                <li><a href="#preco">Melhor Preço Hoje</a></li>
+                <li><a href="#sobre">Sobre nós</a></li>
+                <li><a href="#promocoes">Promoções</a></li>
+                <li><a href="#lojas">Nossas Lojas</a></li>
+                <li><a href="#atendimento">Atendimento</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Header with Diagonal Stripes -->
+    <header class="main-header">
+        <!-- Diagonal Stripes Left -->
+        <div class="diagonal-stripes left">
+            <div class="stripe"></div>
+            <div class="stripe"></div>
+            <div class="stripe"></div>
+        </div>
+
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo">
+                <img src="assets/images/logo-dimar.png" alt="DIMAR - Auto Peças & Moto Peças">
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" placeholder="Buscar produtos" class="search-input">
+                <button class="search-button">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M19 19L14.65 14.65M17 9C17 13.4183 13.4183 17 9 17C4.58172 17 1 13.4183 1 9C1 4.58172 4.58172 1 9 1C13.4183 1 17 4.58172 17 9Z"
+                            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <!-- Televendas -->
+                <a href="tel:0000000000" class="header-action">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3 5C3 3.89543 3.89543 3 5 3H8.27924C8.70967 3 9.09181 3.27543 9.22792 3.68377L10.7257 8.17721C10.8831 8.64932 10.6694 9.16531 10.2243 9.38787L7.96701 10.5165C9.06925 12.9612 11.0388 14.9308 13.4835 16.033L14.6121 13.7757C14.8347 13.3306 15.3507 13.1169 15.8228 13.2743L20.3162 14.7721C20.7246 14.9082 21 15.2903 21 15.7208V19C21 20.1046 20.1046 21 19 21H18C9.71573 21 3 14.2843 3 6V5Z"
+                            fill="white" />
+                    </svg>
+                    <div class="action-text">
+                        <span class="action-label">Televendas</span>
+                        <span class="action-value">(11) 0000-0000</span>
+                    </div>
+                </a>
+
+                <!-- Meus Pedidos -->
+                <a href="#pedidos" class="header-action">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M9 11H15M9 15H12M7.00023 3H16.9998C17.0852 3 17.1695 3.01932 17.2461 3.05662L21.3462 5.10662C21.7217 5.29435 21.9649 5.67653 21.9847 6.09931C21.9949 6.28136 22.0001 6.46704 22.0001 6.65599V17C22.0001 19.2091 20.2092 21 18.0001 21H6.00023C3.79109 21 2.00023 19.2091 2.00023 17V6.65599C2.00023 6.46704 2.00531 6.28136 2.01554 6.09931C2.03532 5.67653 2.27854 5.29435 2.65401 5.10662L6.75408 3.05662C6.83072 3.01932 6.91495 3 7.00023 3Z"
+                            fill="white" />
+                    </svg>
+                    <div class="action-text">
+                        <span class="action-label">Meus</span>
+                        <span class="action-value">Pedidos</span>
+                    </div>
+                </a>
+
+                <!-- Entre ou Cadastre-se -->
+                <a href="#login" class="header-action">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                            fill="white" />
+                        <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" fill="white" />
+                    </svg>
+                    <div class="action-text">
+                        <span class="action-label">Entre ou</span>
+                        <span class="action-value">Cadastre-se</span>
+                    </div>
+                </a>
+
+                <!-- Carrinho -->
+                <a href="/pages/carrinho.html" class="header-action cart cart-action">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M8 10V6.66667C8 3.90524 10.2386 1.66667 13 1.66667V1.66667C15.7614 1.66667 18 3.90524 18 6.66667V10M3.66667 10H22.3333L23.6667 26.3333H2.33333L3.66667 10Z"
+                            stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Diagonal Stripes Right -->
+        <div class="diagonal-stripes right">
+            <div class="stripe"></div>
+            <div class="stripe"></div>
+            <div class="stripe"></div>
+        </div>
+    </header>
+
+    <!-- Categories Bar -->
+    <div class="categories-bar">
+        <div class="categories-container">
+            <!-- Categorias Dropdown -->
+            <div class="categories-dropdown">
+                <button class="categories-button" id="categoriesBtn">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 3H14M2 8H14M2 13H14" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                    </svg>
+                    <span>CATEGORIAS</span>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        class="chevron">
+                        <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <!-- Dropdown Menu (Hidden by default) -->
+                <div class="categories-menu" id="categoriesMenu">
+                    <a href="#motor">Motor</a>
+                    <a href="#freios">Freios</a>
+                    <a href="#suspensao">Suspensão</a>
+                    <a href="#eletrica">Elétrica</a>
+                    <a href="#filtros">Filtros</a>
+                    <a href="#iluminacao">Iluminação</a>
+                    <a href="#acessorios">Acessórios</a>
+                </div>
+            </div>
+
+            <!-- Category Links -->
+            <nav class="category-links">
+                <a href="#pecas-carros">Peças Carros</a>
+                <a href="#pecas-motos">Peças Motos</a>
+                <a href="#rastrear-pedido">Rastrear Pedido</a>
+                <a href="#nossos-servicos">Nossos Serviços</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Banner Carousel -->
+    <section class="banner-carousel">
+        <div class="carousel-container">
+            <!-- Carousel Slides -->
+            <div class="carousel-slides">
+                <div class="carousel-slide active">
+                    <img src="assets/images/bannner01.png" alt="Banner 1 - Dimar Auto Peças">
+                </div>
+                <div class="carousel-slide">
+                    <img src="assets/images/bannner02.png" alt="Banner 2 - Dimar Auto Peças">
+                </div>
+            </div>
+
+            <!-- Static Gradient Overlay -->
+            <div class="banner-gradient"></div>
+
+            <!-- Navigation Buttons -->
+            <button class="carousel-button prev" aria-label="Slide anterior">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+            <button class="carousel-button next" aria-label="Próximo slide">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+
+            <!-- Indicators -->
+            <div class="carousel-indicators">
+                <button class="indicator active" data-slide="0" aria-label="Ir para slide 1"></button>
+                <button class="indicator" data-slide="1" aria-label="Ir para slide 2"></button>
+                <button class="indicator" data-slide="2" aria-label="Ir para slide 3"></button>
+                <button class="indicator" data-slide="3" aria-label="Ir para slide 4"></button>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Smart Vehicle Filter (Overlays Banner) -->
+    <section class="vehicle-filter-wrapper" id="main-content">
+        <div class="vehicle-filter-container">
+            <h2 class="filter-title">Buscar peças por veículo</h2>
+
+            <!-- Vehicle Type Tabs -->
+            <div class="vehicle-tabs">
+                <button class="tab-button active" data-vehicle="car">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M2 14H18M3 14V16C3 16.5523 3.44772 17 4 17H5C5.55228 17 6 16.5523 6 16V14M14 14V16C14 16.5523 14.4477 17 15 17H16C16.5523 17 17 16.5523 17 16V14M3 14L4.5 8C4.77614 7.13077 5.56731 6.5 6.47143 6.5H13.5286C14.4327 6.5 15.2239 7.13077 15.5 8L17 14M6 11H8M12 11H14"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+                    Carro
+                </button>
+                <button class="tab-button" data-vehicle="moto">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M4 14C5.65685 14 7 12.6569 7 11C7 9.34315 5.65685 8 4 8C2.34315 8 1 9.34315 1 11C1 12.6569 2.34315 14 4 14Z M16 14C17.6569 14 19 12.6569 19 11C19 9.34315 17.6569 8 16 8C14.3431 8 13 9.34315 13 11C13 12.6569 14.3431 14 16 14Z M7 11H10L8.5 7H11L13.5 11H13"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Moto
+                </button>
+            </div>
+
+            <!-- Filter Form -->
+            <form class="filter-form" id="vehicleFilterForm">
+                <div class="filter-inputs">
+                    <select class="filter-select" id="brandSelect" required>
+                        <option value="">Selecione a Marca</option>
+                        <option value="chevrolet">Chevrolet</option>
+                        <option value="ford">Ford</option>
+                        <option value="volkswagen">Volkswagen</option>
+                        <option value="fiat">Fiat</option>
+                        <option value="honda">Honda</option>
+                        <option value="toyota">Toyota</option>
+                        <option value="jeep">Jeep</option>
+                    </select>
+
+                    <select class="filter-select" id="modelSelect" required disabled>
+                        <option value="">Selecione o Modelo</option>
+                    </select>
+
+                    <select class="filter-select" id="yearSelect" required disabled>
+                        <option value="">Selecione o Ano</option>
+                    </select>
+
+                    <button type="submit" class="filter-submit">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M17 17L13.2 13.2M15.2 8.6C15.2 12.2451 12.2451 15.2 8.6 15.2C4.95492 15.2 2 12.2451 2 8.6C2 4.95492 4.95492 2 8.6 2C12.2451 2 15.2 4.95492 15.2 8.6Z"
+                                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Buscar Peças
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Principais Ofertas -->
+    <section class="main-offers" aria-label="Principais ofertas de produtos">
+        <div class="offers-container">
+            <h2 class="offers-title">Principais ofertas para você</h2>
+            
+            <div class="offers-carousel">
+                <!-- Botão Anterior -->
+                <button class="offers-nav-button prev" aria-label="Produtos anteriores">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+
+                <!-- Grid de Produtos -->
+                <div class="offers-grid">
+                    <!-- Produto 1 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/produto-1.jpg" alt="Jogo de Ferramentas Profissionais com 110 Peças" loading="lazy">
+                            <span class="product-badge">Destaque</span>
+                        </div>
+                        <div class="product-shipping-top">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 16V6C13 4.89543 12.1046 4 11 4H3C1.89543 4 1 4.89543 1 6V16M13 16H1M13 16L16.5 16C16.7652 16 17.0196 15.8946 17.2071 15.7071L22.5 10.4142C22.7761 10.1381 22.7761 9.69289 22.5 9.41675L19.7929 6.70966C19.6054 6.52213 19.351 6.41675 19.0858 6.41675L13 6.41675M13 16V6.41675" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Produto com entrega <strong>RÁPIDA</strong></span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Jogo de Ferramentas Profissionais com 110 Peças ...</h3>
+                            <div class="product-pricing">
+                                <span class="product-price">R$ 445,90</span>
+                                <span class="product-installment">à vista no Pix ou Boleto</span>
+                                <span class="product-installment-detail">ou R$ 495,44 em 6x de R$ 82,58 sem juros no cartão</span>
+                            </div>
+                        </div>
+                        <div class="product-button-space">
+                            <button class="product-buy-button">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Comprar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Produto 2 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/produto-2.jpg" alt="Furadeira Parafusadeira de Impacto Brushless 12 Pol" loading="lazy">
+                            <span class="product-badge promo">Oferta</span>
+                        </div>
+                        <div class="product-shipping-top">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 16V6C13 4.89543 12.1046 4 11 4H3C1.89543 4 1 4.89543 1 6V16M13 16H1M13 16L16.5 16C16.7652 16 17.0196 15.8946 17.2071 15.7071L22.5 10.4142C22.7761 10.1381 22.7761 9.69289 22.5 9.41675L19.7929 6.70966C19.6054 6.52213 19.351 6.41675 19.0858 6.41675L13 6.41675M13 16V6.41675" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Produto com entrega <strong>RÁPIDA</strong></span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Furadeira Parafusadeira de Impacto Brushless 12 Pol...</h3>
+                            <div class="product-pricing">
+                                <span class="product-price">R$ 591,90</span>
+                                <span class="product-installment">à vista no Pix ou Boleto</span>
+                                <span class="product-installment-detail">ou R$ 657,67 em 8x de R$ 82,21 sem juros no cartão</span>
+                            </div>
+                        </div>
+                        <div class="product-button-space">
+                            <button class="product-buy-button">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Comprar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Produto 3 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/produto-3.jpg" alt="Jogo de Ferramentas Completo 178 Peças com Maleta" loading="lazy">
+                        </div>
+                        <div class="product-shipping-top">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 16V6C13 4.89543 12.1046 4 11 4H3C1.89543 4 1 4.89543 1 6V16M13 16H1M13 16L16.5 16C16.7652 16 17.0196 15.8946 17.2071 15.7071L22.5 10.4142C22.7761 10.1381 22.7761 9.69289 22.5 9.41675L19.7929 6.70966C19.6054 6.52213 19.351 6.41675 19.0858 6.41675L13 6.41675M13 16V6.41675" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Produto com entrega <strong>RÁPIDA</strong></span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Jogo de Ferramentas Completo 178 Peças com...</h3>
+                            <div class="product-pricing">
+                                <span class="product-price">R$ 1.439,91</span>
+                                <span class="product-installment">à vista no Pix ou Boleto</span>
+                                <span class="product-installment-detail">ou R$ 1.599,90 em 10x de R$ 159,99 sem juros no cartão</span>
+                            </div>
+                        </div>
+                        <div class="product-button-space">
+                            <button class="product-buy-button">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Comprar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Produto 4 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/produto-4.jpg" alt="Motosserra a Gasolina 452cc 22BHP Profissional com Sabre" loading="lazy">
+                            <span class="product-badge hot">Mais Vendido</span>
+                        </div>
+                        <div class="product-shipping-top">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 16V6C13 4.89543 12.1046 4 11 4H3C1.89543 4 1 4.89543 1 6V16M13 16H1M13 16L16.5 16C16.7652 16 17.0196 15.8946 17.2071 15.7071L22.5 10.4142C22.7761 10.1381 22.7761 9.69289 22.5 9.41675L19.7929 6.70966C19.6054 6.52213 19.351 6.41675 19.0858 6.41675L13 6.41675M13 16V6.41675" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Produto com entrega <strong>RÁPIDA</strong></span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Motosserra a Gasolina 452cc 22BHP Profissional com Sabr...</h3>
+                            <div class="product-pricing">
+                                <span class="product-price">R$ 500,90</span>
+                                <span class="product-installment">à vista no Pix ou Boleto</span>
+                                <span class="product-installment-detail">ou R$ 556,56 em 7x de R$ 79,51 sem juros no cartão</span>
+                            </div>
+                        </div>
+                        <div class="product-button-space">
+                            <button class="product-buy-button">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Comprar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Produto 5 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/produto-5.jpg" alt="Parafusadeira Furadeira 38 Pol 20V com Bateria e Maleta" loading="lazy">
+                        </div>
+                        <div class="product-shipping-top">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 16V6C13 4.89543 12.1046 4 11 4H3C1.89543 4 1 4.89543 1 6V16M13 16H1M13 16L16.5 16C16.7652 16 17.0196 15.8946 17.2071 15.7071L22.5 10.4142C22.7761 10.1381 22.7761 9.69289 22.5 9.41675L19.7929 6.70966C19.6054 6.52213 19.351 6.41675 19.0858 6.41675L13 6.41675M13 16V6.41675" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Produto com entrega <strong>RÁPIDA</strong></span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Parafusadeira Furadeira 38 Pol 20V com Bateria e...</h3>
+                            <div class="product-pricing">
+                                <span class="product-price">R$ 245,90</span>
+                                <span class="product-installment">à vista no Pix ou Boleto</span>
+                                <span class="product-installment-detail">ou R$ 273,22 em 5x de R$ 54,65 sem juros no cartão</span>
+                            </div>
+                        </div>
+                        <div class="product-button-space">
+                            <button class="product-buy-button">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Comprar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão Próximo -->
+                <button class="offers-nav-button next" aria-label="Próximos produtos">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Categories Section ==================== -->
+    <section class="categories-section" aria-label="Categorias de produtos">
+        <div class="categories-content-wrapper">
+            <h2 class="categories-title">Categorias</h2>
+            
+            <div class="categories-carousel-wrapper">
+                <!-- Navigation Button - Previous -->
+                <button class="categories-nav-button prev" aria-label="Categoria anterior">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+
+                <!-- Categories Carousel (Horizontal Scroll) -->
+                <div class="categories-carousel">
+                    <!-- Category 1 -->
+                    <div class="category-item">
+                        <div class="category-image">
+                            <img src="assets/images/cat_parachoque_dianteiro.png" alt="Parachoque Dianteiro">
+                        </div>
+                        <h3 class="category-name">Parachoque<br>Dianteiro</h3>
+                    </div>
+
+                    <!-- Category 2 -->
+                    <div class="category-item">
+                        <div class="category-image">
+                            <img src="assets/images/cat_parachoque_traseiro.png" alt="Parachoque Traseiro">
+                        </div>
+                        <h3 class="category-name">Parachoque<br>Traseiro</h3>
+                    </div>
+
+                    <!-- Category 3 -->
+                    <div class="category-item">
+                        <div class="category-image">
+                            <img src="assets/images/cat_para_barro.png" alt="Para-Barro">
+                        </div>
+                        <h3 class="category-name">Para-Barro</h3>
+                    </div>
+
+                    <!-- Category 4 -->
+                    <div class="category-item">
+                        <div class="category-image">
+                            <img src="assets/images/cat_grade_dianteira.png" alt="Grade Dianteira">
+                        </div>
+                        <h3 class="category-name">Grade Dianteira</h3>
+                    </div>
+
+                    <!-- Category 5 -->
+                    <div class="category-item">
+                        <div class="category-image">
+                            <img src="assets/images/cat_milha.png" alt="Milha">
+                        </div>
+                        <h3 class="category-name">Milha</h3>
+                    </div>
+
+                    <!-- Category 6 -->
+                    <div class="category-item">
+                        <div class="category-image">
+                            <img src="assets/images/cat_lampadas.png" alt="Lâmpadas">
+                        </div>
+                        <h3 class="category-name">Lâmpadas</h3>
+                    </div>
+                </div>
+
+                <!-- Navigation Button - Next -->
+                <button class="categories-nav-button next" aria-label="Próxima categoria">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+
+                <!-- Carousel Indicators -->
+                <div class="categories-indicators">
+                    <button class="category-indicator active" data-slide="0" aria-label="Ver grupo 1"></button>
+                    <button class="category-indicator" data-slide="1" aria-label="Ver grupo 2"></button>
+                    <button class="category-indicator" data-slide="2" aria-label="Ver grupo 3"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Mais Procurados Section ==================== -->
+    <section class="most-searched-section" aria-label="Produtos mais procurados">
+        <div class="container">
+            <h2 class="section-title">Mais Procurados</h2>
+            
+            <div class="most-searched-carousel-wrapper">
+                <!-- Navigation Button - Previous -->
+                <button class="most-searched-nav-button prev" aria-label="Produto anterior">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+
+                <!-- Products Grid -->
+                <div class="most-searched-grid">
+                    <!-- Product 1 -->
+                    <div class="most-searched-card">
+                        <div class="free-shipping-badge">Para todo o Brasil</div>
+                        <div class="product-image-wrapper">
+                            <img src="https://via.placeholder.com/300x300/FF6B00/FFFFFF?text=Pastilha+Freio" alt="Pastilha de Freio">
+                        </div>
+                        <h3 class="product-name">Kit Pastilha de Freio Dianteira Cerâmica</h3>
+                        <div class="product-pricing-box">
+                            <span class="old-price">R$ 149,90</span>
+                            <span class="discount-percent">+ 10%</span>
+                            <div class="current-price">R$ 119,90</div>
+                            <div class="payment-info">à vista em 10x de R$ 11,99 sem juros no cartão</div>
+                            <div class="payment-info">ou R$ 113,91 em 7x de R$ 16,27 sem juros no cartão</div>
+                        </div>
+                        <div class="fast-delivery-badge">
+                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida" alt="Produto com entrega rápida">
+                        </div>
+                    </div>
+
+                    <!-- Product 2 -->
+                    <div class="most-searched-card">
+                        <div class="free-shipping-badge">Para todo o Brasil</div>
+                        <div class="product-image-wrapper">
+                            <img src="https://via.placeholder.com/300x300/1a1a1a/FFFFFF?text=Filtro+Oleo" alt="Filtro de Óleo">
+                        </div>
+                        <h3 class="product-name">Filtro de Óleo Mann W950/26 Original</h3>
+                        <div class="product-pricing-box">
+                            <span class="old-price">R$ 45,90</span>
+                            <span class="discount-percent">+ 10%</span>
+                            <div class="current-price">R$ 34,90</div>
+                            <div class="payment-info">à vista em 10x de R$ 3,49 sem juros no cartão</div>
+                            <div class="payment-info">ou R$ 33,16 em 7x de R$ 4,74 sem juros no cartão</div>
+                        </div>
+                        <div class="fast-delivery-badge">
+                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida" alt="Produto com entrega rápida">
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="most-searched-card">
+                        <div class="free-shipping-badge">Para todo o Brasil</div>
+                        <div class="product-image-wrapper">
+                            <img src="https://via.placeholder.com/300x300/FF0000/FFFFFF?text=Amortecedor" alt="Amortecedor">
+                        </div>
+                        <h3 class="product-name">Amortecedor Traseiro Cofap Honda CG 125/150</h3>
+                        <div class="product-pricing-box">
+                            <span class="old-price">R$ 189,90</span>
+                            <div class="current-price">R$ 159,90</div>
+                            <div class="payment-info">à vista no Pix ou Boleto</div>
+                            <div class="payment-info">ou R$ 177,67 em 10x de R$ 17,77 sem juros no cartão</div>
+                        </div>
+                        <div class="fast-delivery-badge">
+                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida" alt="Produto com entrega rápida">
+                        </div>
+                    </div>
+
+                    <!-- Product 4 -->
+                    <div class="most-searched-card">
+                        <div class="free-shipping-badge">Para todo o Brasil</div>
+                        <div class="product-image-wrapper">
+                            <img src="https://via.placeholder.com/300x300/0066FF/FFFFFF?text=Bateria" alt="Bateria">
+                        </div>
+                        <h3 class="product-name">Bateria Moura 60Ah Selada Livre de Manutenção</h3>
+                        <div class="product-pricing-box">
+                            <span class="old-price">R$ 459,90</span>
+                            <div class="current-price">R$ 399,90</div>
+                            <div class="payment-info">à vista em 10x de R$ 39,99 sem juros no cartão</div>
+                            <div class="payment-info">ou R$ 419,90 em 5x de R$ 83,98 sem juros no cartão</div>
+                        </div>
+                        <div class="fast-delivery-badge">
+                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida" alt="Produto com entrega rápida">
+                        </div>
+                    </div>
+
+                    <!-- Product 5 -->
+                    <div class="most-searched-card">
+                        <div class="free-shipping-badge">Para todo o Brasil</div>
+                        <div class="product-image-wrapper">
+                            <img src="https://via.placeholder.com/300x300/27ae60/FFFFFF?text=Correia" alt="Correia Dentada">
+                        </div>
+                        <h3 class="product-name">Kit Correia Dentada Gates com Tensor Completo</h3>
+                        <div class="product-pricing-box">
+                            <span class="old-price">R$ 289,90</span>
+                            <div class="current-price">R$ 249,90</div>
+                            <div class="payment-info">à vista no Pix ou Boleto</div>
+                            <div class="payment-info">ou R$ 277,67 em 5x de R$ 55,53 sem juros no cartão</div>
+                        </div>
+                        <div class="fast-delivery-badge">
+                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida" alt="Produto com entrega rápida">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Button - Next -->
+                <button class="most-searched-nav-button next" aria-label="Próximo produto">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Brands Section ==================== -->
+    <section class="brands-section" aria-label="Marcas parceiras">
+        <div class="brands-container">
+            <h2 class="brands-title">Marcas Parceiras</h2>
+            <p class="brands-subtitle">Trabalhamos com as melhores marcas do mercado automotivo</p>
+            
+            <!-- Carousel Top (Left Direction) -->
+            <div class="brands-carousel-row">
+                <div class="brands-carousel brands-carousel-left">
+                    <!-- Set 1 -->
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    
+                    <!-- Set 2 (Duplicata para looping infinito) -->
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    
+                    <!-- Set 3 (Garantia de looping perfeito) -->
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                </div>
+            </div>
+
+            <!-- Carousel Bottom (Right Direction) -->
+            <div class="brands-carousel-row">
+                <div class="brands-carousel brands-carousel-right">
+                    <!-- Set 1 -->
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    
+                    <!-- Set 2 (Duplicata para looping infinito) -->
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    
+                    <!-- Set 3 (Garantia de looping perfeito) -->
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Free Shipping CTA ==================== -->
+    <section class="free-shipping-cta" aria-label="Promoção de frete grátis">
+        <div class="cta-container">
+            <div class="cta-content">
+                <h2 class="cta-title">Frete Grátis acima de R$ 299</h2>
+                <p class="cta-subtitle">Aproveite para comprar as melhores autopeças com entrega gratuita!</p>
+                <a href="#produtos" class="cta-button">
+                    Comprar Agora
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- ==================== Footer REMOVIDO - Usando template ====================
+    NOTA: O footer agora é carregado via templates/footer.html
+    O código abaixo foi comentado para evitar duplicação
+    <!--
+    <footer class="main-footer" role="contentinfo" aria-label="Rodapé com informações da empresa">
+        <div class="footer-container">
+            <!-- Footer Top -->
+            <div class="footer-top">
+                <!-- Column 1: Institucional -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Institucional</h3>
+                    <ul class="footer-links">
+                        <li><a href="#sobre">Sobre a Dimar</a></li>
+                        <li><a href="#lojas">Nossas Lojas</a></li>
+                        <li><a href="#trabalhe">Trabalhe Conosco</a></li>
+                        <li><a href="#fornecedores">Seja um Fornecedor</a></li>
+                        <li><a href="#sustentabilidade">Sustentabilidade</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 2: Atendimento -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Atendimento</h3>
+                    <ul class="footer-links">
+                        <li><a href="#central-ajuda">Central de Ajuda</a></li>
+                        <li><a href="#meus-pedidos">Meus Pedidos</a></li>
+                        <li><a href="#rastreamento">Rastrear Pedido</a></li>
+                        <li><a href="#trocas">Trocas e Devoluções</a></li>
+                        <li><a href="#faq">Perguntas Frequentes</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Informações -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Informações</h3>
+                    <ul class="footer-links">
+                        <li><a href="#politica-privacidade">Política de Privacidade</a></li>
+                        <li><a href="#termos-uso">Termos de Uso</a></li>
+                        <li><a href="#frete-entrega">Frete e Entrega</a></li>
+                        <li><a href="#formas-pagamento">Formas de Pagamento</a></li>
+                        <li><a href="#garantia">Garantia</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Contato -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Fale Conosco</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 5C3 3.89543 3.89543 3 5 3H8.27924C8.70967 3 9.09181 3.27543 9.22792 3.68377L10.7257 8.17721C10.8831 8.64932 10.6694 9.16531 10.2243 9.38787L7.96701 10.5165C9.06925 12.9612 11.0388 14.9308 13.4835 16.033L14.6121 13.7757C14.8347 13.3306 15.3507 13.1169 15.8228 13.2743L20.3162 14.7721C20.7246 14.9082 21 15.2903 21 15.7208V19C21 20.1046 20.1046 21 19 21H18C9.71573 21 3 14.2843 3 6V5Z" fill="currentColor"/>
+                            </svg>
+                            <span>(11) 0000-0000</span>
+                        </li>
+                        <li>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>contato@dimar.com.br</span>
+                        </li>
+                        <li>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C8.13401 2 5 5.13401 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13401 15.866 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 11C13.1046 11 14 10.1046 14 9C14 7.89543 13.1046 7 12 7C10.8954 7 10 7.89543 10 9C10 10.1046 10.8954 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>São Paulo, SP - Brasil</span>
+                        </li>
+                    </ul>
+                    
+                    <!-- Social Media -->
+                    <div class="footer-social">
+                        <h4 class="social-title">Redes Sociais</h4>
+                        <div class="social-icons">
+                            <a href="#facebook" aria-label="Facebook" class="social-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971h-1.513c-1.491 0-1.956.93-1.956 1.886v2.264h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+                                </svg>
+                            </a>
+                            <a href="#instagram" aria-label="Instagram" class="social-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                                </svg>
+                            </a>
+                            <a href="#youtube" aria-label="YouTube" class="social-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                </svg>
+                            </a>
+                            <a href="#whatsapp" aria-label="WhatsApp" class="social-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 5: Newsletter -->
+                <div class="footer-column newsletter-column">
+                    <h3 class="footer-title">Newsletter</h3>
+                    <p class="newsletter-text">Cadastre-se e receba ofertas exclusivas, novidades e cupons de desconto!</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Seu melhor e-mail" class="newsletter-input" required>
+                        <button type="submit" class="newsletter-button">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 8L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </form>
+                    
+                    <!-- Payment Methods -->
+                    <div class="payment-methods">
+                        <h4 class="payment-title">Formas de Pagamento</h4>
+                        <div class="payment-icons">
+                            <span class="payment-icon" title="Visa">💳</span>
+                            <span class="payment-icon" title="Mastercard">💳</span>
+                            <span class="payment-icon" title="Pix">🔵</span>
+                            <span class="payment-icon" title="Boleto">📄</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p class="copyright">
+                        © 2024 Dimar Auto Peças & Moto Peças. Todos os direitos reservados.
+                    </p>
+                    <div class="footer-badges">
+                        <span class="badge">🔒 Site Seguro</span>
+                        <span class="badge">🚚 Frete Grátis*</span>
+                        <span class="badge">⚡ Entrega Rápida</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    ==================== FIM DO FOOTER COMENTADO ==================== -->
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/5511999999999?text=Olá! Gostaria de mais informações sobre as peças." 
+       class="whatsapp-float" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       aria-label="Fale conosco pelo WhatsApp">
+        <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="white"/>
+        </svg>
+        <span class="whatsapp-tooltip">Fale Conosco</span>
+    </a>
+
+    <!-- SCRIPTS -->
+    <!-- ==================== SCRIPTS ==================== -->
+    <!-- Ordem de carregamento é CRÍTICA - NÃO ALTERAR sem testar -->
+    
+    <!-- 1. Logger System (PRIMEIRO - outros dependem dele) -->
+    <script src="js/logger.js"></script>
+    
+    <!-- 2. Placeholders SVG (antes de qualquer renderização) -->
+    <script src="js/create-placeholders.js"></script>
+    
+    <!-- 3. Supabase Configuration (APENAS UMA VEZ) -->
+    <script src="js/supabase-config.js"></script>
+    
+    <!-- 4. Navigation Fix (ajusta paths baseado em ambiente) -->
+    <script src="js/navigation-fix.js"></script>
+    
+    <!-- 5. Templates Loader (header/footer) -->
+    <script src="js/templates.js"></script>
+    
+    <!-- 6. Core Systems -->
+    <script src="js/cart.js"></script>
+    
+    <!-- 7. Product Systems (dependem de cart e Supabase) -->
+    <script src="js/supabase-products.js"></script>
+    <script src="js/products-data.js"></script>
+    <script src="js/products-catalog.js"></script>
+    
+    <!-- 8. Search System (depende de products) -->
+    <script src="js/search.js"></script>
+    
+    <!-- 9. Global Initialization -->
+    <script src="js/global-init.js"></script>
+    
+    <!-- 10. Home Page Supabase Integration (depende de tudo acima) -->
+    <script src="js/home-supabase.js"></script>
+    
+    <!-- 11. Page-Specific Scripts (ÚLTIMO - pode sobrescrever comportamentos) -->
+    <script src="js/script.js"></script>
+</body>
+
+</html>

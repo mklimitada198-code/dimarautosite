@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcas - Dimar Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../assets/images/logo-dimar.png" alt="Logo" class="sidebar-logo">
+                <span class="sidebar-title">Dimar Admin</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="index.html" class="menu-link">
+                        <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="produtos.html" class="menu-link">
+                        <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                        <span class="menu-text">Produtos</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="categorias.html" class="menu-link">
+                        <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                        <span class="menu-text">Categorias</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="banners.html" class="menu-link">
+                        <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="menu-text">Banners</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="marcas.html" class="menu-link active">
+                        <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                        <span class="menu-text">Marcas</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button class="toggle-sidebar" id="toggleSidebar">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <h1 class="page-title">Marcas Parceiras</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-menu" onclick="logout()">
+                        <div class="user-avatar">A</div>
+                        <span class="user-name" id="userName">Admin</span>
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <div>
+                            <h3>⭐ Logos das Marcas Parceiras</h3>
+                            <p style="color: #7f8c8d; margin-top: 8px;">Gerencie as marcas exibidas no carrossel da seção "Marcas Parceiras"</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openBrandModal()">
+                            ➕ Adicionar Marca
+                        </button>
+                    </div>
+
+                    <div id="brandsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="brandModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; overflow-y: auto; padding: 20px;">
+        <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 16px; padding: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 style="font-size: 24px; font-weight: 700;">Adicionar Marca</h2>
+                <button onclick="closeBrandModal()" style="background: none; border: none; font-size: 28px; cursor: pointer;">&times;</button>
+            </div>
+
+            <form id="brandForm">
+                <input type="hidden" id="brandId">
+                
+                <div class="form-group">
+                    <label class="form-label">Logo da Marca*</label>
+                    <input type="file" id="brandLogo" accept="image/*" class="form-control" required>
+                    <p style="font-size: 12px; color: #7f8c8d; margin-top: 4px;">Recomendado: PNG com fundo transparente</p>
+                    <div id="brandLogoPreview" style="margin-top: 12px;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Nome da Marca*</label>
+                    <input type="text" class="form-control" id="brandName" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Link (URL)</label>
+                    <input type="url" class="form-control" id="brandLink" placeholder="https://exemplo.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ordem de Exibição</label>
+                    <input type="number" class="form-control" id="brandOrder" value="0" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="brandActive" checked>
+                        <span>Marca Ativa</span>
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 30px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeBrandModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/marcas.js"></script>
+    <script>
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        const userEmail = localStorage.getItem('admin_email');
+        if (userEmail) {
+            document.getElementById('userName').textContent = userEmail.split('@')[0];
+            document.querySelector('.user-avatar').textContent = userEmail[0].toUpperCase();
+        }
+        document.getElementById('toggleSidebar').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+        function logout() {
+            if (confirm('Deseja realmente sair?')) {
+                localStorage.removeItem('admin_logged_in');
+                localStorage.removeItem('admin_email');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

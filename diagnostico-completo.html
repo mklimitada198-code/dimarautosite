@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Diagnóstico Completo - Dimar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #60a5fa;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+        .section {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+        }
+        .section h2 {
+            color: #93c5fd;
+            font-size: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-item {
+            background: #334155;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .status.loading { background: #fbbf24; color: #78350f; }
+        .status.success { background: #10b981; color: #fff; }
+        .status.error { background: #ef4444; color: #fff; }
+        .status.warning { background: #f59e0b; color: #fff; }
+        .log {
+            background: #111827;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+        .log-line {
+            padding: 2px 0;
+            border-bottom: 1px solid #1f2937;
+        }
+        .log-error { color: #f87171; }
+        .log-warn { color: #fbbf24; }
+        .log-success { color: #34d399; }
+        .log-info { color: #60a5fa; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button.secondary {
+            background: #64748b;
+        }
+        button.secondary:hover {
+            background: #475569;
+        }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .summary-card {
+            background: #374151;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .summary-card h3 {
+            font-size: 32px;
+            margin-bottom: 4px;
+        }
+        .summary-card.success h3 { color: #10b981; }
+        .summary-card.error h3 { color: #ef4444; }
+        .summary-card.warning h3 { color: #f59e0b; }
+        .summary-card p {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .error-details {
+            background: #7f1d1d;
+            border: 1px solid #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+        .code {
+            background: #1f2937;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico Completo do Sistema</h1>
+        
+        <!-- Ações -->
+        <div style="margin-bottom: 20px;">
+            <button onclick="runFullDiagnostic()">🔄 Executar Diagnóstico</button>
+            <button onclick="clearLogs()" class="secondary">🗑️ Limpar Logs</button>
+            <button onclick="window.location.href='index.html'" class="secondary">🏠 Ir para Home</button>
+            <button onclick="window.location.href='test-integration.html'" class="secondary">🧪 Teste Integração</button>
+        </div>
+
+        <!-- Resumo -->
+        <div class="section">
+            <h2>📊 Resumo Geral</h2>
+            <div class="summary">
+                <div class="summary-card" id="summary-pass">
+                    <h3 class="success">-</h3>
+                    <p>Testes Passaram</p>
+                </div>
+                <div class="summary-card" id="summary-fail">
+                    <h3 class="error">-</h3>
+                    <p>Testes Falharam</p>
+                </div>
+                <div class="summary-card" id="summary-warn">
+                    <h3 class="warning">-</h3>
+                    <p>Avisos</p>
+                </div>
+                <div class="summary-card">
+                    <h3 style="color: #60a5fa;" id="summary-total">-</h3>
+                    <p>Total de Testes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dependências Externas -->
+        <div class="section">
+            <h2>📦 Dependências Externas</h2>
+            <div class="test-item">
+                <span>CDN Supabase JS</span>
+                <span class="status loading" id="status-supabase-cdn">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>Google Fonts (Inter)</span>
+                <span class="status loading" id="status-fonts">Verificando...</span>
+            </div>
+        </div>
+
+        <!-- Scripts Locais -->
+        <div class="section">
+            <h2>📄 Scripts Locais</h2>
+            <div class="test-item">
+                <span>js/logger.js</span>
+                <span class="status loading" id="status-logger">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>js/create-placeholders.js</span>
+                <span class="status loading" id="status-placeholders">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>js/supabase-config.js</span>
+                <span class="status loading" id="status-supabase-config">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>js/navigation-fix.js</span>
+                <span class="status loading" id="status-navigation">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>js/templates.js</span>
+                <span class="status loading" id="status-templates">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>js/cart.js</span>
+                <span class="status loading" id="status-cart">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>js/home-supabase.js</span>
+                <span class="status loading" id="status-home-supabase">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>js/script.js</span>
+                <span class="status loading" id="status-script">Verificando...</span>
+            </div>
+        </div>
+
+        <!-- Templates -->
+        <div class="section">
+            <h2>🎨 Templates HTML</h2>
+            <div class="test-item">
+                <span>templates/header.html</span>
+                <span class="status loading" id="status-header">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>templates/footer.html</span>
+                <span class="status loading" id="status-footer">Verificando...</span>
+            </div>
+        </div>
+
+        <!-- Páginas -->
+        <div class="section">
+            <h2>📑 Páginas HTML</h2>
+            <div class="test-item">
+                <span>pages/sobre-nos.html</span>
+                <span class="status loading" id="status-page-sobre">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>pages/produtos.html</span>
+                <span class="status loading" id="status-page-produtos">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>pages/contato.html</span>
+                <span class="status loading" id="status-page-contato">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>pages/carrinho.html</span>
+                <span class="status loading" id="status-page-carrinho">Verificando...</span>
+            </div>
+        </div>
+
+        <!-- CSS -->
+        <div class="section">
+            <h2>🎨 Arquivos CSS</h2>
+            <div class="test-item">
+                <span>css/style.css</span>
+                <span class="status loading" id="status-css-main">Verificando...</span>
+            </div>
+        </div>
+
+        <!-- Banco de Dados -->
+        <div class="section">
+            <h2>🗄️ Banco de Dados (Supabase)</h2>
+            <div class="test-item">
+                <span>Conexão Supabase</span>
+                <span class="status loading" id="status-db-connection">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>Tabela: products</span>
+                <span class="status loading" id="status-table-products">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>Tabela: banners</span>
+                <span class="status loading" id="status-table-banners">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>Tabela: brands</span>
+                <span class="status loading" id="status-table-brands">Verificando...</span>
+            </div>
+            <div class="test-item">
+                <span>Tabela: categories</span>
+                <span class="status loading" id="status-table-categories">Verificando...</span>
+            </div>
+        </div>
+
+        <!-- Erros Encontrados -->
+        <div class="section">
+            <h2>❌ Erros Encontrados</h2>
+            <div id="errors-container" style="color: #9ca3af; font-size: 14px;">
+                Nenhum erro detectado ainda. Execute o diagnóstico.
+            </div>
+        </div>
+
+        <!-- Console de Logs -->
+        <div class="section">
+            <h2>📝 Console de Logs</h2>
+            <div class="log" id="diagnostic-log">
+                <div class="log-line log-info">Aguardando execução do diagnóstico...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Script de Diagnóstico -->
+    <script>
+        const logs = [];
+        const errors = [];
+        let testsPass = 0;
+        let testsFail = 0;
+        let testsWarn = 0;
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push({ timestamp, message, type });
+            updateLog();
+        }
+
+        function updateLog() {
+            const logEl = document.getElementById('diagnostic-log');
+            logEl.innerHTML = logs.map(l => 
+                `<div class="log-line log-${l.type}">[${l.timestamp}] ${l.message}</div>`
+            ).join('');
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function clearLogs() {
+            logs.length = 0;
+            errors.length = 0;
+            testsPass = 0;
+            testsFail = 0;
+            testsWarn = 0;
+            updateLog();
+            updateSummary();
+            document.getElementById('errors-container').innerHTML = 
+                '<span style="color: #9ca3af;">Nenhum erro detectado ainda. Execute o diagnóstico.</span>';
+        }
+
+        function setStatus(id, status, text = null) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            
+            el.className = `status ${status}`;
+            if (text) {
+                el.textContent = text;
+            } else {
+                el.textContent = status === 'success' ? '✅ OK' : 
+                                status === 'error' ? '❌ Erro' : 
+                                status === 'warning' ? '⚠️ Aviso' : 'Verificando...';
+            }
+
+            if (status === 'success') testsPass++;
+            if (status === 'error') testsFail++;
+            if (status === 'warning') testsWarn++;
+        }
+
+        function addError(title, description, suggestion = null) {
+            errors.push({ title, description, suggestion });
+            updateErrors();
+        }
+
+        function updateErrors() {
+            const container = document.getElementById('errors-container');
+            if (errors.length === 0) {
+                container.innerHTML = '<span style="color: #10b981;">✅ Nenhum erro crítico encontrado!</span>';
+                return;
+            }
+
+            container.innerHTML = errors.map((err, i) => `
+                <div class="error-details" style="margin-bottom: 12px;">
+                    <strong>${i + 1}. ${err.title}</strong><br>
+                    <span style="color: #fca5a5;">${err.description}</span>
+                    ${err.suggestion ? `<br><span style="color: #fbbf24;">💡 Solução: ${err.suggestion}</span>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function updateSummary() {
+            document.getElementById('summary-pass').querySelector('h3').textContent = testsPass;
+            document.getElementById('summary-fail').querySelector('h3').textContent = testsFail;
+            document.getElementById('summary-warn').querySelector('h3').textContent = testsWarn;
+            document.getElementById('summary-total').textContent = testsPass + testsFail + testsWarn;
+        }
+
+        async function checkFile(path, statusId, name) {
+            try {
+                const response = await fetch(path);
+                if (response.ok) {
+                    setStatus(statusId, 'success');
+                    log(`✅ ${name} carregado`, 'success');
+                    return true;
+                } else {
+                    setStatus(statusId, 'error');
+                    log(`❌ ${name} não encontrado (${response.status})`, 'error');
+                    addError(`${name} não encontrado`, `HTTP ${response.status}: ${path}`, `Verificar se o arquivo existe no caminho correto`);
+                    return false;
+                }
+            } catch (error) {
+                setStatus(statusId, 'error');
+                log(`❌ Erro ao carregar ${name}: ${error.message}`, 'error');
+                addError(`Erro ao carregar ${name}`, error.message, `Verificar conexão e caminho do arquivo`);
+                return false;
+            }
+        }
+
+        async function runFullDiagnostic() {
+            log('🚀 Iniciando diagnóstico completo...', 'info');
+            clearLogs();
+            log('🚀 Iniciando diagnóstico completo...', 'info');
+
+            // Esperar um pouco para UI atualizar
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // 1. Dependências Externas
+            log('📦 Verificando dependências externas...', 'info');
+            
+            if (typeof window.supabase !== 'undefined') {
+                setStatus('status-supabase-cdn', 'success');
+                log('✅ Supabase CDN carregado', 'success');
+            } else {
+                setStatus('status-supabase-cdn', 'error');
+                log('❌ Supabase CDN NÃO encontrado', 'error');
+                addError('Supabase CDN não carregado', 'window.supabase não está definido', 
+                        'Verificar se o script do CDN está carregando: https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
+            }
+
+            // Google Fonts (difícil testar, marcar como warning)
+            setStatus('status-fonts', 'warning', '⚠️ Não testável');
+            log('⚠️ Google Fonts não pode ser testado automaticamente', 'warn');
+
+            // 2. Scripts Locais
+            log('📄 Verificando scripts locais...', 'info');
+            await checkFile('js/logger.js', 'status-logger', 'Logger');
+            await checkFile('js/create-placeholders.js', 'status-placeholders', 'Placeholders');
+            await checkFile('js/supabase-config.js', 'status-supabase-config', 'Supabase Config');
+            await checkFile('js/navigation-fix.js', 'status-navigation', 'Navigation Fix');
+            await checkFile('js/templates.js', 'status-templates', 'Templates');
+            await checkFile('js/cart.js', 'status-cart', 'Cart');
+            await checkFile('js/home-supabase.js', 'status-home-supabase', 'Home Supabase');
+            await checkFile('js/script.js', 'status-script', 'Script Principal');
+
+            // 3. Templates
+            log('🎨 Verificando templates...', 'info');
+            await checkFile('templates/header.html', 'status-header', 'Header Template');
+            await checkFile('templates/footer.html', 'status-footer', 'Footer Template');
+
+            // 4. Páginas
+            log('📑 Verificando páginas...', 'info');
+            await checkFile('pages/sobre-nos.html', 'status-page-sobre', 'Página Sobre Nós');
+            await checkFile('pages/produtos.html', 'status-page-produtos', 'Página Produtos');
+            await checkFile('pages/contato.html', 'status-page-contato', 'Página Contato');
+            await checkFile('pages/carrinho.html', 'status-page-carrinho', 'Página Carrinho');
+
+            // 5. CSS
+            log('🎨 Verificando CSS...', 'info');
+            await checkFile('css/style.css', 'status-css-main', 'CSS Principal');
+
+            // 6. Banco de Dados
+            log('🗄️ Verificando banco de dados...', 'info');
+            
+            // Aguardar Supabase Config carregar
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            if (window.supabaseClient) {
+                setStatus('status-db-connection', 'success');
+                log('✅ Cliente Supabase conectado', 'success');
+
+                // Testar tabelas
+                try {
+                    const { data, error } = await window.supabaseClient.from('products').select('id').limit(1);
+                    if (error) throw error;
+                    setStatus('status-table-products', 'success', `✅ OK (${data ? data.length : 0})`);
+                    log('✅ Tabela products acessível', 'success');
+                } catch (error) {
+                    setStatus('status-table-products', 'error');
+                    log(`❌ Erro na tabela products: ${error.message}`, 'error');
+                    addError('Tabela products inacessível', error.message, 
+                            'Verificar RLS e permissões no Supabase');
+                }
+
+                try {
+                    const { data, error } = await window.supabaseClient.from('banners').select('id').limit(1);
+                    if (error) throw error;
+                    setStatus('status-table-banners', 'success', `✅ OK (${data ? data.length : 0})`);
+                    log('✅ Tabela banners acessível', 'success');
+                } catch (error) {
+                    setStatus('status-table-banners', 'error');
+                    log(`❌ Erro na tabela banners: ${error.message}`, 'error');
+                    addError('Tabela banners inacessível', error.message, 
+                            'Verificar RLS e permissões no Supabase');
+                }
+
+                try {
+                    const { data, error } = await window.supabaseClient.from('brands').select('id').limit(1);
+                    if (error) throw error;
+                    setStatus('status-table-brands', 'success', `✅ OK (${data ? data.length : 0})`);
+                    log('✅ Tabela brands acessível', 'success');
+                } catch (error) {
+                    setStatus('status-table-brands', 'error');
+                    log(`❌ Erro na tabela brands: ${error.message}`, 'error');
+                    addError('Tabela brands inacessível', error.message, 
+                            'Verificar RLS e permissões no Supabase');
+                }
+
+                try {
+                    const { data, error } = await window.supabaseClient.from('categories').select('id').limit(1);
+                    if (error) throw error;
+                    setStatus('status-table-categories', 'success', `✅ OK (${data ? data.length : 0})`);
+                    log('✅ Tabela categories acessível', 'success');
+                } catch (error) {
+                    setStatus('status-table-categories', 'error');
+                    log(`❌ Erro na tabela categories: ${error.message}`, 'error');
+                    addError('Tabela categories inacessível', error.message, 
+                            'Verificar RLS e permissões no Supabase');
+                }
+            } else {
+                setStatus('status-db-connection', 'error');
+                setStatus('status-table-products', 'error');
+                setStatus('status-table-banners', 'error');
+                setStatus('status-table-brands', 'error');
+                setStatus('status-table-categories', 'error');
+                log('❌ Cliente Supabase NÃO inicializado', 'error');
+                addError('Cliente Supabase não inicializado', 'window.supabaseClient não está definido', 
+                        'Verificar credenciais em js/supabase-config.js');
+            }
+
+            // Atualizar resumo
+            updateSummary();
+
+            log('', 'info');
+            log('🎉 Diagnóstico concluído!', 'success');
+            log(`📊 Resultado: ${testsPass} passou | ${testsFail} falhou | ${testsWarn} avisos`, 'info');
+
+            if (testsFail === 0) {
+                log('✅ Sistema aparenta estar funcionando corretamente!', 'success');
+            } else {
+                log('⚠️ Foram encontrados problemas. Verifique os erros acima.', 'warn');
+            }
+        }
+
+        // Carregar scripts necessários
+        const scripts = [
+            'js/logger.js',
+            'js/create-placeholders.js',
+            'js/supabase-config.js'
+        ];
+
+        scripts.forEach(src => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onerror = () => log(`❌ Erro ao carregar ${src}`, 'error');
+            document.head.appendChild(script);
+        });
+
+        // Auto-run após 2 segundos
+        setTimeout(() => {
+            runFullDiagnostic();
+        }, 2000);
+    </script>
+</body>
+</html>
+
+

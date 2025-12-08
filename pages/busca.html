@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados da Busca - Dimar Auto Peças & Moto Peças</title>
+    <meta name="description" content="Resultados da busca de produtos na Dimar. Encontre auto peças e moto peças com o melhor preço.">
+    <meta name="keywords" content="busca, pesquisa, produtos, auto peças, moto peças">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/catalog.css">
+    <link rel="stylesheet" href="../css/search-results.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="search-results-page">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb" aria-label="Navegação estrutural">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <span>Resultados da Busca</span>
+            </nav>
+
+            <!-- Search Header -->
+            <div class="search-header">
+                <h1 class="page-title">Resultados para: <span id="search-query"></span></h1>
+                <div class="search-stats">
+                    <span id="results-count">0 produtos encontrados</span>
+                    <span class="search-time" id="search-time"></span>
+                </div>
+            </div>
+
+            <!-- Search Filters -->
+            <div class="search-filters">
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="products">Produtos</button>
+                <button class="filter-btn" data-filter="categories">Categorias</button>
+                <button class="filter-btn" data-filter="brands">Marcas</button>
+            </div>
+
+            <!-- Results Container -->
+            <div class="catalog-content">
+                <!-- Sidebar Filters (same as catalog) -->
+                <aside class="sidebar-filters">
+                    <div class="filter-group">
+                        <h3>Categorias</h3>
+                        <div class="filter-options" id="category-filters">
+                            <!-- Categorias serão carregadas aqui -->
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Tipo de Veículo</h3>
+                        <div class="filter-options" id="vehicle-type-filters">
+                            <label><input type="checkbox" value="Carro"> Carros</label>
+                            <label><input type="checkbox" value="Moto"> Motos</label>
+                            <label><input type="checkbox" value="Universal"> Universal</label>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Marcas</h3>
+                        <div class="filter-search">
+                            <input type="text" id="brand-search" placeholder="Buscar marca...">
+                        </div>
+                        <div class="filter-options scrollable" id="brand-filters">
+                            <!-- Marcas serão carregadas aqui -->
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Faixa de Preço</h3>
+                        <div class="filter-options">
+                            <label><input type="checkbox" value="0-100"> Até R$ 100</label>
+                            <label><input type="checkbox" value="100-300"> R$ 100 - R$ 300</label>
+                            <label><input type="checkbox" value="300-500"> R$ 300 - R$ 500</label>
+                            <label><input type="checkbox" value="500-1000"> R$ 500 - R$ 1000</label>
+                            <label><input type="checkbox" value="1000+"> Acima de R$ 1000</label>
+                        </div>
+                    </div>
+
+                    <button id="clear-filters-btn" class="btn-secondary">Limpar Filtros</button>
+                </aside>
+
+                <!-- Results Section -->
+                <section class="product-list-section">
+                    <div class="filter-header">
+                        <span id="product-count">0 produtos</span>
+                        <div class="sort-options">
+                            <label for="sort-by">Ordenar por:</label>
+                            <select id="sort-by">
+                                <option value="relevance">Mais Relevantes</option>
+                                <option value="price-asc">Menor Preço</option>
+                                <option value="price-desc">Maior Preço</option>
+                                <option value="name-asc">Nome (A-Z)</option>
+                                <option value="name-desc">Nome (Z-A)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Product Grid -->
+                    <div class="product-grid" id="product-grid">
+                        <!-- Produtos serão carregados aqui -->
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="no-results" class="no-results" style="display: none;">
+                        <svg width="120" height="120" viewBox="0 0 24 24" fill="none">
+                            <circle cx="11" cy="11" r="7" stroke="#ddd" stroke-width="2"/>
+                            <path d="M16 16L21 21" stroke="#ddd" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <h2>Nenhum produto encontrado</h2>
+                        <p>Tente buscar com outras palavras ou explore nossas categorias.</p>
+                        <a href="../pages/produtos.html" class="btn-primary">Ver Todos os Produtos</a>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination">
+                        <!-- Paginação será carregada aqui -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Related Searches -->
+            <div class="related-searches" id="related-searches">
+                <h3>Buscas Relacionadas:</h3>
+                <div class="related-tags">
+                    <!-- Tags serão carregadas aqui -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts em ordem correta -->
+    <script src="../js/navigation-fix.js"></script>
+    <script src="../js/templates.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/products-catalog.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/search-results.js"></script>
+    <script src="../js/global-init.js"></script>
+</body>
+</html>
+
