@@ -151,10 +151,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
-    <script src="js/auth-guard.js"></script>
     <script src="js/marcas.js"></script>
     <script>
-        // Auth guard faz a verificação automaticamente
+        // Proteção simples
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.replace('login.html');
+        }
         const userEmail = localStorage.getItem('admin_email');
         if (userEmail) {
             document.getElementById('userName').textContent = userEmail.split('@')[0];

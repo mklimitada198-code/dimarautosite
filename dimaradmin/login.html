@@ -79,6 +79,8 @@
         
         // Verificar configuração do Supabase
         window.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 Página de login carregada');
+            
             const configured = checkSupabaseConfig();
             const configAlert = document.getElementById('configAlert');
             
@@ -86,10 +88,23 @@
                 configAlert.style.display = 'none';
             }
             
-            // Se já estiver logado, redirecionar
-            if (localStorage.getItem('admin_logged_in') === 'true') {
+            // IMPORTANTE: Limpar qualquer flag de verificação
+            sessionStorage.clear();
+            
+            // Se já estiver logado, redirecionar (mas apenas UMA vez)
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const isRedirecting = sessionStorage.getItem('redirecting');
+            
+            console.log('🔐 Status login:', isLoggedIn);
+            console.log('🔄 Já redirecionando?', isRedirecting);
+            
+            if (isLoggedIn && !isRedirecting) {
                 console.log('✅ Já está logado, redirecionando para dashboard...');
-                window.location.replace('index.html');
+                sessionStorage.setItem('redirecting', 'true');
+                
+                setTimeout(() => {
+                    window.location.replace('index.html');
+                }, 200);
             }
         });
 
@@ -117,21 +132,28 @@
                 if (email === 'admin@dimar.com.br' && password === 'admin123') {
                     console.log('✅ Credenciais corretas!');
                     
-                    // Limpar tudo primeiro
+                    // Limpar sessionStorage
                     sessionStorage.clear();
                     
-                    // Definir credenciais
+                    // Definir credenciais no localStorage
                     localStorage.setItem('admin_logged_in', 'true');
                     localStorage.setItem('admin_email', email);
                     localStorage.setItem('admin_login_time', new Date().toISOString());
                     
-                    console.log('✅ LocalStorage configurado');
-                    console.log('🔄 Redirecionando para dashboard...');
+                    console.log('✅ LocalStorage configurado:');
+                    console.log('  - admin_logged_in:', localStorage.getItem('admin_logged_in'));
+                    console.log('  - admin_email:', localStorage.getItem('admin_email'));
                     
-                    // Pequeno delay para garantir que localStorage foi salvo
+                    // Marcar que está redirecionando
+                    sessionStorage.setItem('redirecting', 'true');
+                    
+                    console.log('🔄 Redirecionando para dashboard em 200ms...');
+                    
+                    // Delay para garantir que localStorage foi salvo
                     setTimeout(() => {
+                        console.log('➡️ Executando redirecionamento agora!');
                         window.location.replace('index.html');
-                    }, 100);
+                    }, 200);
                 } else {
                     throw new Error('Credenciais inválidas. Use: admin@dimar.com.br / admin123');
                 }

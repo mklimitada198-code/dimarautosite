@@ -192,17 +192,44 @@
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
-    <script src="js/auth-guard.js"></script>
     
     <script>
+        // ===== PROTEÇÃO SIMPLES E DIRETA =====
+        (function() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            console.log('🔒 Dashboard - Verificando login:', isLoggedIn);
+            
+            if (!isLoggedIn) {
+                console.warn('❌ Não autenticado - Redirecionando para login');
+                window.location.replace('login.html');
+                return;
+            }
+            
+            console.log('✅ Autenticado - Carregando dashboard');
+            
+            // Mostrar email do usuário
+            const email = localStorage.getItem('admin_email');
+            if (email) {
+                document.getElementById('userName').textContent = email.split('@')[0];
+                document.querySelector('.user-avatar').textContent = email[0].toUpperCase();
+            }
+        })();
+        
         // Toggle sidebar
         document.getElementById('toggleSidebar').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('collapsed');
         });
 
-        // Logout (usar função global do auth-guard)
+        // Logout
         function logout() {
-            window.adminLogout();
+            if (confirm('Deseja realmente sair?')) {
+                console.log('🚪 Fazendo logout...');
+                localStorage.removeItem('admin_logged_in');
+                localStorage.removeItem('admin_email');
+                localStorage.removeItem('admin_login_time');
+                sessionStorage.clear();
+                window.location.replace('login.html');
+            }
         }
 
         // Carregar estatísticas (mock data por enquanto)
