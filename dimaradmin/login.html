@@ -141,7 +141,11 @@
                 try {
                     console.log('🔐 Tentando fazer login...');
                     console.log('📧 Email digitado:', email);
-                    console.log('🔒 Senha digitada:', password ? '***' : '(vazia)');
+                    console.log('📧 Email length:', email.length);
+                    console.log('🔒 Senha digitada:', password);
+                    console.log('🔒 Senha length:', password.length);
+                    console.log('🔍 Email match:', email === 'admin@dimar.com.br');
+                    console.log('🔍 Password match:', password === 'admin123');
                     
                     // Desabilitar botão durante processamento
                     if (submitButton) {
@@ -150,7 +154,8 @@
                     }
                     
                     // LOGIN TEMPORÁRIO (sem Supabase Auth)
-                    if (email === 'admin@dimar.com.br' && password === 'admin123') {
+                    const trimmedPassword = password.trim();
+                    if (email === 'admin@dimar.com.br' && trimmedPassword === 'admin123') {
                         console.log('✅ Credenciais corretas!');
                         
                         // Definir credenciais no localStorage
