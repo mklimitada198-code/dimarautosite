@@ -272,3 +272,4 @@ CREATE POLICY "Authenticated users can view all banners"
 -- 3. Verificar que usuários não autenticados podem LER mas não ESCREVER
 -- 4. Confirmar que usuários autenticados podem gerenciar o catálogo
 
+

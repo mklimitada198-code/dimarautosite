@@ -505,3 +505,4 @@ Para site **HTML/JS estático**, as env vars do Vercel **NÃO são injetadas aut
 **Última atualização:** 08/12/2024  
 **Próxima revisão recomendada:** Após implementar correções críticas
 
+

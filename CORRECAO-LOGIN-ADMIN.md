@@ -298,3 +298,4 @@ Se ainda houver problemas:
 **Data:** 08/12/2024
 **Versão:** 2.1.0
 
+

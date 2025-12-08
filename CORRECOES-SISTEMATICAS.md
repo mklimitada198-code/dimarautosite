@@ -146,3 +146,4 @@ if (typeof window.supabaseClient === 'undefined') {
 
 Executando correções na ordem de prioridade...
 
+

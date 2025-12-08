@@ -283,3 +283,4 @@ Dashboard → Verifica localStorage (SIMPLES!)
 
 Mas o código agora é **IMPOSSÍVEL** de dar loop! 🎯
 
+

@@ -206,3 +206,4 @@ Se encontrar algum problema:
 **Versão:** 2.0.0
 **Status:** AGUARDANDO VALIDAÇÃO DO USUÁRIO
 
+
