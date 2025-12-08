@@ -98,9 +98,9 @@
                         <div class="stat-icon primary">
                             📦
                         </div>
-                        <div class="stat-content">
-                            <h3 id="totalProducts">0</h3>
-                            <p>Total de Produtos</p>
+                        <div class="stat-details">
+                            <h3 class="stat-value" id="totalProducts">0</h3>
+                            <p class="stat-label">Total de Produtos</p>
                         </div>
                     </div>
 
@@ -108,9 +108,9 @@
                         <div class="stat-icon success">
                             🏷️
                         </div>
-                        <div class="stat-content">
-                            <h3 id="totalCategories">7</h3>
-                            <p>Categorias</p>
+                        <div class="stat-details">
+                            <h3 class="stat-value" id="totalCategories">0</h3>
+                            <p class="stat-label">Categorias</p>
                         </div>
                     </div>
 
@@ -118,71 +118,58 @@
                         <div class="stat-icon warning">
                             🎨
                         </div>
-                        <div class="stat-content">
-                            <h3 id="totalBanners">2</h3>
-                            <p>Banners Ativos</p>
+                        <div class="stat-details">
+                            <h3 class="stat-value" id="totalBanners">0</h3>
+                            <p class="stat-label">Banners Ativos</p>
                         </div>
                     </div>
 
                     <div class="stat-card">
-                        <div class="stat-icon info">
+                        <div class="stat-icon danger">
                             ⭐
                         </div>
-                        <div class="stat-content">
-                            <h3 id="totalBrands">9</h3>
-                            <p>Marcas Parceiras</p>
+                        <div class="stat-details">
+                            <h3 class="stat-value" id="totalBrands">0</h3>
+                            <p class="stat-label">Marcas</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Ações Rápidas</h2>
-                    </div>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <a href="produtos.html" class="btn btn-primary">
-                            ➕ Adicionar Produto
+                <div class="section">
+                    <h2 class="section-title">Ações Rápidas</h2>
+                    <div class="quick-actions">
+                        <a href="produtos.html" class="quick-action-card">
+                            <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            <h3>Adicionar Produto</h3>
+                            <p>Cadastrar novo produto</p>
                         </a>
-                        <a href="categorias.html" class="btn btn-success">
-                            🏷️ Gerenciar Categorias
+                        
+                        <a href="categorias.html" class="quick-action-card">
+                            <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
+                            <h3>Gerenciar Categorias</h3>
+                            <p>Organizar categorias</p>
                         </a>
-                        <a href="banners.html" class="btn btn-warning">
-                            🎨 Gerenciar Banners
+                        
+                        <a href="banners.html" class="quick-action-card">
+                            <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <h3>Editar Banners</h3>
+                            <p>Atualizar carrossel</p>
                         </a>
-                        <a href="marcas.html" class="btn btn-secondary">
-                            ⭐ Gerenciar Marcas
+                        
+                        <a href="marcas.html" class="quick-action-card">
+                            <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                            </svg>
+                            <h3>Gerenciar Marcas</h3>
+                            <p>Adicionar ou editar marcas</p>
                         </a>
-                    </div>
-                </div>
-
-                <!-- Recent Products -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Produtos Recentes</h2>
-                        <a href="produtos.html" class="btn btn-sm btn-primary">Ver Todos</a>
-                    </div>
-                    <div class="table-container">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Produto</th>
-                                    <th>SKU</th>
-                                    <th>Categoria</th>
-                                    <th>Preço</th>
-                                    <th>Estoque</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recentProducts">
-                                <tr>
-                                    <td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">
-                                        Nenhum produto cadastrado ainda.<br>
-                                        <a href="produtos.html">Adicionar primeiro produto</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -194,39 +181,17 @@
     <script src="js/supabase-config.js"></script>
     
     <script>
-        // ===== PROTEÇÃO SIMPLES E DIRETA =====
-        (function() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const alreadyChecked = sessionStorage.getItem('dashboard_loaded');
-            
-            console.log('🔒 Dashboard - Verificando login:', isLoggedIn);
-            console.log('🔍 Dashboard já carregou?', alreadyChecked);
-            
-            if (!isLoggedIn) {
-                console.warn('❌ Não autenticado - Redirecionando para login');
-                // Limpar flag para permitir nova verificação no login
-                sessionStorage.removeItem('login_page_checked');
-                window.location.replace('login.html');
-                return;
-            }
-            
-            // Marcar que dashboard foi carregado (prevenir loop)
-            if (!alreadyChecked) {
-                sessionStorage.setItem('dashboard_loaded', 'true');
-            }
-            
-            console.log('✅ Autenticado - Carregando dashboard');
-            
-            // Mostrar email do usuário
-            const email = localStorage.getItem('admin_email');
-            if (email) {
-                const userNameEl = document.getElementById('userName');
-                const userAvatarEl = document.querySelector('.user-avatar');
-                
-                if (userNameEl) userNameEl.textContent = email.split('@')[0];
-                if (userAvatarEl) userAvatarEl.textContent = email[0].toUpperCase();
-            }
-        })();
+        // Proteção simples
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.replace('login.html');
+        }
+
+        // Mostrar email do usuário
+        const email = localStorage.getItem('admin_email');
+        if (email) {
+            document.getElementById('userName').textContent = email.split('@')[0];
+            document.querySelector('.user-avatar').textContent = email[0].toUpperCase();
+        }
         
         // Toggle sidebar
         document.getElementById('toggleSidebar').addEventListener('click', () => {
@@ -236,24 +201,16 @@
         // Logout
         function logout() {
             if (confirm('Deseja realmente sair?')) {
-                console.log('🚪 Fazendo logout...');
-                
-                // Limpar TUDO
                 localStorage.clear();
                 sessionStorage.clear();
-                
-                console.log('✅ Dados limpos, redirecionando...');
-                
-                // Redirecionar
                 window.location.replace('login.html');
             }
         }
 
-        // Carregar estatísticas (mock data por enquanto)
+        // Carregar estatísticas
         async function loadStats() {
             try {
-                if (checkSupabaseConfig()) {
-                    // Carregar dados reais do Supabase
+                if (typeof supabaseClient !== 'undefined' && typeof checkSupabaseConfig !== 'undefined' && checkSupabaseConfig()) {
                     const { data: products } = await supabaseClient.from('products').select('*');
                     const { data: categories } = await supabaseClient.from('categories').select('*');
                     const { data: banners } = await supabaseClient.from('banners').select('*');
@@ -269,9 +226,7 @@
             }
         }
 
-        // Carregar ao iniciar
         loadStats();
     </script>
 </body>
 </html>
-

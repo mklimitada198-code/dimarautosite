@@ -22,11 +22,6 @@
                 <p>Entre com suas credenciais</p>
             </div>
 
-            <!-- Alert de configuração -->
-            <div class="alert alert-info" id="configAlert" style="display: none;">
-                ⚠️ <strong>Atenção:</strong> Supabase configurado e pronto para uso!
-            </div>
-
             <!-- Alert de erro -->
             <div class="alert alert-danger" id="errorAlert" style="display: none;">
                 <span id="errorMessage"></span>
@@ -40,6 +35,7 @@
                         id="email" 
                         class="form-control" 
                         placeholder="admin@dimar.com.br"
+                        value="admin@dimar.com.br"
                         required>
                 </div>
 
@@ -50,10 +46,11 @@
                         id="password" 
                         class="form-control" 
                         placeholder="••••••••"
+                        value="admin123"
                         required>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="loginBtn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -74,153 +71,45 @@
     <script src="js/supabase-config.js"></script>
     
     <script>
-        // IMPORTANTE: NÃO carregar auth-guard na página de login
-        // Ele será carregado apenas nas páginas protegidas
-        
-        // Verificar configuração do Supabase
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('📄 Página de login carregada');
-            
-            // Verificar Supabase config (sem bloquear se der erro)
-            try {
-                if (typeof checkSupabaseConfig !== 'undefined') {
-                    const configured = checkSupabaseConfig();
-                    const configAlert = document.getElementById('configAlert');
-                    if (configured && configAlert) {
-                        configAlert.style.display = 'none';
-                    }
-                }
-            } catch (e) {
-                console.warn('Supabase config check falhou:', e);
-            }
-            
-            // Verificar se já está logado
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            
-            console.log('🔐 Status login:', isLoggedIn);
-            
-            // Se já estiver logado, redirecionar para dashboard
-            if (isLoggedIn) {
-                console.log('✅ Já está logado, redirecionando para dashboard...');
-                window.location.replace('index.html');
-                return; // Parar execução
-            }
-            
-            // Se chegou aqui, está na página de login e não está logado
-            console.log('📝 Pronto para fazer login');
-        });
+        // Verificar se já está logado
+        if (localStorage.getItem('admin_logged_in') === 'true') {
+            window.location.replace('index.html');
+        }
 
-        // Handle login form - GARANTIR QUE ESTÁ REGISTRADO
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('loginForm');
+        // Handle login form
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            if (!loginForm) {
-                console.error('❌ Formulário de login não encontrado!');
-                return;
-            }
-            
-            console.log('✅ Formulário de login encontrado, registrando evento...');
-            
-            loginForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            const loginBtn = document.getElementById('loginBtn');
+
+            // Validar credenciais
+            if (email === 'admin@dimar.com.br' && password === 'admin123') {
+                // Desabilitar botão
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Entrando...';
                 
-                console.log('🎯 Formulário submetido!');
-                
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-                const errorAlert = document.getElementById('errorAlert');
-                const errorMessage = document.getElementById('errorMessage');
-                const submitButton = e.target.querySelector('button[type="submit"]');
-
-                try {
-                    console.log('🔐 Tentando fazer login...');
-                    console.log('📧 Email digitado:', email);
-                    console.log('📧 Email length:', email.length);
-                    console.log('🔒 Senha digitada:', password);
-                    console.log('🔒 Senha length:', password.length);
-                    console.log('🔍 Email match:', email === 'admin@dimar.com.br');
-                    console.log('🔍 Password match:', password === 'admin123');
-                    
-                    // Desabilitar botão durante processamento
-                    if (submitButton) {
-                        submitButton.disabled = true;
-                        submitButton.textContent = 'Entrando...';
-                    }
-                    
-                    // LOGIN TEMPORÁRIO (sem Supabase Auth)
-                    const trimmedPassword = password.trim();
-                    if (email === 'admin@dimar.com.br' && trimmedPassword === 'admin123') {
-                        console.log('✅ Credenciais corretas!');
-                        
-                        // Definir credenciais no localStorage
-                        localStorage.setItem('admin_logged_in', 'true');
-                        localStorage.setItem('admin_email', email);
-                        localStorage.setItem('admin_login_time', new Date().toISOString());
-                        
-                        console.log('✅ LocalStorage configurado:');
-                        console.log('  - admin_logged_in:', localStorage.getItem('admin_logged_in'));
-                        console.log('  - admin_email:', localStorage.getItem('admin_email'));
-                        
-                        console.log('🔄 Redirecionando para dashboard...');
-                        
-                        // Pequeno delay para ver os logs
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                        
-                        // Redirecionar
-                        console.log('➡️ Executando window.location.replace...');
-                        window.location.replace('index.html');
-                    } else {
-                        throw new Error('Credenciais inválidas. Use: admin@dimar.com.br / admin123');
-                    }
-
-                /* DESCOMENTE PARA USAR SUPABASE AUTH:
-                // Login com Supabase
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (error) throw error;
-
-                // Sucesso - redirecionar para dashboard
+                // Salvar no localStorage
                 localStorage.setItem('admin_logged_in', 'true');
                 localStorage.setItem('admin_email', email);
-                window.location.href = 'index.html';
-                */
-
-                } catch (error) {
-                    console.error('❌ Erro no login:', error);
-                    
-                    if (errorAlert && errorMessage) {
-                        errorAlert.style.display = 'block';
-                        errorMessage.textContent = '❌ ' + error.message;
-                    }
-                    
-                    // Re-habilitar botão
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.innerHTML = `
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            Entrar
-                        `;
-                    }
-                    
-                    // Esconder após 5 segundos
-                    if (errorAlert) {
-                        setTimeout(() => {
-                            errorAlert.style.display = 'none';
-                        }, 5000);
-                    }
-                }
-            });
+                localStorage.setItem('admin_login_time', new Date().toISOString());
+                
+                // Redirecionar
+                window.location.replace('index.html');
+            } else {
+                // Mostrar erro
+                errorAlert.style.display = 'block';
+                errorMessage.textContent = 'Credenciais inválidas. Use: admin@dimar.com.br / admin123';
+                
+                // Esconder após 5 segundos
+                setTimeout(() => {
+                    errorAlert.style.display = 'none';
+                }, 5000);
+            }
         });
-
-        console.log('✅ Login page loaded');
-        console.log('ℹ️ Use: admin@dimar.com.br / admin123');
     </script>
 </body>
 </html>
-
