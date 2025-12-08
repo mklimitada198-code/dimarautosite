@@ -66,15 +66,33 @@
         </div>
     </div>
 
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js"></script>
-    
     <script>
-        // Verificar se já está logado
-        if (localStorage.getItem('admin_logged_in') === 'true') {
-            window.location.replace('index.html');
-        }
+        // PROTEÇÃO ANTI-LOOP: Só redireciona se vier do login bem-sucedido
+        (function() {
+            const justLoggedIn = sessionStorage.getItem('just_logged_in');
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            
+            // Se acabou de fazer login, limpar flag e redirecionar
+            if (justLoggedIn === 'true') {
+                sessionStorage.removeItem('just_logged_in');
+                if (isLoggedIn) {
+                    window.location.replace('index.html');
+                    return;
+                }
+            }
+            
+            // Se já está logado mas não é um login recente, pode ser refresh - perguntar
+            if (isLoggedIn) {
+                const loginTime = localStorage.getItem('admin_login_time');
+                const now = new Date().getTime();
+                const loginTimeMs = loginTime ? new Date(loginTime).getTime() : 0;
+                
+                // Se o login foi há menos de 5 minutos, redirecionar
+                if (now - loginTimeMs < 300000) {
+                    window.location.replace('index.html');
+                }
+            }
+        })();
 
         // Handle login form
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -96,6 +114,9 @@
                 localStorage.setItem('admin_logged_in', 'true');
                 localStorage.setItem('admin_email', email);
                 localStorage.setItem('admin_login_time', new Date().toISOString());
+                
+                // Marcar que acabou de fazer login (prevenir loop)
+                sessionStorage.setItem('just_logged_in', 'true');
                 
                 // Redirecionar
                 window.location.replace('index.html');
