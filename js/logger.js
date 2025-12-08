@@ -26,18 +26,21 @@
         },
         
         warn: function(...args) {
-            // Warnings sempre aparecem
+            // Warnings sempre aparecem (inclusive em produção)
             console.warn(...args);
         },
         
         error: function(...args) {
-            // Errors sempre aparecem
+            // Errors sempre aparecem (inclusive em produção)
             console.error(...args);
         },
         
         success: function(message) {
+            // Success sempre aparece em desenvolvimento, e como log simples em produção
             if (isDevelopment) {
                 console.log(`%c✅ ${message}`, 'color: #27ae60; font-weight: bold;');
+            } else {
+                console.log(`✅ ${message}`);
             }
         },
         
@@ -50,13 +53,8 @@
         }
     };
 
-    // Substituir console global em produção
-    if (!isDevelopment) {
-        const noop = function() {};
-        console.log = noop;
-        console.info = noop;
-        console.debug = noop;
-    }
+    // NÃO desabilitar console em produção - causa mais problemas do que resolve
+    // Mantemos para debug se necessário
 
     logger.success('Logger system initialized');
 })();
