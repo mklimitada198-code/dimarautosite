@@ -197,12 +197,22 @@
         // ===== PROTEÇÃO SIMPLES E DIRETA =====
         (function() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const alreadyChecked = sessionStorage.getItem('dashboard_loaded');
+            
             console.log('🔒 Dashboard - Verificando login:', isLoggedIn);
+            console.log('🔍 Dashboard já carregou?', alreadyChecked);
             
             if (!isLoggedIn) {
                 console.warn('❌ Não autenticado - Redirecionando para login');
+                // Limpar flag para permitir nova verificação no login
+                sessionStorage.removeItem('login_page_checked');
                 window.location.replace('login.html');
                 return;
+            }
+            
+            // Marcar que dashboard foi carregado (prevenir loop)
+            if (!alreadyChecked) {
+                sessionStorage.setItem('dashboard_loaded', 'true');
             }
             
             console.log('✅ Autenticado - Carregando dashboard');
@@ -210,8 +220,11 @@
             // Mostrar email do usuário
             const email = localStorage.getItem('admin_email');
             if (email) {
-                document.getElementById('userName').textContent = email.split('@')[0];
-                document.querySelector('.user-avatar').textContent = email[0].toUpperCase();
+                const userNameEl = document.getElementById('userName');
+                const userAvatarEl = document.querySelector('.user-avatar');
+                
+                if (userNameEl) userNameEl.textContent = email.split('@')[0];
+                if (userAvatarEl) userAvatarEl.textContent = email[0].toUpperCase();
             }
         })();
         
@@ -224,10 +237,14 @@
         function logout() {
             if (confirm('Deseja realmente sair?')) {
                 console.log('🚪 Fazendo logout...');
-                localStorage.removeItem('admin_logged_in');
-                localStorage.removeItem('admin_email');
-                localStorage.removeItem('admin_login_time');
+                
+                // Limpar TUDO
+                localStorage.clear();
                 sessionStorage.clear();
+                
+                console.log('✅ Dados limpos, redirecionando...');
+                
+                // Redirecionar
                 window.location.replace('login.html');
             }
         }

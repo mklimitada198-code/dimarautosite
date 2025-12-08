@@ -158,10 +158,20 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/banners.js"></script>
     <script>
-        // Proteção simples
-        if (localStorage.getItem('admin_logged_in') !== 'true') {
-            window.location.replace('login.html');
-        }
+        // Proteção simples (sem loops)
+        (function() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            console.log('🔒 Banners - Verificando login:', isLoggedIn);
+            
+            if (!isLoggedIn) {
+                console.warn('❌ Não autenticado - Redirecionando');
+                sessionStorage.clear();
+                window.location.replace('login.html');
+                return;
+            }
+            
+            console.log('✅ Autenticado - Página de banners');
+        })();
         const userEmail = localStorage.getItem('admin_email');
         if (userEmail) {
             document.getElementById('userName').textContent = userEmail.split('@')[0];

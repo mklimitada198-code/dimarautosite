@@ -88,24 +88,25 @@
                 configAlert.style.display = 'none';
             }
             
-            // IMPORTANTE: Limpar qualquer flag de verificação
-            sessionStorage.clear();
-            
-            // Se já estiver logado, redirecionar (mas apenas UMA vez)
+            // Verificar se já está logado (sem limpar sessionStorage!)
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const isRedirecting = sessionStorage.getItem('redirecting');
+            const alreadyChecked = sessionStorage.getItem('login_page_checked');
             
             console.log('🔐 Status login:', isLoggedIn);
-            console.log('🔄 Já redirecionando?', isRedirecting);
+            console.log('🔍 Já verificou?', alreadyChecked);
             
-            if (isLoggedIn && !isRedirecting) {
+            // Se já estiver logado E ainda não verificou, redirecionar
+            if (isLoggedIn && !alreadyChecked) {
                 console.log('✅ Já está logado, redirecionando para dashboard...');
-                sessionStorage.setItem('redirecting', 'true');
+                sessionStorage.setItem('login_page_checked', 'true');
                 
-                setTimeout(() => {
-                    window.location.replace('index.html');
-                }, 200);
+                // Redirecionar IMEDIATAMENTE
+                window.location.replace('index.html');
+                return; // Parar execução
             }
+            
+            // Se chegou aqui, está na página de login e não está logado
+            console.log('📝 Pronto para fazer login');
         });
 
         // Handle login form
@@ -132,9 +133,6 @@
                 if (email === 'admin@dimar.com.br' && password === 'admin123') {
                     console.log('✅ Credenciais corretas!');
                     
-                    // Limpar sessionStorage
-                    sessionStorage.clear();
-                    
                     // Definir credenciais no localStorage
                     localStorage.setItem('admin_logged_in', 'true');
                     localStorage.setItem('admin_email', email);
@@ -144,16 +142,13 @@
                     console.log('  - admin_logged_in:', localStorage.getItem('admin_logged_in'));
                     console.log('  - admin_email:', localStorage.getItem('admin_email'));
                     
-                    // Marcar que está redirecionando
-                    sessionStorage.setItem('redirecting', 'true');
+                    // Limpar flag de verificação para permitir dashboard carregar
+                    sessionStorage.removeItem('login_page_checked');
                     
-                    console.log('🔄 Redirecionando para dashboard em 200ms...');
+                    console.log('🔄 Redirecionando para dashboard...');
                     
-                    // Delay para garantir que localStorage foi salvo
-                    setTimeout(() => {
-                        console.log('➡️ Executando redirecionamento agora!');
-                        window.location.replace('index.html');
-                    }, 200);
+                    // Redirecionar IMEDIATAMENTE
+                    window.location.replace('index.html');
                 } else {
                     throw new Error('Credenciais inválidas. Use: admin@dimar.com.br / admin123');
                 }
