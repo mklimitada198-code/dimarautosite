@@ -1,110 +1,8 @@
 {
   "version": 2,
   "name": "dimar-site",
-  "builds": [
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/index",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/home",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/sobre-nos",
-      "destination": "/pages/sobre-nos.html"
-    },
-    {
-      "source": "/sobre",
-      "destination": "/pages/sobre-nos.html"
-    },
-    {
-      "source": "/produtos",
-      "destination": "/pages/produtos.html"
-    },
-    {
-      "source": "/catalogo",
-      "destination": "/pages/produtos.html"
-    },
-    {
-      "source": "/produto",
-      "destination": "/pages/produto.html"
-    },
-    {
-      "source": "/produto/:id",
-      "destination": "/pages/produto.html"
-    },
-    {
-      "source": "/carrinho",
-      "destination": "/pages/carrinho.html"
-    },
-    {
-      "source": "/cart",
-      "destination": "/pages/carrinho.html"
-    },
-    {
-      "source": "/busca",
-      "destination": "/pages/busca.html"
-    },
-    {
-      "source": "/search",
-      "destination": "/pages/busca.html"
-    },
-    {
-      "source": "/contato",
-      "destination": "/pages/contato.html"
-    },
-    {
-      "source": "/lojas",
-      "destination": "/pages/lojas.html"
-    },
-    {
-      "source": "/admin",
-      "destination": "/dimaradmin/login.html"
-    },
-    {
-      "source": "/dimaradmin",
-      "destination": "/dimaradmin/login.html"
-    },
-    {
-      "source": "/dimaradmin/",
-      "destination": "/dimaradmin/login.html"
-    },
-    {
-      "source": "/assets/:path*",
-      "destination": "/assets/:path*"
-    },
-    {
-      "source": "/css/:path*",
-      "destination": "/css/:path*"
-    },
-    {
-      "source": "/js/:path*",
-      "destination": "/js/:path*"
-    },
-    {
-      "source": "/templates/:path*",
-      "destination": "/templates/:path*"
-    },
-    {
-      "source": "/pages/:path*",
-      "destination": "/pages/:path*"
-    },
-    {
-      "source": "/dimaradmin/:path*",
-      "destination": "/dimaradmin/:path*"
-    }
-  ],
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -143,6 +41,76 @@
       ]
     }
   ],
-  "trailingSlash": false,
-  "cleanUrls": true
+  "redirects": [
+    {
+      "source": "/index",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/sobre",
+      "destination": "/sobre-nos",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo",
+      "destination": "/produtos",
+      "permanent": true
+    },
+    {
+      "source": "/cart",
+      "destination": "/carrinho",
+      "permanent": true
+    },
+    {
+      "source": "/search",
+      "destination": "/busca",
+      "permanent": true
+    },
+    {
+      "source": "/admin",
+      "destination": "/dimaradmin/login",
+      "permanent": false
+    },
+    {
+      "source": "/dimaradmin",
+      "destination": "/dimaradmin/login",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/sobre-nos",
+      "destination": "/pages/sobre-nos.html"
+    },
+    {
+      "source": "/produtos",
+      "destination": "/pages/produtos.html"
+    },
+    {
+      "source": "/produto",
+      "destination": "/pages/produto.html"
+    },
+    {
+      "source": "/carrinho",
+      "destination": "/pages/carrinho.html"
+    },
+    {
+      "source": "/busca",
+      "destination": "/pages/busca.html"
+    },
+    {
+      "source": "/contato",
+      "destination": "/pages/contato.html"
+    },
+    {
+      "source": "/lojas",
+      "destination": "/pages/lojas.html"
+    }
+  ]
 }
