@@ -72,9 +72,11 @@
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
-    <script src="js/auth-guard.js"></script>
     
     <script>
+        // IMPORTANTE: NÃO carregar auth-guard na página de login
+        // Ele será carregado apenas nas páginas protegidas
+        
         // Verificar configuração do Supabase
         window.addEventListener('DOMContentLoaded', () => {
             const configured = checkSupabaseConfig();
@@ -82,6 +84,12 @@
             
             if (configured) {
                 configAlert.style.display = 'none';
+            }
+            
+            // Se já estiver logado, redirecionar
+            if (localStorage.getItem('admin_logged_in') === 'true') {
+                console.log('✅ Já está logado, redirecionando para dashboard...');
+                window.location.replace('index.html');
             }
         });
 
@@ -93,22 +101,37 @@
             const password = document.getElementById('password').value;
             const errorAlert = document.getElementById('errorAlert');
             const errorMessage = document.getElementById('errorMessage');
+            const submitButton = e.target.querySelector('button[type="submit"]');
 
             try {
+                // Desabilitar botão durante processamento
+                submitButton.disabled = true;
+                submitButton.textContent = 'Entrando...';
+                
+                console.log('🔐 Tentando fazer login...');
+                console.log('📧 Email:', email);
+                
                 // LOGIN TEMPORÁRIO (sem Supabase Auth)
                 // Para usar Supabase Auth no futuro, descomente o código abaixo
                 
                 if (email === 'admin@dimar.com.br' && password === 'admin123') {
-                    // Limpar sessionStorage para permitir redirecionamento
-                    sessionStorage.removeItem('auth_check_done');
+                    console.log('✅ Credenciais corretas!');
+                    
+                    // Limpar tudo primeiro
+                    sessionStorage.clear();
                     
                     // Definir credenciais
                     localStorage.setItem('admin_logged_in', 'true');
                     localStorage.setItem('admin_email', email);
                     localStorage.setItem('admin_login_time', new Date().toISOString());
                     
-                    // Redirecionar
-                    window.location.href = 'index.html';
+                    console.log('✅ LocalStorage configurado');
+                    console.log('🔄 Redirecionando para dashboard...');
+                    
+                    // Pequeno delay para garantir que localStorage foi salvo
+                    setTimeout(() => {
+                        window.location.replace('index.html');
+                    }, 100);
                 } else {
                     throw new Error('Credenciais inválidas. Use: admin@dimar.com.br / admin123');
                 }
@@ -129,8 +152,19 @@
                 */
 
             } catch (error) {
+                console.error('❌ Erro no login:', error);
+                
                 errorAlert.style.display = 'block';
                 errorMessage.textContent = '❌ ' + error.message;
+                
+                // Re-habilitar botão
+                submitButton.disabled = false;
+                submitButton.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Entrar
+                `;
                 
                 // Esconder após 5 segundos
                 setTimeout(() => {
@@ -139,8 +173,8 @@
             }
         });
 
-        // A verificação de autenticação é feita pelo auth-guard.js
         console.log('✅ Login page loaded');
+        console.log('ℹ️ Use: admin@dimar.com.br / admin123');
     </script>
 </body>
 </html>

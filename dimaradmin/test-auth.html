@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Autenticação - Debug</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #0f0;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #000;
+            border: 2px solid #0f0;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+        
+        h1 {
+            color: #0f0;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .section {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #1a1a1a;
+            border: 1px solid #0f0;
+            border-radius: 4px;
+        }
+        
+        .section h2 {
+            color: #ff0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-left: 4px solid #0f0;
+            background: #002200;
+        }
+        
+        .error {
+            border-left-color: #f00;
+            background: #220000;
+            color: #f00;
+        }
+        
+        .success {
+            border-left-color: #0f0;
+            background: #002200;
+            color: #0f0;
+        }
+        
+        button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+        
+        button:hover {
+            background: #0c0;
+        }
+        
+        code {
+            background: #002200;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            color: #0f0;
+        }
+        
+        .json {
+            background: #000;
+            padding: 1rem;
+            border: 1px solid #333;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 TESTE DE AUTENTICAÇÃO - DEBUG MODE</h1>
+        
+        <div class="section">
+            <h2>📊 Status Atual</h2>
+            <div id="currentStatus"></div>
+        </div>
+        
+        <div class="section">
+            <h2>💾 LocalStorage</h2>
+            <div id="localStorageContent"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🧪 SessionStorage</h2>
+            <div id="sessionStorageContent"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🔧 Ações</h2>
+            <button onclick="testLogin()">✅ Simular Login</button>
+            <button onclick="testLogout()">❌ Simular Logout</button>
+            <button onclick="testRedirect()">🔄 Testar Redirecionamento</button>
+            <button onclick="clearAll()">🗑️ Limpar Tudo</button>
+            <button onclick="location.reload()">🔃 Recarregar</button>
+        </div>
+        
+        <div class="section">
+            <h2>📝 Logs do Console</h2>
+            <div id="consoleLogs" class="json"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Links Rápidos</h2>
+            <button onclick="window.location.href='login.html'">📝 Ir para Login</button>
+            <button onclick="window.location.href='index.html'">🏠 Ir para Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        const logs = [];
+        
+        // Override console.log para capturar logs
+        const originalLog = console.log;
+        console.log = function(...args) {
+            logs.push(args.join(' '));
+            updateConsoleLogs();
+            originalLog.apply(console, args);
+        };
+
+        function updateStatus() {
+            const statusDiv = document.getElementById('currentStatus');
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const email = localStorage.getItem('admin_email');
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            let html = '';
+            
+            if (isLoggedIn) {
+                html += '<div class="status success">✅ AUTENTICADO</div>';
+                html += `<div class="status">📧 Email: <code>${email || 'N/A'}</code></div>`;
+                html += `<div class="status">⏰ Login: <code>${loginTime ? new Date(loginTime).toLocaleString('pt-BR') : 'N/A'}</code></div>`;
+                
+                if (loginTime) {
+                    const hours = (new Date() - new Date(loginTime)) / (1000 * 60 * 60);
+                    html += `<div class="status">⌛ Tempo desde login: <code>${hours.toFixed(2)} horas</code></div>`;
+                }
+            } else {
+                html += '<div class="status error">❌ NÃO AUTENTICADO</div>';
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function updateLocalStorage() {
+            const div = document.getElementById('localStorageContent');
+            const items = {};
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                items[key] = localStorage.getItem(key);
+            }
+            
+            div.innerHTML = '<div class="json">' + JSON.stringify(items, null, 2) + '</div>';
+        }
+
+        function updateSessionStorage() {
+            const div = document.getElementById('sessionStorageContent');
+            const items = {};
+            
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                items[key] = sessionStorage.getItem(key);
+            }
+            
+            div.innerHTML = '<div class="json">' + JSON.stringify(items, null, 2) + '</div>';
+        }
+
+        function updateConsoleLogs() {
+            const div = document.getElementById('consoleLogs');
+            div.innerHTML = logs.slice(-20).reverse().map(log => `> ${log}`).join('<br>');
+        }
+
+        function testLogin() {
+            console.log('🔐 Simulando login...');
+            
+            sessionStorage.clear();
+            localStorage.setItem('admin_logged_in', 'true');
+            localStorage.setItem('admin_email', 'admin@dimar.com.br');
+            localStorage.setItem('admin_login_time', new Date().toISOString());
+            
+            console.log('✅ Login simulado com sucesso!');
+            updateAll();
+        }
+
+        function testLogout() {
+            console.log('🚪 Simulando logout...');
+            
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_email');
+            localStorage.removeItem('admin_login_time');
+            sessionStorage.clear();
+            
+            console.log('✅ Logout simulado com sucesso!');
+            updateAll();
+        }
+
+        function testRedirect() {
+            console.log('🔄 Testando redirecionamento...');
+            
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            
+            if (isLoggedIn) {
+                console.log('✅ Está logado - Redirecionando para dashboard...');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else {
+                console.log('❌ Não está logado - Redirecionando para login...');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1000);
+            }
+        }
+
+        function clearAll() {
+            console.log('🗑️ Limpando tudo...');
+            
+            localStorage.clear();
+            sessionStorage.clear();
+            logs.length = 0;
+            
+            console.log('✅ Tudo limpo!');
+            updateAll();
+        }
+
+        function updateAll() {
+            updateStatus();
+            updateLocalStorage();
+            updateSessionStorage();
+            updateConsoleLogs();
+        }
+
+        // Atualizar tudo ao carregar
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Página de teste carregada');
+            console.log('📍 URL:', window.location.href);
+            console.log('🌐 Hostname:', window.location.hostname);
+            updateAll();
+        });
+
+        // Atualizar a cada segundo
+        setInterval(updateAll, 1000);
+    </script>
+</body>
+</html>
+

@@ -34,21 +34,29 @@
         const currentPage = window.location.pathname;
         const isLoginPage = currentPage.includes('login.html');
         
+        console.log('🔒 Auth Guard - Verificando página:', currentPage);
+        console.log('📍 É página de login?', isLoginPage);
+        
         if (isLoginPage) {
-            // Página de login - redirecionar se JÁ estiver logado
-            if (isAuthenticated()) {
-                console.log('✅ Usuário já autenticado, redirecionando...');
-                window.location.replace('index.html');
-            }
+            console.log('ℹ️ Página de login detectada - auth-guard não deve rodar aqui');
+            return; // Auth guard NÃO deve rodar na página de login
+        }
+        
+        // Páginas protegidas - redirecionar se NÃO estiver logado
+        const authenticated = isAuthenticated();
+        console.log('🔐 Status de autenticação:', authenticated);
+        
+        if (!authenticated) {
+            console.warn('⚠️ Usuário não autenticado, redirecionando para login...');
+            console.log('📊 LocalStorage atual:', {
+                admin_logged_in: localStorage.getItem('admin_logged_in'),
+                admin_email: localStorage.getItem('admin_email'),
+                admin_login_time: localStorage.getItem('admin_login_time')
+            });
+            sessionStorage.clear();
+            window.location.replace('login.html');
         } else {
-            // Páginas protegidas - redirecionar se NÃO estiver logado
-            if (!isAuthenticated()) {
-                console.warn('⚠️ Usuário não autenticado, redirecionando para login...');
-                sessionStorage.removeItem('auth_check_done');
-                window.location.replace('login.html');
-            } else {
-                console.log('✅ Usuário autenticado');
-            }
+            console.log('✅ Usuário autenticado - acesso permitido');
         }
     }
 
@@ -88,10 +96,17 @@
 
     // Executar proteção ao carregar
     window.addEventListener('DOMContentLoaded', () => {
+        console.log('🚀 Auth Guard initialized');
         protectAdminPage();
         displayUserInfo();
-        console.log('✅ Auth Guard initialized');
     });
+    
+    // Também executar imediatamente se DOM já estiver pronto
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+        console.log('🚀 Auth Guard initialized (DOM já pronto)');
+        protectAdminPage();
+        displayUserInfo();
+    }
 
     // Exportar funções úteis
     window.authGuard = {
