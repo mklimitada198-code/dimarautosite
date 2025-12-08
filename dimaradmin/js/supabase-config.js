@@ -11,8 +11,8 @@
  */
 
 // ✅ CREDENCIAIS CONFIGURADAS
-const SUPABASE_URL = 'https://rkhnhdlctkgamaxmfxsr.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJraG5oZGxjdGtnYW1heG1meHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2OTQ4MzgsImV4cCI6MjA0OTI3MDgzOH0.v_1gsMHJE4G0cZdWtqWQtdPU8xzVwJL93oN2tFXnkz4';
+const SUPABASE_URL = 'https://jfiarqtqojfptdbddnvu.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpmaWFycXRxb2pmcHRkYmRkbnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2OTQ5NjgsImV4cCI6MjA0OTI3MDk2OH0.sb_publishable_-gAmMx1wqeIXhNPr6uhAbw_8-VcPgeJ';
 
 // Inicializar cliente Supabase
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

@@ -39,3 +39,7 @@ build/
 # Cache
 .cache/
 
+# Credentials (sensitive data)
+SUPABASE-CREDENTIALS.md
+*credentials*.md
+
