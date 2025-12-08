@@ -153,8 +153,13 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/categorias.js"></script>
     <script>
-        if (localStorage.getItem('admin_logged_in') !== 'true') {
-            window.location.href = 'login.html';
+        // Auth check (apenas uma vez)
+        if (!sessionStorage.getItem('auth_check_done')) {
+            sessionStorage.setItem('auth_check_done', 'true');
+            
+            if (localStorage.getItem('admin_logged_in') !== 'true') {
+                window.location.href = 'login.html';
+            }
         }
         const userEmail = localStorage.getItem('admin_email');
         if (userEmail) {

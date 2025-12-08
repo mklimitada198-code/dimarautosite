@@ -356,9 +356,13 @@
     <script src="js/produtos.js"></script>
     
     <script>
-        // Auth check & sidebar toggle
-        if (localStorage.getItem('admin_logged_in') !== 'true') {
-            window.location.href = 'login.html';
+        // Auth check & sidebar toggle (apenas uma vez)
+        if (!sessionStorage.getItem('auth_check_done')) {
+            sessionStorage.setItem('auth_check_done', 'true');
+            
+            if (localStorage.getItem('admin_logged_in') !== 'true') {
+                window.location.href = 'login.html';
+            }
         }
 
         const userEmail = localStorage.getItem('admin_email');

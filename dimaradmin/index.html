@@ -194,9 +194,13 @@
     <script src="js/supabase-config.js"></script>
     
     <script>
-        // Verificar autenticação
-        if (localStorage.getItem('admin_logged_in') !== 'true') {
-            window.location.href = 'login.html';
+        // Verificar autenticação (apenas uma vez)
+        if (!sessionStorage.getItem('auth_check_done')) {
+            sessionStorage.setItem('auth_check_done', 'true');
+            
+            if (localStorage.getItem('admin_logged_in') !== 'true') {
+                window.location.href = 'login.html';
+            }
         }
 
         // Mostrar nome do usuário

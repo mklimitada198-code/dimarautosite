@@ -131,9 +131,13 @@
             }
         });
 
-        // Verificar se já está logado
-        if (localStorage.getItem('admin_logged_in') === 'true') {
-            window.location.href = 'index.html';
+        // Verificar se já está logado (apenas uma vez)
+        if (!sessionStorage.getItem('login_check_done')) {
+            sessionStorage.setItem('login_check_done', 'true');
+            
+            if (localStorage.getItem('admin_logged_in') === 'true') {
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>
