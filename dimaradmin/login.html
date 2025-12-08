@@ -72,6 +72,7 @@
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
+    <script src="js/auth-guard.js"></script>
     
     <script>
         // Verificar configuração do Supabase
@@ -98,8 +99,15 @@
                 // Para usar Supabase Auth no futuro, descomente o código abaixo
                 
                 if (email === 'admin@dimar.com.br' && password === 'admin123') {
+                    // Limpar sessionStorage para permitir redirecionamento
+                    sessionStorage.removeItem('auth_check_done');
+                    
+                    // Definir credenciais
                     localStorage.setItem('admin_logged_in', 'true');
                     localStorage.setItem('admin_email', email);
+                    localStorage.setItem('admin_login_time', new Date().toISOString());
+                    
+                    // Redirecionar
                     window.location.href = 'index.html';
                 } else {
                     throw new Error('Credenciais inválidas. Use: admin@dimar.com.br / admin123');
@@ -131,14 +139,8 @@
             }
         });
 
-        // Verificar se já está logado (apenas uma vez)
-        if (!sessionStorage.getItem('login_check_done')) {
-            sessionStorage.setItem('login_check_done', 'true');
-            
-            if (localStorage.getItem('admin_logged_in') === 'true') {
-                window.location.href = 'index.html';
-            }
-        }
+        // A verificação de autenticação é feita pelo auth-guard.js
+        console.log('✅ Login page loaded');
     </script>
 </body>
 </html>

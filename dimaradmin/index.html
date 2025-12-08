@@ -192,36 +192,17 @@
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
+    <script src="js/auth-guard.js"></script>
     
     <script>
-        // Verificar autenticação (apenas uma vez)
-        if (!sessionStorage.getItem('auth_check_done')) {
-            sessionStorage.setItem('auth_check_done', 'true');
-            
-            if (localStorage.getItem('admin_logged_in') !== 'true') {
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Mostrar nome do usuário
-        const userEmail = localStorage.getItem('admin_email');
-        if (userEmail) {
-            document.getElementById('userName').textContent = userEmail.split('@')[0];
-            document.querySelector('.user-avatar').textContent = userEmail[0].toUpperCase();
-        }
-
         // Toggle sidebar
         document.getElementById('toggleSidebar').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('collapsed');
         });
 
-        // Logout
+        // Logout (usar função global do auth-guard)
         function logout() {
-            if (confirm('Deseja realmente sair?')) {
-                localStorage.removeItem('admin_logged_in');
-                localStorage.removeItem('admin_email');
-                window.location.href = 'login.html';
-            }
+            window.adminLogout();
         }
 
         // Carregar estatísticas (mock data por enquanto)
