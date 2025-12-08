@@ -13,22 +13,28 @@
     });
 
     function initializeGlobalSystems() {
-        // 1. Atualizar badge do carrinho
-        if (window.cart) {
-            window.cart.updateCartBadge();
-            console.log('✅ Carrinho sincronizado');
+        try {
+            // 1. Atualizar badge do carrinho
+            if (typeof window.cart !== 'undefined' && window.cart) {
+                window.cart.updateCartBadge();
+                console.log('✅ Carrinho sincronizado');
+            } else {
+                console.warn('⚠️ Sistema de carrinho não disponível');
+            }
+
+            // 2. Configurar link do carrinho no header
+            setupCartLinks();
+
+            // 3. Configurar busca
+            setupSearch();
+
+            // 4. Ajustar links para paths corretos
+            adjustHeaderLinks();
+
+            console.log('✅ Sistemas globais inicializados');
+        } catch (error) {
+            console.error('❌ Erro ao inicializar sistemas globais:', error);
         }
-
-        // 2. Configurar link do carrinho no header
-        setupCartLinks();
-
-        // 3. Configurar busca
-        setupSearch();
-
-        // 4. Ajustar links para paths corretos
-        adjustHeaderLinks();
-
-        console.log('✅ Sistemas globais inicializados');
     }
 
     /**

@@ -192,11 +192,31 @@
     <!-- SCRIPTS -->
     <!-- Scripts em ordem correta -->
     <script src="../js/navigation-fix.js"></script>
+    <!-- JavaScript - Ordem correta de carregamento -->
+    <!-- 1. Logger e utilitários base -->
+    <script src="../js/logger.js"></script>
+    <script src="../js/safe-logger.js"></script>
+    
+    <!-- 2. Templates (header/footer) -->
     <script src="../js/templates.js"></script>
+    
+    <!-- 3. Configuração Supabase -->
+    <script src="../js/supabase-config.js"></script>
+    
+    <!-- 4. Carrinho (usado por outras páginas) -->
     <script src="../js/cart.js"></script>
+    
+    <!-- 5. Dados de produtos -->
+    <script src="../js/products-data.js"></script>
     <script src="../js/products-catalog.js"></script>
+    
+    <!-- 6. Busca -->
     <script src="../js/search.js"></script>
+    
+    <!-- 7. Catálogo (lógica específica desta página) -->
     <script src="../js/catalog.js"></script>
+    
+    <!-- 8. Inicialização global (deve ser o último) -->
     <script src="../js/global-init.js"></script>
 </body>
 </html>
