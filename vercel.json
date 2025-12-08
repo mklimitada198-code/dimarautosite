@@ -7,102 +7,102 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/",
-      "dest": "/index.html"
+      "source": "/",
+      "destination": "/index.html"
     },
     {
-      "src": "/index",
-      "dest": "/index.html"
+      "source": "/index",
+      "destination": "/index.html"
     },
     {
-      "src": "/home",
-      "dest": "/index.html"
+      "source": "/home",
+      "destination": "/index.html"
     },
     {
-      "src": "/sobre-nos",
-      "dest": "/pages/sobre-nos.html"
+      "source": "/sobre-nos",
+      "destination": "/pages/sobre-nos.html"
     },
     {
-      "src": "/sobre",
-      "dest": "/pages/sobre-nos.html"
+      "source": "/sobre",
+      "destination": "/pages/sobre-nos.html"
     },
     {
-      "src": "/produtos",
-      "dest": "/pages/produtos.html"
+      "source": "/produtos",
+      "destination": "/pages/produtos.html"
     },
     {
-      "src": "/catalogo",
-      "dest": "/pages/produtos.html"
+      "source": "/catalogo",
+      "destination": "/pages/produtos.html"
     },
     {
-      "src": "/produto",
-      "dest": "/pages/produto.html"
+      "source": "/produto",
+      "destination": "/pages/produto.html"
     },
     {
-      "src": "/produto/:id",
-      "dest": "/pages/produto.html"
+      "source": "/produto/:id",
+      "destination": "/pages/produto.html"
     },
     {
-      "src": "/carrinho",
-      "dest": "/pages/carrinho.html"
+      "source": "/carrinho",
+      "destination": "/pages/carrinho.html"
     },
     {
-      "src": "/cart",
-      "dest": "/pages/carrinho.html"
+      "source": "/cart",
+      "destination": "/pages/carrinho.html"
     },
     {
-      "src": "/busca",
-      "dest": "/pages/busca.html"
+      "source": "/busca",
+      "destination": "/pages/busca.html"
     },
     {
-      "src": "/search",
-      "dest": "/pages/busca.html"
+      "source": "/search",
+      "destination": "/pages/busca.html"
     },
     {
-      "src": "/contato",
-      "dest": "/pages/contato.html"
+      "source": "/contato",
+      "destination": "/pages/contato.html"
     },
     {
-      "src": "/lojas",
-      "dest": "/pages/lojas.html"
+      "source": "/lojas",
+      "destination": "/pages/lojas.html"
     },
     {
-      "src": "/admin",
-      "dest": "/dimaradmin/login.html"
+      "source": "/admin",
+      "destination": "/dimaradmin/login.html"
     },
     {
-      "src": "/dimaradmin",
-      "dest": "/dimaradmin/login.html"
+      "source": "/dimaradmin",
+      "destination": "/dimaradmin/login.html"
     },
     {
-      "src": "/dimaradmin/",
-      "dest": "/dimaradmin/login.html"
+      "source": "/dimaradmin/",
+      "destination": "/dimaradmin/login.html"
     },
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "source": "/assets/:path*",
+      "destination": "/assets/:path*"
     },
     {
-      "src": "/css/(.*)",
-      "dest": "/css/$1"
+      "source": "/css/:path*",
+      "destination": "/css/:path*"
     },
     {
-      "src": "/js/(.*)",
-      "dest": "/js/$1"
+      "source": "/js/:path*",
+      "destination": "/js/:path*"
     },
     {
-      "src": "/templates/(.*)",
-      "dest": "/templates/$1"
+      "source": "/templates/:path*",
+      "destination": "/templates/:path*"
     },
     {
-      "src": "/pages/(.*)",
-      "dest": "/pages/$1"
+      "source": "/pages/:path*",
+      "destination": "/pages/:path*"
     },
     {
-      "src": "/dimaradmin/(.*)",
-      "dest": "/dimaradmin/$1"
+      "source": "/dimaradmin/:path*",
+      "destination": "/dimaradmin/:path*"
     }
   ],
   "headers": [
@@ -143,14 +143,6 @@
       ]
     }
   ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
   "trailingSlash": false,
   "cleanUrls": true
 }
-
-
