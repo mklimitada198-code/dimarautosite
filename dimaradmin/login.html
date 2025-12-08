@@ -94,19 +94,14 @@
                 console.warn('Supabase config check falhou:', e);
             }
             
-            // Verificar se já está logado (sem limpar sessionStorage!)
+            // Verificar se já está logado
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const alreadyChecked = sessionStorage.getItem('login_page_checked');
             
             console.log('🔐 Status login:', isLoggedIn);
-            console.log('🔍 Já verificou?', alreadyChecked);
             
-            // Se já estiver logado E ainda não verificou, redirecionar
-            if (isLoggedIn && !alreadyChecked) {
+            // Se já estiver logado, redirecionar para dashboard
+            if (isLoggedIn) {
                 console.log('✅ Já está logado, redirecionando para dashboard...');
-                sessionStorage.setItem('login_page_checked', 'true');
-                
-                // Redirecionar IMEDIATAMENTE
                 window.location.replace('index.html');
                 return; // Parar execução
             }
@@ -166,9 +161,6 @@
                         console.log('✅ LocalStorage configurado:');
                         console.log('  - admin_logged_in:', localStorage.getItem('admin_logged_in'));
                         console.log('  - admin_email:', localStorage.getItem('admin_email'));
-                        
-                        // Limpar flag de verificação para permitir dashboard carregar
-                        sessionStorage.removeItem('login_page_checked');
                         
                         console.log('🔄 Redirecionando para dashboard...');
                         
