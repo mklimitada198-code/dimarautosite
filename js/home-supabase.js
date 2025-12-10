@@ -27,29 +27,34 @@
         try {
             log.info('🔄 Carregando produtos da home...');
 
+            // Mostrar skeleton enquanto carrega
+            showProductsSkeleton();
+
             // Verificar se Supabase está disponível
             if (!window.supabaseClient) {
                 log.warn('⚠️ Supabase não disponível, usando produtos estáticos');
+                hideProductsSkeleton();
                 return;
             }
 
-            // Buscar produtos em destaque ou recentes
+            // Buscar produtos ativos (compatibilidade: status='active' OU is_active=true)
             const { data: products, error } = await window.supabaseClient
                 .from('products')
                 .select('*')
-                .eq('status', 'active') // ✅ APENAS produtos ativos
-                .or('featured.eq.true,in_stock.eq.true') // Produtos em destaque OU em estoque
+                .or('status.eq.active,is_active.eq.true') // Compatibilidade
                 .order('featured', { ascending: false })
                 .order('created_at', { ascending: false })
                 .limit(CONFIG.maxProductsHome);
 
             if (error) {
                 log.error('❌ Erro ao carregar produtos:', error);
+                hideProductsSkeleton();
                 return;
             }
 
             if (!products || products.length === 0) {
                 log.warn('⚠️ Nenhum produto encontrado no banco');
+                hideProductsSkeleton();
                 return;
             }
 
@@ -58,7 +63,29 @@
 
         } catch (error) {
             log.error('❌ Erro ao carregar produtos:', error);
+            hideProductsSkeleton();
         }
+    }
+
+    // ==================== SKELETON LOADING ====================
+    function showProductsSkeleton() {
+        const container = document.querySelector('.offers-grid');
+        if (!container) return;
+
+        container.innerHTML = Array(4).fill(`
+            <div class="product-card skeleton-card">
+                <div class="skeleton-image"></div>
+                <div class="skeleton-text" style="width: 80%"></div>
+                <div class="skeleton-text" style="width: 50%"></div>
+            </div>
+        `).join('');
+    }
+
+    function hideProductsSkeleton() {
+        const container = document.querySelector('.offers-grid');
+        if (!container) return;
+        const skeletons = container.querySelectorAll('.skeleton-card');
+        skeletons.forEach(s => s.remove());
     }
 
     // ==================== RENDERIZAR PRODUTOS ====================
@@ -354,10 +381,11 @@
                 return;
             }
 
+            // Compatibilidade: is_active=true OU status='active'
             const { data: categories, error } = await window.supabaseClient
                 .from('categories')
                 .select('*')
-                .eq('is_active', true)
+                .or('is_active.eq.true,status.eq.active')
                 .order('display_order', { ascending: true });
 
             if (error) {
