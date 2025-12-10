@@ -52,16 +52,23 @@
             persistSession: true,
             // Auto-refresh de token
             autoRefreshToken: true,
-            // Storage padrão
-            storage: window.localStorage,
-            // Configuração de cookies para produção
+            // ❌ REMOVIDO: storage: window.localStorage
+            // MOTIVO CRÍTICO: Forçar localStorage impede criação de cookies!
+            // Quando storage: localStorage é especificado, o Supabase JS
+            // IGNORA completamente cookieOptions e nunca cria cookies.
+            // 
+            // SOLUÇÃO: Deixar Supabase usar storage padrão:
+            // - Em produção (HTTPS): usa cookies (mais seguro)
+            // - Em local: usa localStorage
+
+            // Configuração de cookies para produção (HTTPS)
             ...(isProduction && {
                 cookieOptions: {
                     name: 'sb-auth-token',
                     domain: window.location.hostname,
                     path: '/',
                     sameSite: 'lax',
-                    secure: true  // Importante para HTTPS em produção
+                    secure: true
                 }
             })
         }
@@ -90,7 +97,13 @@
 
             console.log('✅ Supabase configurado com sucesso!');
             console.log('🌍 Ambiente:', isProduction ? 'PRODUÇÃO' : 'LOCAL');
-            console.log('🔐 Auth cookies:', isProduction ? 'HTTPS/Secure' : 'HTTP/Standard');
+            console.log('🔐 Auth storage:', isProduction ? 'Cookies (via cookieOptions)' : 'localStorage (padrão)');
+            console.log('📦 Storage config:', {
+                persistSession: supabaseConfig.auth.persistSession,
+                autoRefreshToken: supabaseConfig.auth.autoRefreshToken,
+                detectSessionInUrl: supabaseConfig.auth.detectSessionInUrl,
+                hasCookieOptions: !!supabaseConfig.auth.cookieOptions
+            });
 
             return true;
         } catch (error) {

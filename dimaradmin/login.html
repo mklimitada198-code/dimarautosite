@@ -164,6 +164,11 @@
                     if (data.session) {
                         console.log('✅ Login bem-sucedido!');
                         console.log('👤 Usuário:', data.user.email);
+                        console.log('🔑 Session:', {
+                            hasAccessToken: !!data.session.access_token,
+                            expiresAt: data.session.expires_at,
+                            refreshToken: !!data.session.refresh_token
+                        });
 
                         // Manter compatibilidade com localStorage (período de transição)
                         localStorage.setItem('admin_logged_in', 'true');
@@ -171,6 +176,15 @@
                         localStorage.setItem('admin_login_time', new Date().toISOString());
 
                         showSuccess('Login realizado com sucesso! Redirecionando...');
+
+                        // Verificar se cookies foram criados
+                        setTimeout(() => {
+                            console.log('🍪 Cookies após login:', {
+                                allCookies: document.cookie,
+                                hasCookies: document.cookie.length > 0,
+                                cookieCount: document.cookie.split(';').filter(c => c.trim()).length
+                            });
+                        }, 100);
 
                         setTimeout(() => {
                             window.location.replace('./index.html');
