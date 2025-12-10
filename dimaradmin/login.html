@@ -191,51 +191,21 @@
 
                         showSuccess('Login realizado com sucesso! Redirecionando...');
 
-                        // Verificar se cookies foram criados
+                        // Verificar localStorage
+                        console.log('💾 LocalStorage após login:', {
+                            logged_in: localStorage.getItem('admin_logged_in'),
+                            email: localStorage.getItem('admin_email'),
+                            just_logged_in: localStorage.getItem('admin_just_logged_in')
+                        });
+
+                        // CORREÇÃO FINAL: Redirect ABSOLUTO e IMEDIATO
+                        console.log('🚀 REDIRECIONANDO para /dimaradmin/index.html');
+                        console.log('   Método: window.location.href (absoluto)');
+
                         setTimeout(() => {
-                            console.log('🍪 Cookies após login:', {
-                                allCookies: document.cookie,
-                                hasCookies: document.cookie.length > 0,
-                                cookieCount: document.cookie.split(';').filter(c => c.trim()).length
-                            });
-                        }, 100);
-
-                        // CORREÇÃO: Redirect com failsafe
-                        let redirectAttempts = 0;
-                        const maxAttempts = 3;
-
-                        function executeRedirect() {
-                            redirectAttempts++;
-                            console.log(`🚀 TENTATIVA ${redirectAttempts} DE REDIRECT`);
-                            console.log('   Destino: ./index.html');
-                            console.log('   Timestamp:', new Date().toISOString());
-
-                            try {
-                                window.location.replace('./index.html');
-                                console.log('✅ window.location.replace() executado');
-                            } catch (err) {
-                                console.error('❌ Erro no replace:', err);
-                                if (redirectAttempts < maxAttempts) {
-                                    console.log(`⏰ Tentando novamente em 500ms...`);
-                                    setTimeout(executeRedirect, 500);
-                                } else {
-                                    console.log('📍 Tentando window.location.href como último recurso');
-                                    window.location.href = './index.html';
-                                }
-                            }
-                        }
-
-                        // Executar redirect após 1s
-                        setTimeout(executeRedirect, 1000);
-
-                        // Failsafe: se ainda estiver aqui após 3s
-                        setTimeout(() => {
-                            if (window.location.pathname.includes('login')) {
-                                console.warn('⚠️ AINDA NA PÁGINA DE LOGIN APÓS 3S!');
-                                console.warn('   Forçando redirect novamente...');
-                                window.location.href = './index.html';
-                            }
-                        }, 3000);
+                            // USAR CAMINHO ABSOLUTO, não relativo!
+                            window.location.href = '/dimaradmin/index.html';
+                        }, 800);
                     } else {
                         showError('Erro inesperado: sessão não foi criada');
                         setLoading(false);

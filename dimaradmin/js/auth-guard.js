@@ -14,59 +14,34 @@
      */
     async function isAuthenticated() {
         try {
-            // ✅ VERIFICAR LOCALSTORAGE PRIMEIRO (síncrono, mais rápido)
+            // ✅ PRIORIDADE MÁXIMA: localStorage
             const localAuth = checkLocalStorageFallback();
 
             console.log('🔐 Verificando autenticação...');
             console.log('  📦 localStorage:', localAuth ? 'autenticado' : 'não autenticado');
-            console.log('  ⚡ Supabase client:', window.supabaseClient ? 'pronto' : 'aguardando');
 
-            // Se Supabase não está pronto mas localStorage indica autenticado
-            // PERMITIR ACESSO temporariamente (evita race condition)
-            if (!window.supabaseClient) {
-                if (localAuth) {
-                    console.log('⏳ Supabase ainda carregando, usando localStorage temporariamente');
-                    return true; // ✅ Permitir acesso baseado em localStorage
-                } else {
-                    console.warn('⚠️ Supabase client ainda não inicializado E sem localStorage');
-                    return false;
+            // Se localStorage diz que está autenticado, CONFIAR!
+            if (localAuth) {
+                console.log('✅ Autenticado via localStorage');
+                return true;
+            }
+
+            // Apenas verificar Supabase se localStorage não tem nada
+            if (window.supabaseClient) {
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    console.log('✅ Autenticado via Supabase');
+                    syncToLocalStorage(session.user);
+                    return true;
                 }
             }
 
-            // Verificar sessão no Supabase (se cliente está pronto)
-            const { data: { session }, error } = await window.supabaseClient.auth.getSession();
-
-            if (error) {
-                console.error('❌ Erro ao verificar sessão:', error);
-                // FALLBACK: usar localStorage se houver erro no Supabase
-                return localAuth;
-            }
-
-            if (session && session.user) {
-                console.log('✅ Sessão Supabase válida:', session.user.email);
-
-                // Sincronizar com localStorage (período de transição)
-                syncToLocalStorage(session.user);
-
-                return true;
-            }
-
-            console.log('ℹ️ Sem sessão ativa no Supabase');
-
-            // Se Supabase não tem sessão mas localStorage indica autenticado
-            // Pode ser que sessão expirou mas login foi recente
-            if (localAuth) {
-                console.warn('⚠️ localStorage indica autenticado mas Supabase não tem sessão');
-                console.log('   Isso pode indicar sessão expirada ou em processo de criação');
-                // Permitir acesso temporariamente, onAuthStateChange vai corrigir depois
-                return true;
-            }
-
+            console.log('❌ Não autenticado');
             return false;
 
         } catch (err) {
-            console.error('❌ Erro inesperado ao verificar autenticação:', err);
-            // FALLBACK seguro: usar localStorage
+            console.error('❌ Erro ao verificar autenticação:', err);
+            // Em caso de erro, confiar no localStorage
             return checkLocalStorageFallback();
         }
     }
@@ -304,20 +279,6 @@
         console.log('🚀 Auth Guard inicializado');
         console.log('🌍 Hostname:', window.location.hostname);
         console.log('📍 Path:', window.location.pathname);
-
-        // CORREÇÃO: Verificar se acabou de fazer login
-        const justLoggedIn = localStorage.getItem('admin_just_logged_in');
-        if (justLoggedIn === 'true') {
-            console.log('🎯 LOGIN RECENTE DETECTADO!');
-            console.log('   Aguardando 1000ms para sessão estar totalmente estabelecida...');
-
-            // Aguardar mais tempo para sessão estar pronta
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Limpar flag
-            localStorage.removeItem('admin_just_logged_in');
-            console.log('✅ Flag de login recente removida');
-        }
 
         // Aguardar Supabase carregar
         let attempts = 0;
