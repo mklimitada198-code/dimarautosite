@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produtos - Dimar Admin</title>
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/admin.css">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <style>
         .product-image-preview {
             width: 80px;
@@ -21,7 +22,7 @@
             border-radius: 8px;
             border: 2px solid var(--border-color);
         }
-        
+
         .image-upload-area {
             border: 2px dashed var(--border-color);
             border-radius: 8px;
@@ -30,36 +31,36 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .image-upload-area:hover {
             border-color: var(--primary-color);
             background: rgba(255, 102, 0, 0.05);
         }
-        
+
         .image-upload-area.dragover {
             border-color: var(--primary-color);
             background: rgba(255, 102, 0, 0.1);
         }
-        
+
         .preview-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 12px;
             margin-top: 20px;
         }
-        
+
         .preview-item {
             position: relative;
             aspect-ratio: 1;
         }
-        
+
         .preview-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 8px;
         }
-        
+
         .preview-item .remove-image {
             position: absolute;
             top: 5px;
@@ -75,20 +76,21 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .filter-bar {
             display: flex;
             gap: 12px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-        
+
         .search-box {
             flex: 1;
             min-width: 250px;
         }
     </style>
 </head>
+
 <body>
     <div class="admin-wrapper">
         <!-- Sidebar -->
@@ -102,7 +104,8 @@
                 <li class="menu-item">
                     <a href="index.html" class="menu-link">
                         <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         <span class="menu-text">Dashboard</span>
                     </a>
@@ -110,7 +113,8 @@
                 <li class="menu-item">
                     <a href="produtos.html" class="menu-link active">
                         <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                         </svg>
                         <span class="menu-text">Produtos</span>
                     </a>
@@ -118,7 +122,8 @@
                 <li class="menu-item">
                     <a href="categorias.html" class="menu-link">
                         <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                         </svg>
                         <span class="menu-text">Categorias</span>
                     </a>
@@ -126,7 +131,8 @@
                 <li class="menu-item">
                     <a href="banners.html" class="menu-link">
                         <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <span class="menu-text">Banners</span>
                     </a>
@@ -134,7 +140,8 @@
                 <li class="menu-item">
                     <a href="marcas.html" class="menu-link">
                         <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                         </svg>
                         <span class="menu-text">Marcas</span>
                     </a>
@@ -149,7 +156,8 @@
                 <div class="topbar-left">
                     <button class="toggle-sidebar" id="toggleSidebar">
                         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                     <h1 class="page-title">Produtos</h1>
@@ -160,7 +168,8 @@
                         <div class="user-avatar">A</div>
                         <span class="user-name" id="userName">Admin</span>
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
                     </div>
                 </div>
@@ -170,7 +179,8 @@
             <div class="content">
                 <!-- Actions Bar -->
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                         <button class="btn btn-primary" onclick="openProductModal()">
                             ➕ Adicionar Produto
                         </button>
@@ -180,7 +190,8 @@
                 <!-- Filters -->
                 <div class="card">
                     <div class="filter-bar">
-                        <input type="text" class="form-control search-box" id="searchInput" placeholder="🔍 Buscar por nome, SKU ou descrição...">
+                        <input type="text" class="form-control search-box" id="searchInput"
+                            placeholder="🔍 Buscar por nome, SKU ou descrição...">
                         <select class="form-control" id="categoryFilter" style="width: 200px;">
                             <option value="">Todas Categorias</option>
                             <option value="motor">Motor</option>
@@ -234,11 +245,13 @@
     </div>
 
     <!-- Modal Produto -->
-    <div id="productModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; overflow-y: auto; padding: 20px;">
+    <div id="productModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; overflow-y: auto; padding: 20px;">
         <div style="max-width: 900px; margin: 40px auto; background: white; border-radius: 16px; padding: 30px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                 <h2 style="font-size: 24px; font-weight: 700;">Adicionar Produto</h2>
-                <button onclick="closeProductModal()" style="background: none; border: none; font-size: 28px; cursor: pointer;">&times;</button>
+                <button onclick="closeProductModal()"
+                    style="background: none; border: none; font-size: 28px; cursor: pointer;">&times;</button>
             </div>
 
             <form id="productForm">
@@ -249,8 +262,10 @@
                     <label class="form-label">Imagens do Produto</label>
                     <div class="image-upload-area" id="imageUploadArea">
                         <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
-                        <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            style="margin: 0 auto;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         <p style="margin-top: 12px; color: #7f8c8d;">Clique ou arraste imagens aqui</p>
                         <p style="font-size: 12px; color: #bdc3c7;">PNG, JPG até 5MB</p>
@@ -354,41 +369,25 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/produtos.js"></script>
-    
+
+    <!-- Auth Guard - Proteção de Rota -->
+    <script src="js/auth-guard.js"></script>
+
     <script>
-        // Proteção simples (sem loops)
-        (function() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            console.log('🔒 Produtos - Verificando login:', isLoggedIn);
-            
-            if (!isLoggedIn) {
-                console.warn('❌ Não autenticado - Redirecionando');
-                sessionStorage.clear();
-                window.location.replace('login.html');
-                return;
-            }
-            
-            console.log('✅ Autenticado - Página de produtos');
-        })();
-
-        const userEmail = localStorage.getItem('admin_email');
-        if (userEmail) {
-            document.getElementById('userName').textContent = userEmail.split('@')[0];
-            document.querySelector('.user-avatar').textContent = userEmail[0].toUpperCase();
-        }
-
+        // Toggle sidebar
         document.getElementById('toggleSidebar').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('collapsed');
         });
 
+        // Logout
         function logout() {
             if (confirm('Deseja realmente sair?')) {
-                localStorage.removeItem('admin_logged_in');
-                localStorage.removeItem('admin_email');
+                localStorage.clear();
+                sessionStorage.clear();
                 window.location.href = 'login.html';
             }
         }
     </script>
 </body>
-</html>
 
+</html>
