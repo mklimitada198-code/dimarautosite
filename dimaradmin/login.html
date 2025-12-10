@@ -13,6 +13,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -29,17 +32,20 @@
                 <span id="errorMessage"></span>
             </div>
 
+            <!-- Alert de sucesso -->
+            <div class="alert alert-success" id="successAlert" style="display: none;">
+                <span id="successMessage"></span>
+            </div>
+
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email" class="form-label">E-mail</label>
-                    <input type="email" id="email" class="form-control" placeholder="admin@dimar.com.br"
-                        value="admin@dimar.com.br" required>
+                    <input type="email" id="email" class="form-control" placeholder="admin@dimar.com.br" required>
                 </div>
 
                 <div class="form-group">
                     <label for="password" class="form-label">Senha</label>
-                    <input type="password" id="password" class="form-control" placeholder="••••••••" value="admin123"
-                        required>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary" id="loginBtn">
@@ -52,54 +58,167 @@
             </form>
 
             <p style="text-align: center; margin-top: 20px; font-size: 13px; color: #7f8c8d;">
-                <strong>Credenciais temporárias:</strong><br>
-                Email: admin@dimar.com.br<br>
-                Senha: admin123
+                <strong>Importante:</strong><br>
+                Use as credenciais criadas no Supabase Auth
             </p>
         </div>
     </div>
 
-    <script>
-        // SEM NENHUMA VERIFICAÇÃO AUTOMÁTICA - apenas o formulário funciona
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            e.preventDefault();
+    <!-- Supabase Config -->
+    <script src="js/supabase-config.js"></script>
 
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
+    <!-- Login Logic -->
+    <script>
+        (function () {
+            'use strict';
+
+            const loginForm = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
             const errorAlert = document.getElementById('errorAlert');
             const errorMessage = document.getElementById('errorMessage');
-            const loginBtn = document.getElementById('loginBtn');
+            const successAlert = document.getElementById('successAlert');
+            const successMessage = document.getElementById('successMessage');
 
-            // Validar credenciais
-            if (email === 'admin@dimar.com.br' && password === 'admin123') {
-                // Desabilitar botão
-                loginBtn.disabled = true;
-                loginBtn.textContent = 'Entrando...';
+            // ==================== HELPER FUNCTIONS ====================
 
-                // Limpar tudo antes de salvar
-                localStorage.clear();
-                sessionStorage.clear();
-
-                // Salvar no localStorage
-                localStorage.setItem('admin_logged_in', 'true');
-                localStorage.setItem('admin_email', email);
-                localStorage.setItem('admin_login_time', new Date().toISOString());
-
-                // Redirecionar para o dashboard
-                setTimeout(function () {
-                    window.location.replace('./index.html');
-                }, 500);
-            } else {
-                // Mostrar erro
+            function showError(message) {
                 errorAlert.style.display = 'block';
-                errorMessage.textContent = 'Credenciais inválidas. Use: admin@dimar.com.br / admin123';
+                errorMessage.textContent = message;
+                successAlert.style.display = 'none';
 
-                // Esconder após 5 segundos
                 setTimeout(() => {
                     errorAlert.style.display = 'none';
                 }, 5000);
             }
-        });
+
+            function showSuccess(message) {
+                successAlert.style.display = 'block';
+                successMessage.textContent = message;
+                errorAlert.style.display = 'none';
+            }
+
+            function setLoading(isLoading) {
+                loginBtn.disabled = isLoading;
+                loginBtn.textContent = isLoading ? 'Entrando...' : 'Entrar';
+            }
+
+            // ==================== VERIFICAR SESSÃO EXISTENTE ====================
+
+            async function checkExistingSession() {
+                try {
+                    if (!window.supabaseClient) {
+                        console.log('⏳ Aguardando Supabase carregar...');
+                        return;
+                    }
+
+                    const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+
+                    if (error) {
+                        console.error('Erro ao verificar sessão:', error);
+                        return;
+                    }
+
+                    if (session) {
+                        console.log('✅ Sessão existente encontrada, redirecionando...');
+
+                        // Manter compatibilidade com localStorage (período de transição)
+                        localStorage.setItem('admin_logged_in', 'true');
+                        localStorage.setItem('admin_email', session.user.email);
+                        localStorage.setItem('admin_login_time', new Date().toISOString());
+
+                        window.location.replace('./index.html');
+                    }
+                } catch (err) {
+                    console.error('Erro ao verificar sessão:', err);
+                }
+            }
+
+            // Verificar sessão ao carregar
+            setTimeout(checkExistingSession, 500);
+
+            // ==================== LOGIN HANDLER ====================
+
+            loginForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                if (!email || !password) {
+                    showError('Por favor, preencha todos os campos');
+                    return;
+                }
+
+                // Verificar se Supabase está disponível
+                if (!window.supabaseClient) {
+                    showError('Erro: Sistema de autenticação não carregado. Recarregue a página.');
+                    console.error('❌ Supabase client não inicializado');
+                    return;
+                }
+
+                setLoading(true);
+
+                try {
+                    console.log('🔐 Tentando fazer login com Supabase Auth...');
+
+                    const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) {
+                        console.error('❌ Erro no login:', error);
+
+                        // Mensagens de erro amigáveis
+                        let errorMsg = 'Erro ao fazer login';
+                        if (error.message.includes('Invalid login credentials')) {
+                            errorMsg = 'E-mail ou senha incorretos';
+                        } else if (error.message.includes('Email not confirmed')) {
+                            errorMsg = 'E-mail não confirmado. Verifique sua caixa de entrada.';
+                        } else {
+                            errorMsg = error.message;
+                        }
+
+                        showError(errorMsg);
+                        setLoading(false);
+                        return;
+                    }
+
+                    if (data.session) {
+                        console.log('✅ Login bem-sucedido!');
+                        console.log('👤 Usuário:', data.user.email);
+
+                        // Manter compatibilidade com localStorage (período de transição)
+                        localStorage.setItem('admin_logged_in', 'true');
+                        localStorage.setItem('admin_email', data.user.email);
+                        localStorage.setItem('admin_login_time', new Date().toISOString());
+
+                        showSuccess('Login realizado com sucesso! Redirecionando...');
+
+                        setTimeout(() => {
+                            window.location.replace('./index.html');
+                        }, 1000);
+                    } else {
+                        showError('Erro inesperado: sessão não foi criada');
+                        setLoading(false);
+                    }
+
+                } catch (err) {
+                    console.error('❌ Erro inesperado:', err);
+                    showError('Erro inesperado ao fazer login. Tente novamente.');
+                    setLoading(false);
+                }
+            });
+
+            // ==================== DEBUG INFO ====================
+
+            console.log('🔐 Sistema de Login Inicializado');
+            console.log('🌍 Ambiente:', window.location.hostname);
+            console.log('📍 URL atual:', window.location.href);
+
+        })();
     </script>
 </body>
 
