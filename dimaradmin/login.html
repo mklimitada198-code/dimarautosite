@@ -135,9 +135,14 @@
 
                 setLoading(true);
 
-                try {
-                    console.log('🔐 Tentando fazer login com Supabase Auth...');
+                // Limpar localStorage antigo antes de tentar login
+                console.log('🧹 Limpando localStorage antigo...');
+                localStorage.removeItem('admin_just_logged_in');
 
+                console.log('🔐 Tentando fazer login com Supabase Auth...');
+                console.log('📧 Email:', email);
+
+                try {
                     const { data, error } = await window.supabaseClient.auth.signInWithPassword({
                         email: email,
                         password: password
