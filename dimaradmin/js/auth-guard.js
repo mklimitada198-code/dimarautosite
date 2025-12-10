@@ -105,13 +105,14 @@
         if (isLoginPage) {
             console.log('ℹ️ Página de login - auth guard inativo');
 
-            // Se já estiver autenticado, redirecionar para dashboard
-            const authenticated = await isAuthenticated();
-            if (authenticated) {
-                console.log('✅ Já autenticado, redirecionando para dashboard...');
-                window.location.replace('index.html');
-            }
-            return;
+            // ❌ REMOVIDO: auto-redirect se já autenticado
+            // MOTIVO: Causava loop infinito
+            // - login.html tem seu próprio fluxo de redirect após submit
+            // - Verificação automática causava conflito
+            // - Se usuário está em login.html, deixar ele fazer login manualmente
+            // - Não forçar redirect baseado em sessão existente
+
+            return; // NÃO FAZER NADA - deixar formulário de login lidar
         }
 
         // Verificar autenticação

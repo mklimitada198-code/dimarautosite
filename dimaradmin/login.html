@@ -104,39 +104,14 @@
                 loginBtn.textContent = isLoading ? 'Entrando...' : 'Entrar';
             }
 
-            // ==================== VERIFICAR SESSÃO EXISTENTE ====================
-
-            async function checkExistingSession() {
-                try {
-                    if (!window.supabaseClient) {
-                        console.log('⏳ Aguardando Supabase carregar...');
-                        return;
-                    }
-
-                    const { data: { session }, error } = await window.supabaseClient.auth.getSession();
-
-                    if (error) {
-                        console.error('Erro ao verificar sessão:', error);
-                        return;
-                    }
-
-                    if (session) {
-                        console.log('✅ Sessão existente encontrada, redirecionando...');
-
-                        // Manter compatibilidade com localStorage (período de transição)
-                        localStorage.setItem('admin_logged_in', 'true');
-                        localStorage.setItem('admin_email', session.user.email);
-                        localStorage.setItem('admin_login_time', new Date().toISOString());
-
-                        window.location.replace('./index.html');
-                    }
-                } catch (err) {
-                    console.error('Erro ao verificar sessão:', err);
-                }
-            }
-
-            // Verificar sessão ao carregar
-            setTimeout(checkExistingSession, 500);
+            // ==================== VERIFICAÇÃO DE SESSÃO REMOVIDA ====================
+            // MOTIVO: Causava loop infinito ao redirecionar automaticamente
+            // Agora a verificação ocorre APENAS no submit do formulário
+            //
+            // A função checkExistingSession foi removida para evitar:
+            // 1. Redirect automático ao carregar a página
+            // 2. Conflito com verificação do auth-guard em index.html  
+            // 3. Loop quando localStorage e Supabase session estão dessincronizados
 
             // ==================== LOGIN HANDLER ====================
 

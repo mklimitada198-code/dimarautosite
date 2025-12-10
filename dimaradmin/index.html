@@ -206,17 +206,27 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
 
+    <!-- Auth Guard - CRÍTICO: Protege a página -->
+    <script src="js/auth-guard.js"></script>
+
     <!-- Dashboard Script -->
     <script src="js/dashboard.js"></script>
 
     <script>
-        // Auth check
-        const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-        if (!isLoggedIn) {
-            window.location.replace('login.html');
-        }
+        // ==================== VERIFICAÇÃO DE AUTH REMOVIDA ====================
+        // MOTIVO: auth-guard.js agora faz a verificação completa
+        // A verificação inline foi removida porque causava:
+        // 1. Verificação duplicada (auth-guard.js já verifica)
+        // 2. Dessincronia entre localStorage e Supabase session
+        // 3. Loop infinito quando sessão Supabase existe mas localStorage não
+        //
+        // auth-guard.js agora é responsável por:
+        // - Verificar sessão do Supabase
+        // - Verificar localStorage como fallback
+        // - Redirecionar se necessário
+        // - Sincronizar estados
 
-        // Update user name
+        // Update user name (mantido - não causa problema)
         const userEmail = localStorage.getItem('admin_email');
         if (userEmail) {
             document.getElementById('userName').textContent = userEmail.split('@')[0];
@@ -231,9 +241,15 @@
         // Logout
         function logout() {
             if (confirm('Deseja realmente sair?')) {
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.href = 'login.html';
+                // Usar adminLogout do auth-guard se disponível
+                if (typeof window.adminLogout === 'function') {
+                    window.adminLogout();
+                } else {
+                    // Fallback
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.href = 'login.html';
+                }
             }
         }
     </script>

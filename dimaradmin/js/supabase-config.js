@@ -45,8 +45,9 @@
     // Configurações do cliente
     const supabaseConfig = {
         auth: {
-            // Detectar sessão na URL (importante para callbacks OAuth)
-            detectSessionInUrl: true,
+            // Detectar sessão na URL - DESABILITADO para evitar loop
+            // OAuth callbacks devem ser tratados explicitamente
+            detectSessionInUrl: false,
             // Persistir sessão
             persistSession: true,
             // Auto-refresh de token
