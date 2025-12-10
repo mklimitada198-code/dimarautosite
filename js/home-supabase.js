@@ -37,6 +37,7 @@
             const { data: products, error } = await window.supabaseClient
                 .from('products')
                 .select('*')
+                .eq('status', 'active') // ✅ APENAS produtos ativos
                 .or('featured.eq.true,in_stock.eq.true') // Produtos em destaque OU em estoque
                 .order('featured', { ascending: false })
                 .order('created_at', { ascending: false })
@@ -62,20 +63,19 @@
 
     // ==================== RENDERIZAR PRODUTOS ====================
     function renderProducts(products) {
-        const container = document.querySelector('.products-carousel');
+        const container = document.querySelector('.offers-grid');
         if (!container) {
             log.warn('⚠️ Container de produtos não encontrado');
             return;
         }
 
-        // Limpar produtos existentes (mantém navegação)
-        const existingProducts = container.querySelectorAll('.product-card');
-        existingProducts.forEach(product => product.remove());
+        // Limpar produtos existentes
+        container.innerHTML = '';
 
         // Renderizar novos produtos
         products.forEach(product => {
             const productCard = createProductCard(product);
-            container.insertBefore(productCard, container.querySelector('.carousel-nav'));
+            container.appendChild(productCard);
         });
 
         log.success('✅ Produtos renderizados na home');
