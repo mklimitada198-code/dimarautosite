@@ -144,7 +144,7 @@
                 sessionStorage.clear();
 
                 console.log('🔀 Redirecionando para login...');
-                window.location.replace('login.html');
+                window.location.replace('/dimaradmin/login.html');
             } else {
                 console.log('✅ Sessão confirmada após recheck - acesso autorizado');
             }
