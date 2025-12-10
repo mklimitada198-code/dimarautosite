@@ -16,10 +16,10 @@
 
     // ==================== SAFE LOGGER ====================
     const log = {
-        info: (...args) => typeof logger !== 'undefined' ? log.info(...args) : console.info(...args),
-        warn: (...args) => typeof logger !== 'undefined' ? log.warn(...args) : console.warn(...args),
-        error: (...args) => typeof logger !== 'undefined' ? log.error(...args) : console.error(...args),
-        success: (msg) => typeof logger !== 'undefined' ? log.success(msg) : console.log('✅', msg)
+        info: (...args) => typeof logger !== 'undefined' ? logger.info(...args) : console.info(...args),
+        warn: (...args) => typeof logger !== 'undefined' ? logger.warn(...args) : console.warn(...args),
+        error: (...args) => typeof logger !== 'undefined' ? logger.error(...args) : console.error(...args),
+        success: (msg) => typeof logger !== 'undefined' ? logger.success(msg) : console.log('✅', msg)
     };
 
     // ==================== CARREGAR PRODUTOS ====================
