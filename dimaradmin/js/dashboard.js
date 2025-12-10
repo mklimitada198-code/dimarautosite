@@ -1,5 +1,8 @@
 /**
  * Dashboard - Real-time Statistics and Quick Actions
+ * 
+ * CORREÇÃO 2024-12-10: Adicionado waitForSupabase para garantir
+ * que estatísticas só carregam quando Supabase está pronto.
  */
 
 // State
@@ -12,32 +15,70 @@ let stats = {
 
 let recentProducts = [];
 
+// ==================== WAIT FOR SUPABASE ====================
+function waitForSupabase(callback) {
+    let attempts = 0;
+    const maxAttempts = 30; // 3 seconds max
+
+    const checkInterval = setInterval(() => {
+        attempts++;
+
+        if (window.supabaseClient) {
+            console.log('✅ Dashboard: Supabase detectado!');
+            clearInterval(checkInterval);
+            callback();
+        } else if (attempts >= maxAttempts) {
+            console.warn('⚠️ Dashboard: Timeout aguardando Supabase, usando localStorage');
+            clearInterval(checkInterval);
+            callback();
+        }
+    }, 100);
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    loadDashboardStats();
-    loadRecentProducts();
-    setupQuickActions();
+    console.log('📊 Dashboard: Inicializando...');
+
+    // Aguardar Supabase estar pronto
+    waitForSupabase(() => {
+        loadDashboardStats();
+        loadRecentProducts();
+        setupQuickActions();
+    });
 });
 
 /**
  * Load dashboard statistics
  */
 async function loadDashboardStats() {
+    console.log('📊 Carregando estatísticas do dashboard...');
+
     try {
-        if (checkSupabaseConfig()) {
+        // Verificar se Supabase está disponível
+        const useSupabase = typeof checkSupabaseConfig === 'function' &&
+            checkSupabaseConfig() &&
+            window.supabaseClient;
+
+        if (useSupabase) {
+            console.log('🔌 Carregando estatísticas do Supabase...');
+
             // Load from Supabase
             const [products, categories, banners, brands] = await Promise.all([
-                supabaseClient.from('products').select('*', { count: 'exact', head: true }),
-                supabaseClient.from('categories').select('*', { count: 'exact', head: true }),
-                supabaseClient.from('banners').select('*', { count: 'exact', head: true }),
-                supabaseClient.from('brands').select('*', { count: 'exact', head: true })
+                window.supabaseClient.from('products').select('*', { count: 'exact', head: true }),
+                window.supabaseClient.from('categories').select('*', { count: 'exact', head: true }),
+                window.supabaseClient.from('banners').select('*', { count: 'exact', head: true }),
+                window.supabaseClient.from('brands').select('*', { count: 'exact', head: true })
             ]);
 
             stats.products = products.count || 0;
             stats.categories = categories.count || 0;
             stats.banners = banners.count || 0;
             stats.brands = brands.count || 0;
+
+            console.log('✅ Estatísticas carregadas:', stats);
         } else {
+            console.warn('⚠️ Supabase não disponível, usando localStorage');
+
             // Load from localStorage
             const storedProducts = localStorage.getItem('dimar_products');
             const storedCategories = localStorage.getItem('dimar_categories');
@@ -45,15 +86,14 @@ async function loadDashboardStats() {
             const storedBrands = localStorage.getItem('dimar_brands');
 
             stats.products = storedProducts ? JSON.parse(storedProducts).length : 0;
-            stats.categories = storedCategories ? JSON.parse(storedCategories).length : 7; // Default categories
+            stats.categories = storedCategories ? JSON.parse(storedCategories).length : 7;
             stats.banners = storedBanners ? JSON.parse(storedBanners).length : 0;
             stats.brands = storedBrands ? JSON.parse(storedBrands).length : 0;
         }
 
         updateStatsDisplay();
     } catch (error) {
-        console.error('Erro ao carregar estatísticas:', error);
-        // Show zeros if error
+        console.error('❌ Erro ao carregar estatísticas:', error);
         updateStatsDisplay();
     }
 }
@@ -149,10 +189,10 @@ function renderRecentProducts() {
     tbody.innerHTML = recentProducts.map(product => `
         <tr>
             <td>
-                ${product.images && product.images.length > 0 
-                    ? `<img src="${product.images[0]}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" alt="${product.name}">`
-                    : '<div style="width:50px;height:50px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;">📦</div>'
-                }
+                ${product.images && product.images.length > 0
+            ? `<img src="${product.images[0]}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" alt="${product.name}">`
+            : '<div style="width:50px;height:50px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;">📦</div>'
+        }
             </td>
             <td><strong>${product.name}</strong></td>
             <td>R$ ${parseFloat(product.price).toFixed(2)}</td>

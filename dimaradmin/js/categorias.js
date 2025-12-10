@@ -7,7 +7,27 @@
 let categories = [];
 let editingCategoryId = null;
 
-console.log('📦 categorias.js carregado (VERSÃO CORRIGIDA)!');
+// UUID Validation
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidUUID(uuid) {
+    return UUID_REGEX.test(uuid);
+}
+
+function validateCategoryID(id, operation) {
+    if (!isValidUUID(id)) {
+        const error = `❌ ID inválido para ${operation}!\n\n` +
+            `Esperado: UUID (ex: 550e8400-e29b-...)\n` +
+            `Recebido: "${id}"\n\n` +
+            `Este é um erro do sistema. Recarregue a página.`;
+        showCustomAlert('Erro de Sistema', error);
+        console.error('❌ UUID inválido:', { id, operation });
+        return false;
+    }
+    return true;
+}
+
+console.log('📦 categorias.js carregado (VERSÃO CORRIGIDA COM UUID VALIDATION)!');
 
 // ==================== INICIALIZAÇÃO ====================
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,32 +57,55 @@ async function loadCategories() {
 
             if (error) throw error;
             categories = data || [];
-            console.log(`✅ ${categories.length} categorias carregadas do Supabase`);
+
+            // ✅ VALIDAR UUIDs ao carregar
+            const invalidIds = categories.filter(c => !isValidUUID(c.id));
+            if (invalidIds.length > 0) {
+                console.error('❌ IDs inválidos detectados:', invalidIds.map(c => c.id));
+                throw new Error('Dados corrompidos no banco. IDs inválidos: ' + invalidIds.map(c => c.name).join(', '));
+            }
+
+            console.log(`✅ ${categories.length} categorias carregadas do Supabase (todas com UUID válido)`);
         } else {
-            const stored = localStorage.getItem('dimar_categories');
-            categories = stored ? JSON.parse(stored) : getDefaultCategories();
-            console.log(`✅ ${categories.length} categorias carregadas do localStorage`);
+            // ❌ SEM FALLBACK - Supabase é obrigatório
+            console.error('❌ Supabase não configurado!');
+            throw new Error('Sistema não configurado. Supabase é obrigatório.');
         }
 
         renderCategories();
     } catch (error) {
-        console.error('❌ Erro ao carregar categorias:', error);
-        alert('Erro ao carregar categorias: ' + error.message);
+        console.error('❌ Erro CRÍTICO ao carregar categorias:', error);
+        showCustomAlert('Erro Crítico',
+            '❌ Não foi possível carregar categorias!\n\n' +
+            'Motivo: ' + error.message + '\n\n' +
+            '🔧 Ações:\n' +
+            '• Verifique se está logado\n' +
+            '• Recarregue a página (Ctrl+Shift+R)\n' +
+            '• Se persistir, contate o suporte'
+        );
+        categories = [];
+        renderCategories(); // Mostrar tabela vazia com mensagem
     }
 }
 
-// ==================== DEFAULT CATEGORIES ====================
-function getDefaultCategories() {
+/*
+// ==================== DEFAULT CATEGORIES (DEPRECATED) ====================
+// ❌ NÃO MAIS USADO - Supabase é obrigatório
+// Esta função gerava IDs inválidos tipo "cat_1" que causavam erros UUID
+// Mantido comentado apenas para referência histórica
+
+function getDefaultCategories_DEPRECATED() {
     return [
         { id: 'cat_1', name: 'Motor', slug: 'motor', description: 'Peças para motor', is_active: true },
         { id: 'cat_2', name: 'Freios', slug: 'freios', description: 'Sistemas de freio', is_active: true },
         { id: 'cat_3', name: 'Suspensão', slug: 'suspensao', description: 'Peças de suspensão', is_active: true },
-        { id: 'cat_4', name: 'Elétrica', slug: 'eletrica', description: 'Componentes elétricos', is_active: true },
+        { id:cat_4', name: 'Elétrica', slug: 'eletrica', description: 'Componentes elétricos', is_active: true },
         { id: 'cat_5', name: 'Filtros', slug: 'filtros', description: 'Filtros automotivos', is_active: true },
         { id: 'cat_6', name: 'Iluminação', slug: 'iluminacao', description: 'Lâmpadas e faróis', is_active: true },
         { id: 'cat_7', name: 'Acessórios', slug: 'acessorios', description: 'Acessórios diversos', is_active: true }
     ];
 }
+*/
 
 // ==================== RENDERIZAR TABELA ====================
 function renderCategories() {
@@ -88,7 +131,7 @@ function renderCategories() {
     }
 
     tbody.innerHTML = categories.map(category => `
-        <tr>
+        <tr data-category-id="${category.id}" data-category-name="${category.name}" data-category-slug="${category.slug}">
             <td><strong>${category.name}</strong></td>
             <td><code>${category.slug}</code></td>
             <td>${category.description || '-'}</td>
@@ -97,18 +140,70 @@ function renderCategories() {
                     ${category.is_active ? 'Ativa' : 'Inativa'}
                 </span>
             </td>
-            <td>
-                <button class="btn btn-sm btn-warning" onclick="window.editCategory('${category.id}')" title="Editar">
-                    ✏️
+            <td style="white-space: nowrap;">
+                <button 
+                    class="btn btn-sm btn-warning edit-category-btn"
+                    data-category-id="${category.id}"
+                    title="Editar categoria"
+                    style="margin-right: 4px; min-width: 38px; transition: all 0.2s;"
+                    onmouseover="this.style.transform='scale(1.05)'"
+                    onmouseout="this.style.transform='scale(1)'"
+                >
+                    ✏️ Editar
                 </button>
-                <button class="btn btn-sm btn-danger" onclick="window.deleteCategory('${category.id}')" title="Excluir">
-                    🗑️
+                <button 
+                    class="btn btn-sm btn-danger delete-category-btn"
+                    data-category-id="${category.id}"
+                    title="Excluir categoria permanentemente"
+                    style="min-width: 38px; transition: all 0.2s;"
+                    onmouseover="this.style.transform='scale(1.05)'; this.style.backgroundColor='#c0392b'"
+                    onmouseout="this.style.transform='scale(1)'; this.style.backgroundColor=''"
+                >
+                    🗑️ Excluir
                 </button>
             </td>
         </tr>
     `).join('');
 
     console.log('✅ Tabela renderizada com', categories.length, 'categorias');
+    setupActionButtons();
+}
+
+// ==================== SETUP ACTION BUTTONS ====================
+function setupActionButtons() {
+    const tbody = document.getElementById('categoriesTableBody');
+    if (!tbody) return;
+
+    // Remove existing listeners to avoid duplicates
+    const existingClone = tbody.cloneNode(true);
+    tbody.parentNode.replaceChild(existingClone, tbody);
+    const newTbody = document.getElementById('categoriesTableBody');
+
+    // Event delegation for Edit buttons
+    newTbody.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.edit-category-btn');
+        if (editBtn) {
+            e.preventDefault();
+            const categoryId = editBtn.dataset.categoryId;
+            console.log('✏️ Botão EDITAR clicado!', categoryId);
+            window.editCategory(categoryId);
+        }
+    });
+
+    // Event delegation for Delete buttons
+    newTbody.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-category-btn');
+        if (deleteBtn) {
+            e.preventDefault();
+            const categoryId = deleteBtn.dataset.categoryId;
+            const row = deleteBtn.closest('tr');
+            const categoryName = row.dataset.categoryName;
+            console.log('🗑️ Botão EXCLUIR clicado!', categoryId, categoryName);
+            window.deleteCategory(categoryId, categoryName);
+        }
+    });
+
+    console.log('✅ Event listeners dos botões configurados');
 }
 
 // ==================== SETUP FORM ====================
@@ -160,7 +255,7 @@ window.previewCategoryImage = function (event) {
     const file = event.target.files[0];
     if (file) {
         if (file.size > 2 * 1024 * 1024) {
-            alert('⚠️ Imagem muito grande! Tamanho máximo: 2MB');
+            showCustomAlert('Aviso', '⚠️ Imagem muito grande!\n\nTamanho máximo permitido: 2MB\nTamanho da imagem: ' + (file.size / 1024 / 1024).toFixed(2) + 'MB');
             event.target.value = '';
             return;
         }
@@ -226,7 +321,7 @@ async function saveCategory() {
     const slug = document.getElementById('categorySlug').value.trim();
 
     if (!name || !slug) {
-        alert('⚠️ Nome e Slug são obrigatórios!');
+        showCustomAlert('Erro de Validação', '⚠️ Campos obrigatórios não preenchidos!\n\n• Nome da categoria\n• Slug\n\nPor favor, preencha ambos os campos.');
         return;
     }
 
@@ -258,6 +353,7 @@ async function saveCategory() {
         console.log('🔌 Usando:', useSupabase ? 'Supabase' : 'localStorage');
 
         if (useSupabase) {
+            // Supabase gera UUID automaticamente - NÃO enviar ID
             if (editingCategoryId) {
                 console.log('✏️ Atualizando categoria ID:', editingCategoryId);
                 const { data, error } = await supabaseClient
@@ -269,49 +365,58 @@ async function saveCategory() {
                 if (error) throw error;
                 console.log('✅ Categoria atualizada:', data);
             } else {
-                console.log('➕ Inserindo nova categoria');
+                console.log('➕ Inserindo nova categoria (UUID auto-gerado)');
                 const { data, error } = await supabaseClient
                     .from('categories')
-                    .insert([categoryData])
+                    .insert([categoryData])  // Supabase gera o UUID
                     .select();
 
                 if (error) throw error;
-                console.log('✅ Categoria criada:', data);
+                console.log('✅ Categoria criada com UUID:', data);
             }
         } else {
-            if (editingCategoryId) {
-                const index = categories.findIndex(c => c.id === editingCategoryId);
-                categories[index] = { ...categoryData, id: editingCategoryId };
-            } else {
-                categoryData.id = 'cat_' + Date.now();
-                categories.push(categoryData);
-            }
-            localStorage.setItem('dimar_categories', JSON.stringify(categories));
-            console.log('✅ Salvo no localStorage');
+            // ❌ REMOVIDO: Fallback localStorage gerava IDs incompatíveis com Supabase
+            // IDs como 'cat_123456' causavam "invalid input syntax for type uuid"
+            // Referência: ADR-002 em docs/decisoes-tecnicas.md
+            throw new Error('Supabase não configurado. Não é possível salvar categorias.');
         }
 
-        alert('✅ ' + (editingCategoryId ? 'Categoria atualizada!' : 'Categoria adicionada!'));
+        showCustomAlert('Sucesso', '✅ ' + (editingCategoryId ? 'Categoria atualizada com sucesso!' : 'Categoria adicionada com sucesso!') + '\n\nA tabela será atualizada automaticamente.');
         window.closeCategoryModal();
         await loadCategories();
 
     } catch (error) {
         console.error('❌ ERRO ao salvar:', error);
-        let errorMsg = '❌ Erro ao salvar categoria:\n\n' + error.message;
+        let errorMsg = '❌ Erro ao salvar categoria!\n\n' + error.message;
         if (error.code) errorMsg += '\n\nCódigo: ' + error.code;
         if (error.hint) errorMsg += '\nDica: ' + error.hint;
-        alert(errorMsg);
+        errorMsg += '\n\n❓ Verifique:\n• Conexão com Supabase\n• Permissões do banco';
+        showCustomAlert('Erro', errorMsg);
     }
 }
 
 // ==================== EDIT CATEGORY ====================
 window.editCategory = function (categoryId) {
     console.log('✏️ Editar categoria:', categoryId);
+
+    // ✅ VALIDAR UUID antes de editar
+    if (!validateCategoryID(categoryId, 'edição')) {
+        console.error('❌ Operação de edição bloqueada: ID inválido');
+        return;
+    }
+
     window.openCategoryModal(categoryId);
 };
 
 // ==================== DELETE CATEGORY ====================
-window.deleteCategory = async function (categoryId) {
-    console.log('🗑️ Deletar categoria:', categoryId);
+window.deleteCategory = async function (categoryId, categoryName) {
+    console.log('🗑️ Deletar categoria:', categoryId, categoryName);
+
+    // ✅ VALIDAR UUID antes de deletar
+    if (!validateCategoryID(categoryId, 'exclusão')) {
+        console.error('❌ Operação de exclusão bloqueada: ID inválido');
+        return;
+    }
 
     const category = categories.find(c => c.id === categoryId);
     if (!category) {
@@ -348,5 +453,106 @@ window.deleteCategory = async function (categoryId) {
         alert('❌ Erro ao excluir categoria:\n\n' + error.message);
     }
 };
+
+console.log('✅ categorias.js totalmente carregado!');
+// ==================== CUSTOM MODAL DIALOGS ====================
+function showCustomConfirm(title, message) {
+    return new Promise((resolve) => {
+        // Remove existing modal if any
+        const existing = document.getElementById('customConfirmModal');
+        if (existing) existing.remove();
+
+        // Create modal
+        const modal = document.createElement('div');
+        modal.id = 'customConfirmModal';
+        modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;';
+
+        modal.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 30px; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <h2 style="margin: 0 0 20px 0; color: #e74c3c; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 32px;">⚠️</span>
+                    ${title}
+                </h2>
+                <div style="white-space: pre-wrap; line-height: 1.6; color: #2c3e50; margin-bottom: 30px; font-size: 16px;">
+                    ${message}
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button id="confirmCancel" style="padding: 12px 24px; border: 2px solid #95a5a6; background: white; color: #2c3e50; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                        Cancelar
+                    </button>
+                    <button id="confirmOk" style="padding: 12px 24px; border: none; background: #e74c3c; color: white; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                        Sim, Excluir
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Event listeners
+        document.getElementById('confirmOk').onclick = () => {
+            modal.remove();
+            resolve(true);
+        };
+
+        document.getElementById('confirmCancel').onclick = () => {
+            modal.remove();
+            resolve(false);
+        };
+
+        // Close on backdrop click
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.remove();
+                resolve(false);
+            }
+        };
+
+        // Focus OK button
+        setTimeout(() => document.getElementById('confirmOk').focus(), 100);
+    });
+}
+
+function showCustomAlert(title, message) {
+    // Remove existing modal if any
+    const existing = document.getElementById('customAlertModal');
+    if (existing) existing.remove();
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.id = 'customAlertModal';
+    modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;';
+
+    const icon = title.includes('Sucesso') ? '✅' : title.includes('Erro') ? '❌' : 'ℹ️';
+    const color = title.includes('Sucesso') ? '#2ecc71' : title.includes('Erro') ? '#e74c3c' : '#3498db';
+
+    modal.innerHTML = `
+        <div style="background: white; border-radius: 16px; padding: 30px; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h2 style="margin:  0 0 20px 0; color: ${color}; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 32px;">${icon}</span>
+                ${title}
+            </h2>
+            <div style="white-space: pre-wrap; line-height: 1.6; color: #2c3e50; margin-bottom: 30px; font-size: 16px;">
+                ${message}
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button id="alertOk" style="padding: 12px 32px; border: none; background: ${color}; color: white; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                    OK
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Event listener
+    document.getElementById('alertOk').onclick = () => modal.remove();
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+
+    // Focus OK button
+    setTimeout(() => document.getElementById('alertOk').focus(), 100);
+}
 
 console.log('✅ categorias.js totalmente carregado!');

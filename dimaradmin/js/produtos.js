@@ -452,18 +452,9 @@ async function saveProduct() {
                 console.log('✅ Produto criado:', data);
             }
         } else {
-            console.log('💾 Salvando no localStorage...');
-            if (editingProductId) {
-                const index = products.findIndex(p => p.id === editingProductId);
-                products[index] = { ...productData, id: editingProductId };
-            } else {
-                productData.id = 'prod_' + Date.now();
-                productData.created_at = new Date().toISOString();
-                products.push(productData);
-            }
-
-            localStorage.setItem('dimar_products', JSON.stringify(products));
-            console.log('✅ Salvo no localStorage');
+            // ❌ REMOVIDO: Fallback localStorage gerava IDs incompatíveis com Supabase
+            // Referência: ADR-002 em docs/decisoes-tecnicas.md
+            throw new Error('Supabase não configurado. Não é possível salvar produtos.');
         }
 
         alert('✅ ' + (editingProductId ? 'Produto atualizado!' : 'Produto adicionado!'));
@@ -493,16 +484,18 @@ window.deleteProduct = async function (productId, productName) {
 
     if (!product) {
         console.error('❌ ERRO: Produto não encontrado!');
-        showCustomAlert('Erro', '❌ Produto não encontrado!\\n\\nO produto pode ter sido excluído ou não está carregado.');
+        showCustomAlert('Erro', '❌ Produto não encontrado!\n\nO produto pode ter sido excluído ou não está carregado.');
         return;
     }
 
     // Mensagem de confirmação melhorada
-    const confirmMessage = `⚠️ ATENÇÃO: Tem certeza que deseja EXCLUIR este produto?\\n\\n` +
-        `📦 Produto: ${productName}\\n` +
-        `🏷️ SKU: ${product.sku}\\n` +
-        `💰 Preço: R$ ${product.price.toFixed(2)}\\n\\n` +
-        `Esta ação NÃO PODE ser desfeita!`;
+    const confirmMessage = `⚠️ ATENÇÃO: Tem certeza que deseja EXCLUIR este produto?
+
+📦 Produto: ${productName}
+🏷️ SKU: ${product.sku}
+💰 Preço: R$ ${product.price.toFixed(2)}
+
+Esta ação NÃO PODE ser desfeita!`;
 
     console.log('💬 Mostrando modal de confirmação customizado...');
 
@@ -535,10 +528,8 @@ window.deleteProduct = async function (productId, productName) {
             if (error) throw error;
             console.log('✅ Produto deletado do Supabase');
         } else {
-            console.log('💾 Deletando do localStorage...');
-            products = products.filter(p => p.id !== productId);
-            localStorage.setItem('dimar_products', JSON.stringify(products));
-            console.log('✅ Produto deletado do localStorage');
+            // ❌ REMOVIDO: Fallback localStorage
+            throw new Error('Supabase não configurado. Não é possível excluir produtos.');
         }
 
         // Animação de remoção
@@ -552,7 +543,7 @@ window.deleteProduct = async function (productId, productName) {
         }
 
         setTimeout(async () => {
-            showCustomAlert('Sucesso', '✅ Produto excluído com sucesso!\\n\\nO produto foi removido do sistema.');
+            showCustomAlert('Sucesso', '✅ Produto excluído com sucesso!\n\nO produto foi removido do sistema.');
             await loadProducts();
         }, 600);
 
@@ -569,10 +560,10 @@ window.deleteProduct = async function (productId, productName) {
             }, 2000);
         }
 
-        let errorMsg = '❌ ERRO ao excluir produto!\\n\\n' + error.message;
-        if (error.code) errorMsg += '\\n\\nCódigo: ' + error.code;
-        if (error.hint) errorMsg += '\\nDica: ' + error.hint;
-        errorMsg += '\\n\\nO produto NÃO foi excluído.';
+        let errorMsg = '❌ ERRO ao excluir produto!\n\n' + error.message;
+        if (error.code) errorMsg += '\n\nCódigo: ' + error.code;
+        if (error.hint) errorMsg += '\nDica: ' + error.hint;
+        errorMsg += '\n\nO produto NÃO foi excluído.';
 
         showCustomAlert('Erro', errorMsg);
     }

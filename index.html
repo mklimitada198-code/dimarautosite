@@ -273,134 +273,12 @@
         </div>
     </section>
 
+
     <!-- ==================== Mais Procurados Section ==================== -->
-    <section class="most-searched-section" aria-label="Produtos mais procurados">
-        <div class="container">
-            <h2 class="section-title">Mais Procurados</h2>
+    <!-- TODO: Esta seção será carregada dinamicamente do Supabase -->
+    <!-- Por enquanto removida para evitar imagens quebradas em produção -->
+    <!-- Implementar loadMostSearchedProducts() em home-supabase.js -->
 
-            <div class="most-searched-carousel-wrapper">
-                <!-- Navigation Button - Previous -->
-                <button class="most-searched-nav-button prev" aria-label="Produto anterior">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </button>
-
-                <!-- Products Grid -->
-                <div class="most-searched-grid">
-                    <!-- Product 1 -->
-                    <div class="most-searched-card">
-                        <div class="free-shipping-badge">Para todo o Brasil</div>
-                        <div class="product-image-wrapper">
-                            <img src="https://via.placeholder.com/300x300/FF6B00/FFFFFF?text=Pastilha+Freio"
-                                alt="Pastilha de Freio">
-                        </div>
-                        <h3 class="product-name">Kit Pastilha de Freio Dianteira Cerâmica</h3>
-                        <div class="product-pricing-box">
-                            <span class="old-price">R$ 149,90</span>
-                            <span class="discount-percent">+ 10%</span>
-                            <div class="current-price">R$ 119,90</div>
-                            <div class="payment-info">à vista em 10x de R$ 11,99 sem juros no cartão</div>
-                            <div class="payment-info">ou R$ 113,91 em 7x de R$ 16,27 sem juros no cartão</div>
-                        </div>
-                        <div class="fast-delivery-badge">
-                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida"
-                                alt="Produto com entrega rápida">
-                        </div>
-                    </div>
-
-                    <!-- Product 2 -->
-                    <div class="most-searched-card">
-                        <div class="free-shipping-badge">Para todo o Brasil</div>
-                        <div class="product-image-wrapper">
-                            <img src="https://via.placeholder.com/300x300/1a1a1a/FFFFFF?text=Filtro+Oleo"
-                                alt="Filtro de Óleo">
-                        </div>
-                        <h3 class="product-name">Filtro de Óleo Mann W950/26 Original</h3>
-                        <div class="product-pricing-box">
-                            <span class="old-price">R$ 45,90</span>
-                            <span class="discount-percent">+ 10%</span>
-                            <div class="current-price">R$ 34,90</div>
-                            <div class="payment-info">à vista em 10x de R$ 3,49 sem juros no cartão</div>
-                            <div class="payment-info">ou R$ 33,16 em 7x de R$ 4,74 sem juros no cartão</div>
-                        </div>
-                        <div class="fast-delivery-badge">
-                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida"
-                                alt="Produto com entrega rápida">
-                        </div>
-                    </div>
-
-                    <!-- Product 3 -->
-                    <div class="most-searched-card">
-                        <div class="free-shipping-badge">Para todo o Brasil</div>
-                        <div class="product-image-wrapper">
-                            <img src="https://via.placeholder.com/300x300/FF0000/FFFFFF?text=Amortecedor"
-                                alt="Amortecedor">
-                        </div>
-                        <h3 class="product-name">Amortecedor Traseiro Cofap Honda CG 125/150</h3>
-                        <div class="product-pricing-box">
-                            <span class="old-price">R$ 189,90</span>
-                            <div class="current-price">R$ 159,90</div>
-                            <div class="payment-info">à vista no Pix ou Boleto</div>
-                            <div class="payment-info">ou R$ 177,67 em 10x de R$ 17,77 sem juros no cartão</div>
-                        </div>
-                        <div class="fast-delivery-badge">
-                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida"
-                                alt="Produto com entrega rápida">
-                        </div>
-                    </div>
-
-                    <!-- Product 4 -->
-                    <div class="most-searched-card">
-                        <div class="free-shipping-badge">Para todo o Brasil</div>
-                        <div class="product-image-wrapper">
-                            <img src="https://via.placeholder.com/300x300/0066FF/FFFFFF?text=Bateria" alt="Bateria">
-                        </div>
-                        <h3 class="product-name">Bateria Moura 60Ah Selada Livre de Manutenção</h3>
-                        <div class="product-pricing-box">
-                            <span class="old-price">R$ 459,90</span>
-                            <div class="current-price">R$ 399,90</div>
-                            <div class="payment-info">à vista em 10x de R$ 39,99 sem juros no cartão</div>
-                            <div class="payment-info">ou R$ 419,90 em 5x de R$ 83,98 sem juros no cartão</div>
-                        </div>
-                        <div class="fast-delivery-badge">
-                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida"
-                                alt="Produto com entrega rápida">
-                        </div>
-                    </div>
-
-                    <!-- Product 5 -->
-                    <div class="most-searched-card">
-                        <div class="free-shipping-badge">Para todo o Brasil</div>
-                        <div class="product-image-wrapper">
-                            <img src="https://via.placeholder.com/300x300/27ae60/FFFFFF?text=Correia"
-                                alt="Correia Dentada">
-                        </div>
-                        <h3 class="product-name">Kit Correia Dentada Gates com Tensor Completo</h3>
-                        <div class="product-pricing-box">
-                            <span class="old-price">R$ 289,90</span>
-                            <div class="current-price">R$ 249,90</div>
-                            <div class="payment-info">à vista no Pix ou Boleto</div>
-                            <div class="payment-info">ou R$ 277,67 em 5x de R$ 55,53 sem juros no cartão</div>
-                        </div>
-                        <div class="fast-delivery-badge">
-                            <img src="https://via.placeholder.com/100x20/0066FF/FFFFFF?text=Entrega+Rapida"
-                                alt="Produto com entrega rápida">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Navigation Button - Next -->
-                <button class="most-searched-nav-button next" aria-label="Próximo produto">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </section>
 
     <!-- ==================== Brands Section ==================== -->
     <section class="brands-section" aria-label="Marcas parceiras">
@@ -519,6 +397,9 @@
 
     <!-- 1. Logger System (PRIMEIRO - outros dependem dele) -->
     <script src="js/logger.js"></script>
+
+    <!-- 1.5. Image Fallback System (previne imagens quebradas) -->
+    <script src="js/utils/image-fallback.js"></script>
 
     <!-- 2. Placeholders SVG (antes de qualquer renderização) -->
     <script src="js/create-placeholders.js"></script>
