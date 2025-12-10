@@ -305,6 +305,20 @@
         console.log('🌍 Hostname:', window.location.hostname);
         console.log('📍 Path:', window.location.pathname);
 
+        // CORREÇÃO: Verificar se acabou de fazer login
+        const justLoggedIn = localStorage.getItem('admin_just_logged_in');
+        if (justLoggedIn === 'true') {
+            console.log('🎯 LOGIN RECENTE DETECTADO!');
+            console.log('   Aguardando 1000ms para sessão estar totalmente estabelecida...');
+
+            // Aguardar mais tempo para sessão estar pronta
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Limpar flag
+            localStorage.removeItem('admin_just_logged_in');
+            console.log('✅ Flag de login recente removida');
+        }
+
         // Aguardar Supabase carregar
         let attempts = 0;
         const checkInterval = setInterval(async () => {
