@@ -198,14 +198,17 @@
                             just_logged_in: localStorage.getItem('admin_just_logged_in')
                         });
 
-                        // CORREÇÃO FINAL: Redirect ABSOLUTO e IMEDIATO
+                        // CORREÇÃO FINAL: Redirect com window.location.replace
                         console.log('🚀 REDIRECIONANDO para /dimaradmin/index.html');
-                        console.log('   Método: window.location.href (absoluto)');
+                        console.log('   Método: window.location.replace (absoluto)');
+                        console.log('   Timestamp:', new Date().toISOString());
 
+                        // Usar timeout curto apenas para garantir que localStorage salvou
                         setTimeout(() => {
-                            // USAR CAMINHO ABSOLUTO, não relativo!
-                            window.location.href = '/dimaradmin/index.html';
-                        }, 800);
+                            console.log('⚡ EXECUTANDO REDIRECT AGORA!');
+                            // window.location.replace evita que botão voltar retorne para login
+                            window.location.replace('/dimaradmin/index.html');
+                        }, 100);
                     } else {
                         showError('Erro inesperado: sessão não foi criada');
                         setLoading(false);
