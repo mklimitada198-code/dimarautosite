@@ -343,18 +343,43 @@
                     <textarea class="form-control" id="productDescription" rows="5"></textarea>
                 </div>
 
+                <!-- Badge Configuration -->
                 <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                        <input type="checkbox" id="productFeatured">
-                        <span>Produto em Destaque</span>
-                    </label>
+                    <label class="form-label">Badge do Produto</label>
+                    <select class="form-control" id="productBadgeType">
+                        <option value="">Nenhum</option>
+                        <option value="destaque">Destaque (Laranja)</option>
+                        <option value="oferta">Oferta (Verde)</option>
+                        <option value="mais-vendido">Mais Vendido (Vermelho)</option>
+                        <option value="personalizado">Personalizado</option>
+                    </select>
                 </div>
 
+                <div class="form-group" id="customBadgeGroup" style="display: none;">
+                    <label class="form-label">Texto do Badge Personalizado</label>
+                    <input type="text" class="form-control" id="productCustomBadge"
+                        placeholder="Ex: NOVIDADE, LANÇAMENTO, etc.">
+                </div>
+
+                <!-- Product Features -->
                 <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                        <input type="checkbox" id="productFastShipping">
-                        <span>Entrega Rápida</span>
-                    </label>
+                    <label class="form-label">Características do Produto</label>
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="productFeatured">
+                            <span>⭐ Produto em Destaque (aparece primeiro na home)</span>
+                        </label>
+
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="productBestseller">
+                            <span>🔥 Mais Vendido (badge vermelho automático)</span>
+                        </label>
+
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="productFastShipping">
+                            <span>🚚 Entrega Rápida (exibe ícone de caminhão)</span>
+                        </label>
+                    </div>
                 </div>
 
                 <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 30px;">
@@ -377,6 +402,12 @@
         // Toggle sidebar
         document.getElementById('toggleSidebar').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+
+        // Toggle custom badge field
+        document.getElementById('productBadgeType').addEventListener('change', (e) => {
+            const customGroup = document.getElementById('customBadgeGroup');
+            customGroup.style.display = e.target.value === 'personalizado' ? 'block' : 'none';
         });
 
         // Logout

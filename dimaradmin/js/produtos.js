@@ -66,22 +66,23 @@ function renderProducts(filteredProducts = null) {
     tbody.innerHTML = productsToRender.map(product => `
         <tr>
             <td>
-                ${product.images && product.images.length > 0 
-                    ? `<img src="${product.images[0]}" class="product-image-preview" alt="${product.name}">`
-                    : '<div style="width:80px;height:80px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;">📦</div>'
-                }
+                ${product.images && product.images.length > 0
+            ? `<img src="${product.images[0]}" class="product-image-preview" alt="${product.name}">`
+            : '<div style="width:80px;height:80px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;">📦</div>'
+        }
             </td>
             <td><strong>${product.name}</strong></td>
             <td>${product.sku}</td>
             <td><span class="badge badge-${getCategoryColor(product.category)}">${formatCategory(product.category)}</span></td>
             <td>
-                ${product.sale_price 
-                    ? `<span style="text-decoration: line-through; color: #999; margin-right: 8px;">R$ ${parseFloat(product.price).toFixed(2)}</span><strong style="color: var(--danger);">R$ ${parseFloat(product.sale_price).toFixed(2)}</strong>`
-                    : `R$ ${parseFloat(product.price).toFixed(2)}`
-                }
+                ${product.sale_price
+            ? `<span style="text-decoration: line-through; color: #999; margin-right: 8px;">R$ ${parseFloat(product.price).toFixed(2)}</span><strong style="color: var(--danger);">R$ ${parseFloat(product.sale_price).toFixed(2)}</strong>`
+            : `R$ ${parseFloat(product.price).toFixed(2)}`
+        }
             </td>
             <td>${product.stock} un</td>
             <td>
+                ${product.badge_type ? `<span class="badge badge-info" style="margin-right: 4px;">${getBadgeLabel(product.badge_type, product.custom_badge_text)}</span>` : ''}
                 <span class="badge ${product.status === 'active' ? 'badge-success' : 'badge-danger'}">
                     ${product.status === 'active' ? 'Ativo' : 'Inativo'}
                 </span>
@@ -244,8 +245,14 @@ function openProductModal(productId = null) {
             document.getElementById('productStatus').value = product.status;
             document.getElementById('productShortDesc').value = product.short_description || '';
             document.getElementById('productDescription').value = product.description || '';
-            document.getElementById('productFeatured').checked = product.is_featured || false;
+            document.getElementById('productFeatured').checked = product.featured || false;
             document.getElementById('productFastShipping').checked = product.fast_shipping || false;
+            document.getElementById('productBadgeType').value = product.badge_type || '';
+            document.getElementById('productCustomBadge').value = product.custom_badge_text || '';
+
+            // Show custom badge field if needed
+            const customGroup = document.getElementById('customBadgeGroup');
+            customGroup.style.display = product.badge_type === 'personalizado' ? 'block' : 'none';
 
             selectedImages = product.images || [];
             renderImagePreviews();
@@ -255,6 +262,7 @@ function openProductModal(productId = null) {
     } else {
         document.getElementById('productForm').reset();
         document.getElementById('productId').value = '';
+        document.getElementById('customBadgeGroup').style.display = 'none';
         renderImagePreviews();
         document.querySelector('#productModal h2').textContent = 'Adicionar Produto';
     }
@@ -286,8 +294,10 @@ async function saveProduct() {
         status: document.getElementById('productStatus').value,
         short_description: document.getElementById('productShortDesc').value,
         description: document.getElementById('productDescription').value,
-        is_featured: document.getElementById('productFeatured').checked,
+        featured: document.getElementById('productFeatured').checked,
         fast_shipping: document.getElementById('productFastShipping').checked,
+        badge_type: document.getElementById('productBadgeType').value,
+        custom_badge_text: document.getElementById('productCustomBadge').value,
         images: selectedImages
     };
 
@@ -396,5 +406,15 @@ function getCategoryColor(category) {
         acessorios: 'success'
     };
     return colors[category] || 'success';
+}
+
+function getBadgeLabel(badgeType, customText) {
+    const labels = {
+        'destaque': 'Destaque',
+        'oferta': 'Oferta',
+        'mais-vendido': 'Mais Vendido',
+        'personalizado': customText || 'Badge'
+    };
+    return labels[badgeType] || badgeType;
 }
 

@@ -12,7 +12,7 @@
 
 // ✅ CREDENCIAIS CONFIGURADAS
 const SUPABASE_URL = 'https://jfiarqtqojfptdbddnvu.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpmaWFycXRxb2pmcHRkYmRkbnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2OTQ5NjgsImV4cCI6MjA0OTI3MDk2OH0.sb_publishable_-gAmMx1wqeIXhNPr6uhAbw_8-VcPgeJ';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpmaWFycXRxb2pmcHRkYmRkbnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxODY0NTEsImV4cCI6MjA4MDc2MjQ1MX0.Nf7e1D1_J3kKUwPBhvBUp-VSPCJu3vra8ysjUZBUm8g';
 
 // Inicializar cliente Supabase
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -24,13 +24,13 @@ function checkSupabaseConfig() {
         console.log('⚠️ Supabase não configurado - Usando localStorage');
         return false;
     }
-    
-    if (SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE' || 
+
+    if (SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE' ||
         SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY_HERE') {
         console.log('⚠️ Credenciais placeholder - Usando localStorage');
         return false;
     }
-    
+
     console.log('✅ Supabase configurado e pronto para uso!');
     console.log('📊 Dados serão salvos no banco de dados');
     return true; // Retorna true para usar Supabase

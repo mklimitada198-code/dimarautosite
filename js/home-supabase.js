@@ -3,7 +3,7 @@
  * Carrega dinamicamente produtos, banners, marcas e categorias do banco
  */
 
-(function() {
+(function () {
     'use strict';
 
     // ==================== CONFIGURAÇÃO ====================
@@ -87,26 +87,50 @@
         card.className = 'product-card';
         card.dataset.productId = product.id;
 
-        // Determinar badge
+        // Determinar badge (priorizar badge_type do admin)
         let badge = '';
-        if (product.featured) {
+        let badgeClass = 'product-badge';
+
+        if (product.badge_type) {
+            // Usar badge configurado no admin
+            switch (product.badge_type) {
+                case 'destaque':
+                    badge = '<span class="product-badge">Destaque</span>';
+                    break;
+                case 'oferta':
+                    badge = '<span class="product-badge promo">Oferta</span>';
+                    break;
+                case 'mais-vendido':
+                    badge = '<span class="product-badge hot">Mais Vendido</span>';
+                    break;
+                case 'personalizado':
+                    badge = `<span class="product-badge">${product.custom_badge_text || 'Badge'}</span>`;
+                    break;
+            }
+        } else if (product.is_bestseller) {
+            // Fallback: usar is_bestseller checkbox
+            badge = '<span class="product-badge hot">Mais Vendido</span>';
+        } else if (product.is_featured || product.featured) {
+            // Fallback: usar is_featured checkbox (compatibilidade)
             badge = '<span class="product-badge">Destaque</span>';
         } else if (product.sale_price && product.sale_price < product.price) {
+            // Fallback: calcular automaticamente se tem preço promocional
             badge = '<span class="product-badge promo">Oferta</span>';
         } else if (product.badge) {
+            // Fallback antigo: campo badge legado
             badge = `<span class="product-badge">${product.badge}</span>`;
         }
 
         // Calcular preços
         const price = product.sale_price || product.price;
         const originalPrice = product.sale_price ? product.price : null;
-        
+
         // Calcular parcelamento (10x sem juros)
         const installmentValue = (price / 10).toFixed(2);
 
         // Imagem (usar primeira imagem ou placeholder)
-        const imageUrl = product.images && product.images.length > 0 
-            ? product.images[0] 
+        const imageUrl = product.images && product.images.length > 0
+            ? product.images[0]
             : (window.placeholders ? window.placeholders.product : 'assets/images/produto-1.jpg');
 
         card.innerHTML = `
@@ -145,7 +169,7 @@
     }
 
     // ==================== ADICIONAR AO CARRINHO ====================
-    window.addToCartFromHome = function(productId) {
+    window.addToCartFromHome = function (productId) {
         if (typeof window.cart !== 'undefined' && window.cart.addItem) {
             // Buscar produto completo
             if (window.supabaseClient) {
@@ -211,7 +235,7 @@
     function renderBanners(banners) {
         const slidesContainer = document.querySelector('.carousel-slides');
         const indicatorsContainer = document.querySelector('.carousel-indicators');
-        
+
         if (!slidesContainer || !indicatorsContainer) {
             log.warn('⚠️ Container de banners não encontrado');
             return;
@@ -226,10 +250,10 @@
             // Slide
             const slide = document.createElement('div');
             slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
-            
+
             const link = banner.link_url ? `<a href="${banner.link_url}">` : '';
             const closeLink = banner.link_url ? '</a>' : '';
-            
+
             slide.innerHTML = `
                 ${link}
                     <img src="${banner.image_url}" alt="${banner.title}" onerror="this.src='${window.placeholders ? window.placeholders.banner : 'assets/images/bannner01.png'}'">
@@ -357,7 +381,7 @@
     // ==================== RENDERIZAR CATEGORIAS ====================
     function renderCategories(categories) {
         const carousel = document.querySelector('.categories-carousel');
-        
+
         if (!carousel) {
             log.warn('⚠️ Container de categorias não encontrado');
             return;

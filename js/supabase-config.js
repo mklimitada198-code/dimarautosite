@@ -3,7 +3,7 @@
  * Configuração e inicialização do Supabase
  */
 
-(function() {
+(function () {
     'use strict';
 
     // ==================== SAFE LOGGER ====================
@@ -17,14 +17,14 @@
     // ==================== CONFIGURAÇÃO ====================
     // Credenciais do Supabase - Dimar Auto Peças
     const SUPABASE_URL = 'https://jfiarqtqojfptdbddnvu.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpmaWFycXRxb2pmcHRkYmRkbnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM2OTQ5NjgsImV4cCI6MjA0OTI3MDk2OH0.sb_publishable_-gAmMx1wqeIXhNPr6uhAbw_8-VcPgeJ';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpmaWFycXRxb2pmcHRkYmRkbnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxODY0NTEsImV4cCI6MjA4MDc2MjQ1MX0.Nf7e1D1_J3kKUwPBhvBUp-VSPCJu3vra8ysjUZBUm8g';
 
     // Inicializar cliente Supabase
     let supabase = null;
 
     // Verificar se as credenciais foram configuradas
-    const isConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && 
-                         SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE';
+    const isConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' &&
+        SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE';
 
     // ==================== AGUARDAR CDN E INICIALIZAR ====================
     function initializeSupabase() {
@@ -56,7 +56,7 @@
 
     const initInterval = setInterval(() => {
         attempts++;
-        
+
         if (initializeSupabase()) {
             clearInterval(initInterval);
             log.success('✅ Supabase pronto para uso!');
@@ -82,7 +82,7 @@
      */
     async function isAuthenticated() {
         if (!isSupabaseConnected()) return false;
-        
+
         try {
             const { data: { session } } = await supabase.auth.getSession();
             return session !== null;
@@ -97,7 +97,7 @@
      */
     async function getCurrentUser() {
         if (!isSupabaseConnected()) return null;
-        
+
         try {
             const { data: { user } } = await supabase.auth.getUser();
             return user;
@@ -114,15 +114,15 @@
         if (!isSupabaseConnected()) {
             return { success: false, error: 'Supabase não configurado' };
         }
-        
+
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: password
             });
-            
+
             if (error) throw error;
-            
+
             log.success('Login realizado com sucesso!');
             return { success: true, user: data.user };
         } catch (error) {
@@ -138,11 +138,11 @@
         if (!isSupabaseConnected()) {
             return { success: false, error: 'Supabase não configurado' };
         }
-        
+
         try {
             const { error } = await supabase.auth.signOut();
             if (error) throw error;
-            
+
             log.success('Logout realizado com sucesso!');
             return { success: true };
         } catch (error) {
@@ -158,7 +158,7 @@
         if (!isSupabaseConnected()) {
             return { success: false, error: 'Supabase não configurado' };
         }
-        
+
         try {
             const { data, error } = await supabase.auth.signUp({
                 email: email,
@@ -167,9 +167,9 @@
                     data: metadata
                 }
             });
-            
+
             if (error) throw error;
-            
+
             log.success('Cadastro realizado com sucesso!');
             return { success: true, user: data.user };
         } catch (error) {
