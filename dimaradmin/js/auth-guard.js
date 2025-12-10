@@ -10,21 +10,36 @@
 
     /**
      * Verifica se usuário está autenticado via Supabase
+     * CORREÇÃO: Prioriza localStorage para evitar race condition em produção
      */
     async function isAuthenticated() {
         try {
-            // Verificar se Supabase está disponível
+            // ✅ VERIFICAR LOCALSTORAGE PRIMEIRO (síncrono, mais rápido)
+            const localAuth = checkLocalStorageFallback();
+
+            console.log('🔐 Verificando autenticação...');
+            console.log('  📦 localStorage:', localAuth ? 'autenticado' : 'não autenticado');
+            console.log('  ⚡ Supabase client:', window.supabaseClient ? 'pronto' : 'aguardando');
+
+            // Se Supabase não está pronto mas localStorage indica autenticado
+            // PERMITIR ACESSO temporariamente (evita race condition)
             if (!window.supabaseClient) {
-                console.warn('⚠️ Supabase client ainda não inicializado');
-                return checkLocalStorageFallback();
+                if (localAuth) {
+                    console.log('⏳ Supabase ainda carregando, usando localStorage temporariamente');
+                    return true; // ✅ Permitir acesso baseado em localStorage
+                } else {
+                    console.warn('⚠️ Supabase client ainda não inicializado E sem localStorage');
+                    return false;
+                }
             }
 
-            // Verificar sessão no Supabase
+            // Verificar sessão no Supabase (se cliente está pronto)
             const { data: { session }, error } = await window.supabaseClient.auth.getSession();
 
             if (error) {
                 console.error('❌ Erro ao verificar sessão:', error);
-                return checkLocalStorageFallback();
+                // FALLBACK: usar localStorage se houver erro no Supabase
+                return localAuth;
             }
 
             if (session && session.user) {
@@ -37,10 +52,21 @@
             }
 
             console.log('ℹ️ Sem sessão ativa no Supabase');
+
+            // Se Supabase não tem sessão mas localStorage indica autenticado
+            // Pode ser que sessão expirou mas login foi recente
+            if (localAuth) {
+                console.warn('⚠️ localStorage indica autenticado mas Supabase não tem sessão');
+                console.log('   Isso pode indicar sessão expirada ou em processo de criação');
+                // Permitir acesso temporariamente, onAuthStateChange vai corrigir depois
+                return true;
+            }
+
             return false;
 
         } catch (err) {
             console.error('❌ Erro inesperado ao verificar autenticação:', err);
+            // FALLBACK seguro: usar localStorage
             return checkLocalStorageFallback();
         }
     }
@@ -93,6 +119,7 @@
 
     /**
      * Protege páginas admin - redireciona se não autenticado
+     * CORREÇÃO: Adiciona recheck para evitar falsos negativos por race condition
      */
     async function protectAdminPage() {
         const currentPage = window.location.pathname;
@@ -115,25 +142,39 @@
             return; // NÃO FAZER NADA - deixar formulário de login lidar
         }
 
-        // Verificar autenticação
+        // Verificar autenticação (primeira tentativa)
         const authenticated = await isAuthenticated();
 
         if (!authenticated) {
-            console.warn('⚠️ Usuário NÃO autenticado');
+            console.warn('⚠️ Usuário NÃO autenticado (primeira verificação)');
             console.log('📊 LocalStorage:', {
                 admin_logged_in: localStorage.getItem('admin_logged_in'),
                 admin_email: localStorage.getItem('admin_email'),
                 admin_login_time: localStorage.getItem('admin_login_time')
             });
 
-            // Limpar dados e redirecionar
-            clearLocalStorage();
-            sessionStorage.clear();
+            // 🔄 CORREÇÃO: Aguardar e verificar novamente antes de redirecionar
+            // Isso evita race condition onde Supabase ainda está carregando
+            console.log('⏳ Aguardando 500ms para reconfirmar...');
+            await new Promise(resolve => setTimeout(resolve, 500));
 
-            console.log('🔀 Redirecionando para login...');
-            window.location.replace('login.html');
+            // Segunda verificação
+            const recheckAuth = await isAuthenticated();
+
+            if (!recheckAuth) {
+                console.warn('❌ Usuário NÃO autenticado (confirmado após recheck)');
+
+                // Agora sim, limpar dados e redirecionar
+                clearLocalStorage();
+                sessionStorage.clear();
+
+                console.log('🔀 Redirecionando para login...');
+                window.location.replace('login.html');
+            } else {
+                console.log('✅ Sessão confirmada após recheck - acesso autorizado');
+            }
         } else {
-            console.log('✅ Acesso autorizado');
+            console.log('✅ Acesso autorizado (primeira verificação)');
         }
     }
 
