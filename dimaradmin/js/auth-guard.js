@@ -181,7 +181,7 @@
 
                     // Redirecionar para login se não estiver na página de login
                     if (!window.location.pathname.includes('login.html')) {
-                        window.location.replace('login.html');
+                        window.location.replace('/dimaradmin/login.html');
                     }
                     break;
 
@@ -227,7 +227,7 @@
         sessionStorage.clear();
 
         // Redirecionar
-        window.location.replace('login.html');
+        window.location.replace('/dimaradmin/login.html');
     };
 
     // ==================== INFORMAÇÕES DO USUÁRIO ====================
