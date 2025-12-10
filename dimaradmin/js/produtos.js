@@ -51,6 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadProducts() {
     console.log('📥 Carregando produtos...');
 
+    // Mostrar skeleton loading na tabela
+    if (typeof showTableSkeleton === 'function') {
+        showTableSkeleton('productsTableBody', 8, 5);
+    }
+
     try {
         if (checkSupabaseConfig()) {
             console.log('🔌 Carregando do Supabase...');
@@ -72,7 +77,13 @@ async function loadProducts() {
         renderProducts();
     } catch (error) {
         console.error('❌ Erro ao carregar produtos:', error);
-        alert('Erro ao carregar produtos: ' + error.message);
+        if (typeof ToastManager !== 'undefined') {
+            ToastManager.error('Erro ao carregar produtos: ' + error.message);
+        } else {
+            alert('Erro ao carregar produtos: ' + error.message);
+        }
+        products = [];
+        renderProducts();
     }
 }
 
@@ -407,6 +418,11 @@ window.closeProductModal = function () {
 async function saveProduct() {
     console.log('💾 Salvando produto...');
 
+    // Mostrar loading
+    if (typeof LoadingManager !== 'undefined') {
+        LoadingManager.show(editingProductId ? 'Atualizando produto...' : 'Salvando produto...');
+    }
+
     const productData = {
         name: document.getElementById('productName').value,
         sku: document.getElementById('productSku').value,
@@ -457,16 +473,34 @@ async function saveProduct() {
             throw new Error('Supabase não configurado. Não é possível salvar produtos.');
         }
 
-        alert('✅ ' + (editingProductId ? 'Produto atualizado!' : 'Produto adicionado!'));
+        // Esconder loading
+        if (typeof LoadingManager !== 'undefined') {
+            LoadingManager.hide();
+        }
+
+        // Toast de sucesso
+        if (typeof ToastManager !== 'undefined') {
+            ToastManager.success(editingProductId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!');
+        }
+
         window.closeProductModal();
         await loadProducts();
 
     } catch (error) {
         console.error('❌ ERRO ao salvar:', error);
-        let errorMsg = '❌ Erro ao salvar produto:\n\n' + error.message;
-        if (error.code) errorMsg += '\n\nCódigo: ' + error.code;
-        if (error.hint) errorMsg += '\nDica: ' + error.hint;
-        alert(errorMsg);
+
+        // Esconder loading
+        if (typeof LoadingManager !== 'undefined') {
+            LoadingManager.hide();
+        }
+
+        // Toast de erro
+        let errorMsg = 'Erro ao salvar produto: ' + error.message;
+        if (typeof ToastManager !== 'undefined') {
+            ToastManager.error(errorMsg);
+        } else {
+            alert('❌ ' + errorMsg);
+        }
     }
 }
 

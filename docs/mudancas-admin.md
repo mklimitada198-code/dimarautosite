@@ -1,7 +1,8 @@
 # 🛠️ Mudanças no Admin - Dimar Auto Peças
 
-**Versão:** 1.0.0  
+**Versão:** 1.1.0  
 **Data Início:** 10/12/2024  
+**Última Atualização:** 10/12/2024 20:43  
 **Status:** 📝 Documento Vivo
 
 ---
@@ -44,10 +45,9 @@ dimaradmin/
 
 ### ADM-001: Corrigir Escape de Strings em produtos.js
 
-**Status:** 🟡 PENDENTE  
-**Prioridade:** 🔴 ALTA  
-**Arquivo:** `dimaradmin/js/produtos.js`  
-**Linhas:** 501-505, 555, 572-575
+**Status:** ✅ EXECUTADA  
+**Data Execução:** 10/12/2024  
+**Arquivo:** `dimaradmin/js/produtos.js`
 
 #### Problema
 Mensagens de confirmação e erro usam `\\n` (literal) em vez de `\n` (quebra de linha).
@@ -75,8 +75,8 @@ const confirmMessage = `⚠️ ATENÇÃO: Tem certeza...
 
 ### ADM-002: Remover Fallback localStorage
 
-**Status:** 🟡 PENDENTE  
-**Prioridade:** 🔴 ALTA  
+**Status:** ✅ EXECUTADA  
+**Data Execução:** 10/12/2024  
 **Arquivos:** 
 - `dimaradmin/js/categorias.js` (linha 383)
 - `dimaradmin/js/produtos.js` (linha 460)
@@ -112,9 +112,9 @@ Fallback para localStorage gera IDs incompatíveis com Supabase (UUID).
 
 ### ADM-003: Corrigir Contagens do Dashboard
 
-**Status:** 🟡 PENDENTE  
-**Prioridade:** 🟡 MÉDIA  
-**Arquivo:** `dimaradmin/index.html` ou `dimaradmin/js/dashboard.js`
+**Status:** ✅ EXECUTADA  
+**Data Execução:** 10/12/2024  
+**Arquivo:** `dimaradmin/js/dashboard.js`
 
 #### Problema
 Dashboard mostra "0 marcas" quando existem 7+ no banco.
@@ -170,9 +170,9 @@ async function loadDashboardStats() {
 
 ### ADM-004: Implementar Loading States
 
-**Status:** 🟡 PENDENTE  
-**Prioridade:** 🟡 MÉDIA  
-**Arquivos:** Todos os arquivos JS do admin
+**Status:** ✅ EXECUTADA  
+**Data Execução:** 10/12/2024  
+**Arquivos:** `dimaradmin/js/ui-components.js` (NOVO) + Todos os HTMLs
 
 #### Problema
 Não há feedback visual durante carregamento de dados.
@@ -195,6 +195,39 @@ function showTableLoading(tableId) {
 function hideTableLoading(tableId) {
     // Será substituído pelo render real
 }
+```
+
+### ADM-005: UI Components System (NOVO)
+
+**Status:** ✅ EXECUTADA  
+**Data Execução:** 10/12/2024  
+**Arquivo:** `dimaradmin/js/ui-components.js`
+
+#### Descrição
+Sistema centralizado de componentes UI para o admin:
+
+1. **LoadingManager** - Overlay de loading com spinner animado
+2. **ToastManager** - Notificações coloridas (success, error, warning, info)
+3. **showTableSkeleton** - Skeleton loading animado para tabelas
+
+#### Integração
+Adicionado em todas as 5 páginas do admin:
+- `index.html` (Dashboard)
+- `produtos.html`
+- `categorias.html`
+- `banners.html`
+- `marcas.html`
+
+#### Código de Exemplo
+```javascript
+// Mostrar loading
+LoadingManager.show('Salvando produto...');
+
+// Toast de sucesso
+ToastManager.success('Produto salvo com sucesso!');
+
+// Skeleton na tabela
+showTableSkeleton('productsTableBody', 8, 5);
 ```
 
 ---
@@ -336,5 +369,5 @@ window.showCustomAlert = showCustomAlert;
 
 ---
 
-**Última atualização:** 10/12/2024 20:10
+**Última atualização:** 10/12/2024 20:43
 
