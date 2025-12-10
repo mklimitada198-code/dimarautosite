@@ -2205,7 +2205,7 @@ ul {
     width: auto;
     max-width: 160px; /* Aumentado de 140px para 160px */
     object-fit: contain;
-    filter: grayscale(100%) opacity(0.6);
+    filter: grayscale(80%) opacity(0.85);
     transition: all 0.3s ease;
 }
 

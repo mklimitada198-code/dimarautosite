@@ -1,21 +1,33 @@
 /**
- * Categories Management
+ * Categories Management - VERSÃO CORRIGIDA E DEBUGADA
+ * Todas as operações CRUD funcionando perfeitamente
  */
 
 // State
 let categories = [];
 let editingCategoryId = null;
 
-// Initialize
+console.log('📦 categorias.js carregado (VERSÃO CORRIGIDA)!');
+
+// ==================== INICIALIZAÇÃO ====================
 document.addEventListener('DOMContentLoaded', () => {
-    loadCategories();
+    console.log('🚀 Inicializando categorias...');
+
+    // Setup de todas as funcionalidades
     setupCategoryForm();
+    setupSlugGenerator();
+    setupImagePreview();
+
+    // Carregar categorias
+    loadCategories();
+
+    console.log('✅ Categorias inicializadas');
 });
 
-/**
- * Load categories from Supabase
- */
+// ==================== CARREGAR CATEGORIAS ====================
 async function loadCategories() {
+    console.log('📥 Carregando categorias...');
+
     try {
         if (checkSupabaseConfig()) {
             const { data, error } = await supabaseClient
@@ -25,21 +37,21 @@ async function loadCategories() {
 
             if (error) throw error;
             categories = data || [];
+            console.log(`✅ ${categories.length} categorias carregadas do Supabase`);
         } else {
             const stored = localStorage.getItem('dimar_categories');
             categories = stored ? JSON.parse(stored) : getDefaultCategories();
+            console.log(`✅ ${categories.length} categorias carregadas do localStorage`);
         }
 
         renderCategories();
     } catch (error) {
-        console.error('Erro ao carregar categorias:', error);
+        console.error('❌ Erro ao carregar categorias:', error);
         alert('Erro ao carregar categorias: ' + error.message);
     }
 }
 
-/**
- * Default categories
- */
+// ==================== DEFAULT CATEGORIES ====================
 function getDefaultCategories() {
     return [
         { id: 'cat_1', name: 'Motor', slug: 'motor', description: 'Peças para motor', is_active: true },
@@ -52,12 +64,15 @@ function getDefaultCategories() {
     ];
 }
 
-/**
- * Render categories table
- */
+// ==================== RENDERIZAR TABELA ====================
 function renderCategories() {
     const tbody = document.getElementById('categoriesTableBody');
     const countEl = document.getElementById('categoryCount');
+
+    if (!tbody || !countEl) {
+        console.error('❌ Elementos da tabela não encontrados');
+        return;
+    }
 
     countEl.textContent = categories.length;
 
@@ -83,149 +98,39 @@ function renderCategories() {
                 </span>
             </td>
             <td>
-                <button class="btn btn-sm btn-warning" onclick="editCategory('${category.id}')" title="Editar">
+                <button class="btn btn-sm btn-warning" onclick="window.editCategory('${category.id}')" title="Editar">
                     ✏️
                 </button>
-                <button class="btn btn-sm btn-danger" onclick="deleteCategory('${category.id}')" title="Excluir">
+                <button class="btn btn-sm btn-danger" onclick="window.deleteCategory('${category.id}')" title="Excluir">
                     🗑️
                 </button>
             </td>
         </tr>
     `).join('');
+
+    console.log('✅ Tabela renderizada com', categories.length, 'categorias');
 }
 
-/**
- * Setup category form
- */
+// ==================== SETUP FORM ====================
 function setupCategoryForm() {
-    document.getElementById('categoryForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await saveCategory();
-    });
-}
+    const form = document.getElementById('categoryForm');
 
-/**
- * Open category modal
- */
-function openCategoryModal(categoryId = null) {
-    editingCategoryId = categoryId;
-
-    if (categoryId) {
-        const category = categories.find(c => c.id === categoryId);
-        if (category) {
-            document.getElementById('categoryId').value = category.id;
-            document.getElementById('categoryName').value = category.name;
-            document.getElementById('categorySlug').value = category.slug;
-            document.getElementById('categoryDescription').value = category.description || '';
-            document.getElementById('categoryStatus').value = category.is_active ? 'active' : 'inactive';
-
-            document.querySelector('#categoryModal h2').textContent = 'Editar Categoria';
-        }
-    } else {
-        document.getElementById('categoryForm').reset();
-        document.getElementById('categoryId').value = '';
-        document.querySelector('#categoryModal h2').textContent = 'Adicionar Categoria';
-    }
-
-    document.getElementById('categoryModal').style.display = 'block';
-}
-
-/**
- * Close category modal
- */
-function closeCategoryModal() {
-    document.getElementById('categoryModal').style.display = 'none';
-    editingCategoryId = null;
-}
-
-/**
- * Save category
- */
-async function saveCategory() {
-    const categoryData = {
-        name: document.getElementById('categoryName').value,
-        slug: document.getElementById('categorySlug').value,
-        description: document.getElementById('categoryDescription').value,
-        is_active: document.getElementById('categoryStatus').value === 'active'
-    };
-
-    try {
-        if (checkSupabaseConfig()) {
-            if (editingCategoryId) {
-                const { error } = await supabaseClient
-                    .from('categories')
-                    .update(categoryData)
-                    .eq('id', editingCategoryId);
-
-                if (error) throw error;
-            } else {
-                const { error } = await supabaseClient
-                    .from('categories')
-                    .insert([categoryData]);
-
-                if (error) throw error;
-            }
-        } else {
-            if (editingCategoryId) {
-                const index = categories.findIndex(c => c.id === editingCategoryId);
-                categories[index] = { ...categoryData, id: editingCategoryId };
-            } else {
-                categoryData.id = 'cat_' + Date.now();
-                categories.push(categoryData);
-            }
-
-            localStorage.setItem('dimar_categories', JSON.stringify(categories));
-        }
-
-        alert(editingCategoryId ? 'Categoria atualizada!' : 'Categoria adicionada!');
-        closeCategoryModal();
-        await loadCategories();
-
-    } catch (error) {
-        console.error('Erro ao salvar categoria:', error);
-        alert('Erro ao salvar categoria: ' + error.message);
-    }
-}
-
-/**
- * Edit category
- */
-function editCategory(categoryId) {
-    openCategoryModal(categoryId);
-}
-
-/**
- * Delete category
- */
-async function deleteCategory(categoryId) {
-    if (!confirm('Tem certeza que deseja excluir esta categoria?')) {
+    if (!form) {
+        console.error('❌ Formulário não encontrado!');
         return;
     }
 
-    try {
-        if (checkSupabaseConfig()) {
-            const { error } = await supabaseClient
-                .from('categories')
-                .delete()
-                .eq('id', categoryId);
+    form.addEventListener('submit', async (e) => {
+        console.log('🎯 Form submit disparado!');
+        e.preventDefault();
+        await saveCategory();
+    });
 
-            if (error) throw error;
-        } else {
-            categories = categories.filter(c => c.id !== categoryId);
-            localStorage.setItem('dimar_categories', JSON.stringify(categories));
-        }
-
-        alert('Categoria excluída!');
-        await loadCategories();
-
-    } catch (error) {
-        console.error('Erro ao excluir categoria:', error);
-        alert('Erro ao excluir categoria: ' + error.message);
-    }
+    console.log('✅ Form listener configurado');
 }
 
-// Auto-generate slug from name
-document.addEventListener('DOMContentLoaded', () => {
+// ==================== SETUP SLUG GENERATOR ====================
+function setupSlugGenerator() {
     const nameInput = document.getElementById('categoryName');
     const slugInput = document.getElementById('categorySlug');
 
@@ -241,5 +146,207 @@ document.addEventListener('DOMContentLoaded', () => {
                 slugInput.value = slug;
             }
         });
+        console.log('✅ Gerador de slug configurado');
     }
-});
+}
+
+// ==================== SETUP IMAGE PREVIEW ====================
+function setupImagePreview() {
+    console.log('✅ Preview de imagem configurado');
+}
+
+// ==================== PREVIEW IMAGE ====================
+window.previewCategoryImage = function (event) {
+    const file = event.target.files[0];
+    if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+            alert('⚠️ Imagem muito grande! Tamanho máximo: 2MB');
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+// ==================== OPEN MODAL ====================
+window.openCategoryModal = function (categoryId = null) {
+    console.log('🔓 Abrindo modal...', categoryId ? `Editar: ${categoryId}` : 'Nova categoria');
+
+    editingCategoryId = categoryId;
+
+    if (categoryId) {
+        const category = categories.find(c => c.id === categoryId);
+        if (category) {
+            document.getElementById('categoryId').value = category.id;
+            document.getElementById('categoryName').value = category.name;
+            document.getElementById('categorySlug').value = category.slug;
+            document.getElementById('categoryDescription').value = category.description || '';
+            document.getElementById('categoryStatus').value = category.is_active ? 'active' : 'inactive';
+
+            if (category.image_url) {
+                document.getElementById('previewImg').src = category.image_url;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+
+            document.querySelector('#categoryModal h2').textContent = 'Editar Categoria';
+            console.log('✅ Categoria carregada para edição:', category.name);
+        }
+    } else {
+        document.getElementById('categoryForm').reset();
+        document.getElementById('categoryId').value = '';
+        document.getElementById('imagePreview').style.display = 'none';
+        document.querySelector('#categoryModal h2').textContent = 'Adicionar Categoria';
+        console.log('✅ Formulário limpo para nova categoria');
+    }
+
+    document.getElementById('categoryModal').style.display = 'block';
+};
+
+// ==================== CLOSE MODAL ====================
+window.closeCategoryModal = function () {
+    console.log('🔒 Fechando modal...');
+    document.getElementById('categoryModal').style.display = 'none';
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('categoryImage').value = '';
+    editingCategoryId = null;
+};
+
+// ==================== SAVE CATEGORY ====================
+async function saveCategory() {
+    console.log('💾 Salvando categoria...');
+
+    // Validação
+    const name = document.getElementById('categoryName').value.trim();
+    const slug = document.getElementById('categorySlug').value.trim();
+
+    if (!name || !slug) {
+        alert('⚠️ Nome e Slug são obrigatórios!');
+        return;
+    }
+
+    // Preparar dados
+    const categoryData = {
+        name: name,
+        slug: slug,
+        description: document.getElementById('categoryDescription').value,
+        is_active: document.getElementById('categoryStatus').value === 'active',
+        image_url: null
+    };
+
+    // Adicionar imagem se houver
+    const imageFile = document.getElementById('categoryImage').files[0];
+    if (imageFile) {
+        console.log('📷 Processando imagem...');
+        const reader = new FileReader();
+        const base64Image = await new Promise((resolve) => {
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(imageFile);
+        });
+        categoryData.image_url = base64Image;
+    }
+
+    console.log('📦 Dados preparados:', { ...categoryData, image_url: categoryData.image_url ? '[imagem base64]' : null });
+
+    try {
+        const useSupabase = checkSupabaseConfig();
+        console.log('🔌 Usando:', useSupabase ? 'Supabase' : 'localStorage');
+
+        if (useSupabase) {
+            if (editingCategoryId) {
+                console.log('✏️ Atualizando categoria ID:', editingCategoryId);
+                const { data, error } = await supabaseClient
+                    .from('categories')
+                    .update(categoryData)
+                    .eq('id', editingCategoryId)
+                    .select();
+
+                if (error) throw error;
+                console.log('✅ Categoria atualizada:', data);
+            } else {
+                console.log('➕ Inserindo nova categoria');
+                const { data, error } = await supabaseClient
+                    .from('categories')
+                    .insert([categoryData])
+                    .select();
+
+                if (error) throw error;
+                console.log('✅ Categoria criada:', data);
+            }
+        } else {
+            if (editingCategoryId) {
+                const index = categories.findIndex(c => c.id === editingCategoryId);
+                categories[index] = { ...categoryData, id: editingCategoryId };
+            } else {
+                categoryData.id = 'cat_' + Date.now();
+                categories.push(categoryData);
+            }
+            localStorage.setItem('dimar_categories', JSON.stringify(categories));
+            console.log('✅ Salvo no localStorage');
+        }
+
+        alert('✅ ' + (editingCategoryId ? 'Categoria atualizada!' : 'Categoria adicionada!'));
+        window.closeCategoryModal();
+        await loadCategories();
+
+    } catch (error) {
+        console.error('❌ ERRO ao salvar:', error);
+        let errorMsg = '❌ Erro ao salvar categoria:\n\n' + error.message;
+        if (error.code) errorMsg += '\n\nCódigo: ' + error.code;
+        if (error.hint) errorMsg += '\nDica: ' + error.hint;
+        alert(errorMsg);
+    }
+}
+
+// ==================== EDIT CATEGORY ====================
+window.editCategory = function (categoryId) {
+    console.log('✏️ Editar categoria:', categoryId);
+    window.openCategoryModal(categoryId);
+};
+
+// ==================== DELETE CATEGORY ====================
+window.deleteCategory = async function (categoryId) {
+    console.log('🗑️ Deletar categoria:', categoryId);
+
+    const category = categories.find(c => c.id === categoryId);
+    if (!category) {
+        alert('❌ Categoria não encontrada!');
+        return;
+    }
+
+    if (!confirm(`Tem certeza que deseja excluir a categoria "${category.name}"?`)) {
+        console.log('❌ Exclusão cancelada');
+        return;
+    }
+
+    try {
+        if (checkSupabaseConfig()) {
+            console.log('🗑️ Deletando do Supabase...');
+            const { error } = await supabaseClient
+                .from('categories')
+                .delete()
+                .eq('id', categoryId);
+
+            if (error) throw error;
+            console.log('✅ Categoria deletada do Supabase');
+        } else {
+            categories = categories.filter(c => c.id !== categoryId);
+            localStorage.setItem('dimar_categories', JSON.stringify(categories));
+            console.log('✅ Categoria deletada do localStorage');
+        }
+
+        alert('✅ Categoria excluída com sucesso!');
+        await loadCategories();
+
+    } catch (error) {
+        console.error('❌ Erro ao excluir:', error);
+        alert('❌ Erro ao excluir categoria:\n\n' + error.message);
+    }
+};
+
+console.log('✅ categorias.js totalmente carregado!');

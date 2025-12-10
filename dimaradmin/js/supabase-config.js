@@ -116,7 +116,9 @@
     // ==================== HELPER FUNCTIONS ====================
 
     function checkSupabaseConfig() {
-        return supabase !== null;
+        const isConfigured = window.supabaseClient !== null && window.supabaseClient !== undefined;
+        console.log('🔍 checkSupabaseConfig chamado:', isConfigured ? 'CONECTADO' : 'NÃO CONECTADO');
+        return isConfigured;
     }
 
     // Export global

@@ -393,10 +393,12 @@
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
-    <script src="js/produtos.js"></script>
 
-    <!-- Auth Guard - Proteção de Rota -->
+    <!-- Auth Guard - DEVE carregar ANTES de produtos.js -->
     <script src="js/auth-guard.js"></script>
+
+    <!-- produtos.js - AGORA carrega DEPOIS do Supabase estar pronto -->
+    <script src="js/produtos.js"></script>
 
     <script>
         // Toggle sidebar
