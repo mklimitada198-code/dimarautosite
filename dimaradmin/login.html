@@ -115,8 +115,24 @@
 
             // ==================== LOGIN HANDLER ====================
 
+            // LOG IMEDIATO para confirmar que script está rodando
+            console.log('📝 Configurando event listener do formulário...');
+            console.log('   loginForm element:', loginForm);
+            console.log('   É nulo?', loginForm === null);
+
+            if (!loginForm) {
+                console.error('❌ ERRO CRÍTICO: Formulário #loginForm não encontrado!');
+                console.error('   O código pode estar rodando antes do DOM carregar');
+                return;
+            }
+
+            console.log('✅ Formulário encontrado! Adicionando event listener...');
+
             loginForm.addEventListener('submit', async function (e) {
                 e.preventDefault();
+
+                console.log('🎯 EVENTO SUBMIT DISPARADO!');
+                console.log('   Este log confirma que o formulário foi submetido');
 
                 const email = emailInput.value.trim();
                 const password = passwordInput.value.trim();
