@@ -170,10 +170,19 @@
                             refreshToken: !!data.session.refresh_token
                         });
 
-                        // Manter compatibilidade com localStorage (período de transição)
+                        // Manter compatibilidade com localStorage
                         localStorage.setItem('admin_logged_in', 'true');
                         localStorage.setItem('admin_email', data.user.email);
                         localStorage.setItem('admin_login_time', new Date().toISOString());
+
+                        // CORREÇÃO: Flag para auth-guard detectar login recente
+                        localStorage.setItem('admin_just_logged_in', 'true');
+
+                        console.log('💾 LocalStorage atualizado:', {
+                            logged_in: localStorage.getItem('admin_logged_in'),
+                            email: localStorage.getItem('admin_email'),
+                            just_logged_in: localStorage.getItem('admin_just_logged_in')
+                        });
 
                         showSuccess('Login realizado com sucesso! Redirecionando...');
 
@@ -186,9 +195,42 @@
                             });
                         }, 100);
 
+                        // CORREÇÃO: Redirect com failsafe
+                        let redirectAttempts = 0;
+                        const maxAttempts = 3;
+
+                        function executeRedirect() {
+                            redirectAttempts++;
+                            console.log(`🚀 TENTATIVA ${redirectAttempts} DE REDIRECT`);
+                            console.log('   Destino: ./index.html');
+                            console.log('   Timestamp:', new Date().toISOString());
+
+                            try {
+                                window.location.replace('./index.html');
+                                console.log('✅ window.location.replace() executado');
+                            } catch (err) {
+                                console.error('❌ Erro no replace:', err);
+                                if (redirectAttempts < maxAttempts) {
+                                    console.log(`⏰ Tentando novamente em 500ms...`);
+                                    setTimeout(executeRedirect, 500);
+                                } else {
+                                    console.log('📍 Tentando window.location.href como último recurso');
+                                    window.location.href = './index.html';
+                                }
+                            }
+                        }
+
+                        // Executar redirect após 1s
+                        setTimeout(executeRedirect, 1000);
+
+                        // Failsafe: se ainda estiver aqui após 3s
                         setTimeout(() => {
-                            window.location.replace('./index.html');
-                        }, 1000);
+                            if (window.location.pathname.includes('login')) {
+                                console.warn('⚠️ AINDA NA PÁGINA DE LOGIN APÓS 3S!');
+                                console.warn('   Forçando redirect novamente...');
+                                window.location.href = './index.html';
+                            }
+                        }, 3000);
                     } else {
                         showError('Erro inesperado: sessão não foi criada');
                         setLoading(false);
