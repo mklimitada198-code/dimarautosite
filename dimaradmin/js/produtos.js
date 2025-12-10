@@ -106,7 +106,7 @@ function renderProducts(filteredProducts = null) {
             : null;
 
         return `
-        <tr>
+        <tr data-product-id="${product.id}" data-product-name="${product.name}" data-product-sku="${product.sku}" data-product-price="${product.price}">
             <td>
                 ${imageUrl
                 ? `<img src="${imageUrl}" class="product-image-preview" alt="${product.name}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">`
@@ -129,18 +129,72 @@ function renderProducts(filteredProducts = null) {
                     ${product.status === 'active' ? 'Ativo' : 'Inativo'}
                 </span>
             </td>
-            <td>
-                <button class="btn btn-sm btn-warning" onclick="window.editProduct('${product.id}')" title="Editar">
-                    ✏️
+            <td style="white-space: nowrap;">
+                <button
+                    class="btn btn-sm btn-warning edit-product-btn"
+                    data-product-id="${product.id}"
+                    title="Editar produto"
+                    style="margin-right: 4px; min-width: 38px; transition: all 0.2s;"
+                    onmouseover="this.style.transform='scale(1.05)'"
+                    onmouseout="this.style.transform='scale(1)'"
+                >
+                    ✏️ Editar
                 </button>
-                <button class="btn btn-sm btn-danger" onclick="window.deleteProduct('${product.id}')" title="Excluir">
-                    🗑️
+                <button
+                    class="btn btn-sm btn-danger delete-product-btn"
+                    data-product-id="${product.id}"
+                    title="Excluir produto permanentemente"
+                    style="min-width: 38px; transition: all 0.2s;"
+                    onmouseover="this.style.transform='scale(1.05)'; this.style.backgroundColor='#c0392b'"
+                    onmouseout="this.style.transform='scale(1)'; this.style.backgroundColor=''"
+                >
+                    🗑️ Excluir
                 </button>
             </td>
         </tr>
     `}).join('');
 
     console.log('✅ Tabela renderizada com', productsToRender.length, 'produtos');
+
+    // Setup event listeners for action buttons after rendering
+    setupActionButtons();
+}
+
+// ==================== SETUP ACTION BUTTONS ====================
+function setupActionButtons() {
+    const tbody = document.getElementById('productsTableBody');
+    if (!tbody) return;
+
+    // Remove existing listeners to avoid duplicates
+    const existingClone = tbody.cloneNode(true);
+    tbody.parentNode.replaceChild(existingClone, tbody);
+    const newTbody = document.getElementById('productsTableBody');
+
+    // Event delegation for Edit buttons
+    newTbody.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.edit-product-btn');
+        if (editBtn) {
+            e.preventDefault();
+            const productId = editBtn.dataset.productId;
+            console.log('✏️ Botão EDITAR clicado!', productId);
+            window.editProduct(productId);
+        }
+    });
+
+    // Event delegation for Delete buttons
+    newTbody.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-product-btn');
+        if (deleteBtn) {
+            e.preventDefault();
+            const productId = deleteBtn.dataset.productId;
+            const row = deleteBtn.closest('tr');
+            const productName = row.dataset.productName;
+            console.log('🗑️ Botão EXCLUIR clicado!', productId, productName);
+            window.deleteProduct(productId, productName);
+        }
+    });
+
+    console.log('✅ Event listeners dos botões configurados');
 }
 
 // ==================== SETUP IMAGE UPLOAD ====================
@@ -432,21 +486,45 @@ window.editProduct = function (productId) {
 };
 
 // ==================== DELETE PRODUCT ====================
-window.deleteProduct = async function (productId) {
-    console.log('🗑️ Deletar produto:', productId);
+window.deleteProduct = async function (productId, productName) {
+    console.log('🗑️ Deletar produto:', productId, productName);
 
     const product = products.find(p => p.id === productId);
+
     if (!product) {
-        alert('❌ Produto não encontrado!');
+        console.error('❌ ERRO: Produto não encontrado!');
+        showCustomAlert('Erro', '❌ Produto não encontrado!\\n\\nO produto pode ter sido excluído ou não está carregado.');
         return;
     }
 
-    if (!confirm(`Tem certeza que deseja excluir o produto "${product.name}"?`)) {
-        console.log('❌ Exclusão cancelada');
+    // Mensagem de confirmação melhorada
+    const confirmMessage = `⚠️ ATENÇÃO: Tem certeza que deseja EXCLUIR este produto?\\n\\n` +
+        `📦 Produto: ${productName}\\n` +
+        `🏷️ SKU: ${product.sku}\\n` +
+        `💰 Preço: R$ ${product.price.toFixed(2)}\\n\\n` +
+        `Esta ação NÃO PODE ser desfeita!`;
+
+    console.log('💬 Mostrando modal de confirmação customizado...');
+
+    // Usar modal customizado em vez de confirm() para evitar bloqueadores
+    const userConfirmed = await showCustomConfirm('Confirmar Exclusão', confirmMessage);
+    console.log('✅ Resposta do usuário:', userConfirmed ? 'CONFIRMOU' : 'CANCELOU');
+
+    if (!userConfirmed) {
+        console.log('❌ Exclusão cancelada pelo usuário');
         return;
+    }
+
+    // Encontrar a linha do produto para feedback visual
+    const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+    if (row) {
+        row.style.opacity = '0.5';
+        row.style.pointerEvents = 'none';
     }
 
     try {
+        console.log('🔄 Processando exclusão...');
+
         if (checkSupabaseConfig()) {
             console.log('🗑️ Deletando do Supabase...');
             const { error } = await supabaseClient
@@ -457,19 +535,148 @@ window.deleteProduct = async function (productId) {
             if (error) throw error;
             console.log('✅ Produto deletado do Supabase');
         } else {
+            console.log('💾 Deletando do localStorage...');
             products = products.filter(p => p.id !== productId);
             localStorage.setItem('dimar_products', JSON.stringify(products));
             console.log('✅ Produto deletado do localStorage');
         }
 
-        alert('✅ Produto excluído com sucesso!');
-        await loadProducts();
+        // Animação de remoção
+        if (row) {
+            row.style.backgroundColor = '#2ecc71';
+            setTimeout(() => {
+                row.style.transition = 'all 0.3s';
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-100%)';
+            }, 300);
+        }
+
+        setTimeout(async () => {
+            showCustomAlert('Sucesso', '✅ Produto excluído com sucesso!\\n\\nO produto foi removido do sistema.');
+            await loadProducts();
+        }, 600);
 
     } catch (error) {
-        console.error('❌ Erro ao excluir:', error);
-        alert('❌ Erro ao excluir produto:\n\n' + error.message);
+        console.error('❌ ERRO ao excluir produto:', error);
+
+        // Restaurar visual se falhou
+        if (row) {
+            row.style.opacity = '1';
+            row.style.pointerEvents = 'auto';
+            row.style.backgroundColor = '#e74c3c';
+            setTimeout(() => {
+                row.style.backgroundColor = '';
+            }, 2000);
+        }
+
+        let errorMsg = '❌ ERRO ao excluir produto!\\n\\n' + error.message;
+        if (error.code) errorMsg += '\\n\\nCódigo: ' + error.code;
+        if (error.hint) errorMsg += '\\nDica: ' + error.hint;
+        errorMsg += '\\n\\nO produto NÃO foi excluído.';
+
+        showCustomAlert('Erro', errorMsg);
     }
 };
+
+// ==================== CUSTOM MODAL DIALOGS ====================
+function showCustomConfirm(title, message) {
+    return new Promise((resolve) => {
+        // Remove existing modal if any
+        const existing = document.getElementById('customConfirmModal');
+        if (existing) existing.remove();
+
+        // Create modal
+        const modal = document.createElement('div');
+        modal.id = 'customConfirmModal';
+        modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;';
+
+        modal.innerHTML = `
+            <div style="background: white; border-radius: 16px; padding: 30px; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <h2 style="margin: 0 0 20px 0; color: #e74c3c; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 32px;">⚠️</span>
+                    ${title}
+                </h2>
+                <div style="white-space: pre-wrap; line-height: 1.6; color: #2c3e50; margin-bottom: 30px; font-size: 16px;">
+                    ${message}
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button id="confirmCancel" style="padding: 12px 24px; border: 2px solid #95a5a6; background: white; color: #2c3e50; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                        Cancelar
+                    </button>
+                    <button id="confirmOk" style="padding: 12px 24px; border: none; background: #e74c3c; color: white; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                        Sim, Excluir
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Event listeners
+        document.getElementById('confirmOk').onclick = () => {
+            modal.remove();
+            resolve(true);
+        };
+
+        document.getElementById('confirmCancel').onclick = () => {
+            modal.remove();
+            resolve(false);
+        };
+
+        // Close on backdrop click
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.remove();
+                resolve(false);
+            }
+        };
+
+        // Focus OK button
+        setTimeout(() => document.getElementById('confirmOk').focus(), 100);
+    });
+}
+
+function showCustomAlert(title, message) {
+    // Remove existing modal if any
+    const existing = document.getElementById('customAlertModal');
+    if (existing) existing.remove();
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.id = 'customAlertModal';
+    modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;';
+
+    const icon = title.includes('Sucesso') ? '✅' : title.includes('Erro') ? '❌' : 'ℹ️';
+    const color = title.includes('Sucesso') ? '#2ecc71' : title.includes('Erro') ? '#e74c3c' : '#3498db';
+
+    modal.innerHTML = `
+        <div style="background: white; border-radius: 16px; padding: 30px; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h2 style="margin:  0 0 20px 0; color: ${color}; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 32px;">${icon}</span>
+                ${title}
+            </h2>
+            <div style="white-space: pre-wrap; line-height: 1.6; color: #2c3e50; margin-bottom: 30px; font-size: 16px;">
+                ${message}
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button id="alertOk" style="padding: 12px 32px; border: none; background: ${color}; color: white; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                    OK
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Event listener
+    document.getElementById('alertOk').onclick = () => modal.remove();
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+
+    // Focus OK button
+    setTimeout(() => document.getElementById('alertOk').focus(), 100);
+}
 
 // ==================== HELPER FUNCTIONS ====================
 function formatCategory(category) {

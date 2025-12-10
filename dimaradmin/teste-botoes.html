@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Botões - Produtos Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .log {
+            background: #2c3e50;
+            color: #2ecc71;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>🧪 Teste de Botões - Produtos Admin</h2>
+        <p>Este teste verifica se os botões de ação estão funcionando corretamente.</p>
+    </div>
+
+    <div class="card">
+        <h3>Tabela de Teste</h3>
+        <table id="testTable" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #34495e; color: white;">
+                    <th style="padding: 10px; text-align: left;">Produto</th>
+                    <th style="padding: 10px; text-align: left;">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="testTableBody">
+                <!-- Will be filled by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Console de Logs</h3>
+        <div class="log" id="logConsole"></div>
+    </div>
+
+    <script>
+        // Mock functions
+        window.editProduct = function (id) {
+            log('✅ editProduct CHAMADO com ID: ' + id, 'success');
+            alert('✅ Função editProduct funcionando!\\nID: ' + id);
+        };
+
+        window.deleteProduct = function (id, name) {
+            log('✅ deleteProduct CHAMADO com ID: ' + id + ', Nome: ' + name, 'success');
+            alert('✅ Função deleteProduct funcionando!\\nID: ' + id + '\\nNome: ' + name);
+        };
+
+        // Log function
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('logConsole');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'success' ? '#2ecc71' : type === 'error' ? '#e74c3c' : '#3498db';
+            logDiv.innerHTML += `<div style="color: ${color}; margin-bottom: 5px;">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // Test products data
+        const testProducts = [
+            { id: 'prod-1', name: 'Produto Teste 1' },
+            { id: 'prod-2', name: 'Produto com Aspas \\'Simples\\'' },
+            { id: 'prod-3', name: 'Produto com "Aspas Duplas"' }
+        ];
+
+        // Render test table
+        function renderTestTable() {
+            const tbody = document.getElementById('testTableBody');
+
+            tbody.innerHTML = testProducts.map(product => `
+                <tr data-product-id="${product.id}" data-product-name="${product.name}" style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 10px;"><strong>${product.name}</strong></td>
+                    <td style="padding: 10px; white-space: nowrap;">
+                        <button
+                            class="btn btn-warning edit-product-btn"
+                            data-product-id="${product.id}"
+                            style="margin-right: 8px;"
+                        >
+                            ✏️ Editar
+                        </button>
+                        <button
+                            class="btn btn-danger delete-product-btn"
+                            data-product-id="${product.id}"
+                        >
+                            🗑️ Excluir
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            log('📦 Tabela renderizada com ' + testProducts.length + ' produtos', 'info');
+            setupActionButtons();
+        }
+
+        // Setup action buttons (MESMA LÓGICA DO produtos.js)
+        function setupActionButtons() {
+            const tbody = document.getElementById('testTableBody');
+            if (!tbody) {
+                log('❌ tbody não encontrado!', 'error');
+                return;
+            }
+
+            log('🔧 Configurando event listeners...', 'info');
+
+            // Event delegation for Edit buttons
+            tbody.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-product-btn');
+                if (editBtn) {
+                    e.preventDefault();
+                    const productId = editBtn.dataset.productId;
+                    log('✏️ Botão EDITAR clicado! ID: ' + productId, 'info');
+                    window.editProduct(productId);
+                }
+            });
+
+            // Event delegation for Delete buttons
+            tbody.addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-product-btn');
+                if (deleteBtn) {
+                    e.preventDefault();
+                    const productId = deleteBtn.dataset.productId;
+                    const row = deleteBtn.closest('tr');
+                    const productName = row.dataset.productName;
+                    log('🗑️ Botão EXCLUIR clicado! ID: ' + productId + ', Nome: ' + productName, 'info');
+                    window.deleteProduct(productId, productName);
+                }
+            });
+
+            log('✅ Event listeners configurados com sucesso!', 'success');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Iniciando teste de botões...', 'info');
+            renderTestTable();
+        });
+    </script>
+</body>
+
+</html>
