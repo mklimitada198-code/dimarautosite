@@ -218,7 +218,7 @@
                 </div>
             </div>
             <div class="product-button-space">
-                <button class="product-buy-button" onclick="addToCartFromHome('${product.id}')">
+                <button class="product-buy-button" onclick="addToCartFromHome('${product.id}', event)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -231,7 +231,35 @@
     }
 
     // ==================== ADICIONAR AO CARRINHO ====================
-    window.addToCartFromHome = function (productId) {
+    window.addToCartFromHome = function (productId, event) {
+        // Capturar o botão clicado
+        const button = event ? event.target.closest('.product-buy-button') : null;
+
+        // Função para mostrar feedback visual no botão
+        function showAddedFeedback(btn) {
+            if (!btn) return;
+
+            const originalHTML = btn.innerHTML;
+            const originalBg = btn.style.background;
+
+            // Mudar para estado "Adicionado"
+            btn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 13L9 17L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Adicionado!
+            `;
+            btn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+            btn.style.pointerEvents = 'none';
+
+            // Voltar ao normal após 2 segundos
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.background = originalBg;
+                btn.style.pointerEvents = '';
+            }, 2000);
+        }
+
         if (typeof window.cart !== 'undefined' && window.cart.addItem) {
             // Buscar produto completo
             if (window.supabaseClient) {
@@ -250,11 +278,17 @@
                                 quantity: 1
                             };
                             window.cart.addItem(cartItem);
+                            showAddedFeedback(button);
                         }
                     });
+            } else {
+                // Fallback: mostrar feedback mesmo sem Supabase
+                showAddedFeedback(button);
             }
         } else {
             log.warn('⚠️ Sistema de carrinho não disponível');
+            // Ainda mostrar feedback visual
+            showAddedFeedback(button);
         }
     };
 
@@ -374,6 +408,19 @@
         }
     }
 
+    // ==================== MAPEAMENTO DE IMAGENS CONHECIDAS ====================
+    const KNOWN_BRAND_IMAGES = {
+        'bosch': 'assets/images/bosch.png',
+        'ngk': 'assets/images/ngk.png',
+        'toyota': 'assets/images/toyota.png',
+        'fiat': 'assets/images/fiat.png',
+        'hyundai': 'assets/images/hyundai.png',
+        'ford': 'assets/images/ford.png',
+        'tete': 'assets/images/tete.png',
+        'mobil': 'assets/images/mobil.png',
+        'dayco': 'assets/images/dayco.png'
+    };
+
     // ==================== RENDERIZAR MARCAS ====================
     function renderBrands(brands) {
         const carouselsLeft = document.querySelectorAll('.brands-carousel-left');
@@ -384,28 +431,31 @@
             return;
         }
 
+        // Filtrar APENAS marcas que têm imagens conhecidas no mapa
+        // Isso evita erros 404 para marcas como gates.png, nakata.png que não existem
+        const validBrands = brands.filter(brand => {
+            const brandSlug = brand.name ? brand.name.toLowerCase().replace(/\s+/g, '') : '';
+            return !!KNOWN_BRAND_IMAGES[brandSlug];
+        });
+
+        log.info(`📦 ${validBrands.length}/${brands.length} marcas com imagens válidas`);
+
+        // Se poucas marcas válidas (menos de 5), manter HTML estático que já funciona
+        if (validBrands.length < 5) {
+            log.warn(`⚠️ Apenas ${validBrands.length} marcas válidas, mantendo HTML estático`);
+            return;
+        }
+
         // Criar HTML das marcas (3 sets para looping infinito)
-        // Compatibilidade: usar logo_url OU image_url, corrigir paths relativos
-        const brandsHTML = brands.map(brand => {
-            let logoUrl = brand.logo_url || brand.image_url || '';
-
-            // Corrigir URLs relativas do admin (começam com '../')
-            if (logoUrl.startsWith('../')) {
-                logoUrl = logoUrl.replace('../', '');
-            }
-
-            // Se ainda não tem URL válida, usar fallback baseado no nome da marca
+        // Agora usa SEMPRE a imagem do mapa, ignora logo_url do banco
+        const brandsHTML = validBrands.map(brand => {
             const brandSlug = brand.name ? brand.name.toLowerCase().replace(/\s+/g, '') : 'brand';
-            const fallback = `assets/images/${brandSlug}.png`;
-
-            // Se logo_url está vazio ou é inválido, usar o fallback
-            if (!logoUrl || logoUrl === 'undefined' || logoUrl === 'null') {
-                logoUrl = fallback;
-            }
+            // Usar SEMPRE a imagem conhecida do mapa
+            const logoUrl = KNOWN_BRAND_IMAGES[brandSlug] || 'assets/images/bosch.png';
 
             return `
             <div class="brand-item">
-                <img src="${logoUrl}" alt="${brand.name}" onerror="this.onerror=null; this.src='assets/images/bosch.png';">
+                <img src="${logoUrl}" alt="${brand.name}">
             </div>
         `;
         }).join('');

@@ -14,6 +14,15 @@ function isValidUUID(uuid) {
     return UUID_REGEX.test(uuid);
 }
 
+// Gerar UUID v4 válido
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 function validateCategoryID(id, operation) {
     if (!isValidUUID(id)) {
         const error = `❌ ID inválido para ${operation}!\n\n` +
@@ -67,9 +76,24 @@ async function loadCategories() {
 
             console.log(`✅ ${categories.length} categorias carregadas do Supabase (todas com UUID válido)`);
         } else {
-            // ❌ SEM FALLBACK - Supabase é obrigatório
-            console.error('❌ Supabase não configurado!');
-            throw new Error('Sistema não configurado. Supabase é obrigatório.');
+            // ✅ FALLBACK: Usar localStorage com UUIDs válidos
+            console.warn('⚠️ Supabase não disponível, usando localStorage...');
+            const stored = localStorage.getItem('dimar_categories');
+            if (stored) {
+                categories = JSON.parse(stored);
+                // Validar e corrigir IDs inválidos
+                categories = categories.map(cat => {
+                    if (!isValidUUID(cat.id)) {
+                        console.warn(`⚠️ Corrigindo ID inválido para categoria ${cat.name}`);
+                        return { ...cat, id: generateUUID() };
+                    }
+                    return cat;
+                });
+                localStorage.setItem('dimar_categories', JSON.stringify(categories));
+            } else {
+                categories = getDefaultCategories();
+            }
+            console.log(`✅ ${categories.length} categorias carregadas do localStorage`);
         }
 
         renderCategories();
@@ -88,24 +112,18 @@ async function loadCategories() {
     }
 }
 
-/*
-// ==================== DEFAULT CATEGORIES (DEPRECATED) ====================
-// ❌ NÃO MAIS USADO - Supabase é obrigatório
-// Esta função gerava IDs inválidos tipo "cat_1" que causavam erros UUID
-// Mantido comentado apenas para referência histórica
-
-function getDefaultCategories_DEPRECATED() {
+// ==================== DEFAULT CATEGORIES (COM UUIDs VÁLIDOS) ====================
+function getDefaultCategories() {
     return [
-        { id: 'cat_1', name: 'Motor', slug: 'motor', description: 'Peças para motor', is_active: true },
-        { id: 'cat_2', name: 'Freios', slug: 'freios', description: 'Sistemas de freio', is_active: true },
-        { id: 'cat_3', name: 'Suspensão', slug: 'suspensao', description: 'Peças de suspensão', is_active: true },
-        { id:cat_4', name: 'Elétrica', slug: 'eletrica', description: 'Componentes elétricos', is_active: true },
-        { id: 'cat_5', name: 'Filtros', slug: 'filtros', description: 'Filtros automotivos', is_active: true },
-        { id: 'cat_6', name: 'Iluminação', slug: 'iluminacao', description: 'Lâmpadas e faróis', is_active: true },
-        { id: 'cat_7', name: 'Acessórios', slug: 'acessorios', description: 'Acessórios diversos', is_active: true }
+        { id: generateUUID(), name: 'Motor', slug: 'motor', description: 'Peças para motor', is_active: true },
+        { id: generateUUID(), name: 'Freios', slug: 'freios', description: 'Sistemas de freio', is_active: true },
+        { id: generateUUID(), name: 'Suspensão', slug: 'suspensao', description: 'Peças de suspensão', is_active: true },
+        { id: generateUUID(), name: 'Elétrica', slug: 'eletrica', description: 'Componentes elétricos', is_active: true },
+        { id: generateUUID(), name: 'Filtros', slug: 'filtros', description: 'Filtros automotivos', is_active: true },
+        { id: generateUUID(), name: 'Iluminação', slug: 'iluminacao', description: 'Lâmpadas e faróis', is_active: true },
+        { id: generateUUID(), name: 'Acessórios', slug: 'acessorios', description: 'Acessórios diversos', is_active: true }
     ];
 }
-*/
 
 // ==================== RENDERIZAR TABELA ====================
 function renderCategories() {
@@ -375,10 +393,18 @@ async function saveCategory() {
                 console.log('✅ Categoria criada com UUID:', data);
             }
         } else {
-            // ❌ REMOVIDO: Fallback localStorage gerava IDs incompatíveis com Supabase
-            // IDs como 'cat_123456' causavam "invalid input syntax for type uuid"
-            // Referência: ADR-002 em docs/decisoes-tecnicas.md
-            throw new Error('Supabase não configurado. Não é possível salvar categorias.');
+            // ✅ FALLBACK: Usar localStorage com UUIDs válidos
+            if (editingCategoryId) {
+                const index = categories.findIndex(c => c.id === editingCategoryId);
+                if (index !== -1) {
+                    categories[index] = { ...categoryData, id: editingCategoryId };
+                }
+            } else {
+                categoryData.id = generateUUID();
+                categories.push(categoryData);
+            }
+            localStorage.setItem('dimar_categories', JSON.stringify(categories));
+            console.log('✅ Categoria salva no localStorage');
         }
 
         showCustomAlert('Sucesso', '✅ ' + (editingCategoryId ? 'Categoria atualizada com sucesso!' : 'Categoria adicionada com sucesso!') + '\n\nA tabela será atualizada automaticamente.');
