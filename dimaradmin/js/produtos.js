@@ -386,6 +386,13 @@ window.openProductModal = function (productId = null) {
             document.getElementById('productCustomBadge').value = product.custom_badge_text || '';
             document.getElementById('productHomeSection').value = product.home_section || '';
 
+            // Compatibilidade de veículos
+            document.getElementById('productVehicleType').value = product.vehicle_type || '';
+            const compatibilityTextarea = document.getElementById('productCompatibility');
+            if (compatibilityTextarea) {
+                compatibilityTextarea.value = (product.compatibility || []).join('\n');
+            }
+
             const customGroup = document.getElementById('customBadgeGroup');
             customGroup.style.display = product.badge_type === 'personalizado' ? 'block' : 'none';
 
@@ -440,10 +447,12 @@ async function saveProduct() {
         badge_type: document.getElementById('productBadgeType').value || null,
         custom_badge_text: document.getElementById('productCustomBadge').value || null,
         home_section: document.getElementById('productHomeSection').value || null,
+        vehicle_type: document.getElementById('productVehicleType').value || null,
+        compatibility: parseCompatibility(document.getElementById('productCompatibility').value),
         images: selectedImages
     };
 
-    console.log('📦 Dados preparados:', { ...productData, images: `${selectedImages.length} imagens` });
+    console.log('📦 Dados preparados:', { ...productData, images: `${selectedImages.length} imagens`, compatibility: `${productData.compatibility.length} veículos` });
 
     try {
         if (checkSupabaseConfig()) {
@@ -740,6 +749,16 @@ function getBadgeLabel(badgeType, customText) {
         'personalizado': customText || 'Badge'
     };
     return labels[badgeType] || badgeType;
+}
+
+// ==================== PARSE COMPATIBILITY ====================
+function parseCompatibility(text) {
+    if (!text || text.trim() === '') return [];
+
+    return text
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
 }
 
 console.log('✅ produtos.js totalmente carregado!');

@@ -375,6 +375,39 @@
                     </small>
                 </div>
 
+                <!-- Compatibilidade de Veículos -->
+                <div class="form-group"
+                    style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 20px;">
+                    <label class="form-label" style="font-size: 16px; margin-bottom: 16px;">
+                        🚗 Compatibilidade de Veículos
+                    </label>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tipo de Veículo</label>
+                            <select class="form-control" id="productVehicleType">
+                                <option value="">Selecione...</option>
+                                <option value="carro">🚗 Carro</option>
+                                <option value="moto">🏍️ Moto</option>
+                                <option value="universal">⚙️ Universal (Ambos)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Veículos Compatíveis</label>
+                        <textarea class="form-control" id="productCompatibility" rows="4" placeholder="Digite um veículo por linha. Ex:
+Chevrolet Onix 2020
+Chevrolet Onix 2021
+Chevrolet Onix Plus 2022
+Fiat Argo 2019"></textarea>
+                        <small style="color: #7f8c8d; display: block; margin-top: 6px;">
+                            📝 <strong>Formato:</strong> Marca + Modelo + Ano (um por linha)<br>
+                            Esses dados serão usados na busca por veículo da homepage
+                        </small>
+                    </div>
+                </div>
+
                 <!-- Product Features -->
                 <div class="form-group">
                     <label class="form-label">Características do Produto</label>

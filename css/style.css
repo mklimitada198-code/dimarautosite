@@ -1260,13 +1260,17 @@ ul {
 }
 
 .most-searched-grid {
-    display: flex;
-    gap: 24px;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch;
+    gap: 20px;
     padding: 0 60px;
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    max-height: 520px;
 }
 
 .most-searched-grid::-webkit-scrollbar {
@@ -1274,8 +1278,8 @@ ul {
 }
 
 .most-searched-grid .product-card {
-    flex: 0 0 280px;
-    min-width: 280px;
+    flex: 0 0 250px;
+    min-width: 250px;
 }
 
 .most-searched-nav-button {
@@ -1310,6 +1314,46 @@ ul {
 
 .most-searched-nav-button.next {
     right: 0;
+}
+
+/* Most Searched - Action Button */
+.most-searched-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.btn-view-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 36px;
+    background: linear-gradient(135deg, #ff7700 0%, #ff6600 100%);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-view-more:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 102, 0, 0.4);
+    background: linear-gradient(135deg, #ff8800 0%, #ff7700 100%);
+}
+
+.btn-view-more:active {
+    transform: translateY(-1px);
+}
+
+.btn-view-more svg {
+    transition: transform 0.3s ease;
+}
+
+.btn-view-more:hover svg {
+    transform: translateX(5px);
 }
 
 /* ==================== Main Offers Section ==================== */
@@ -1354,8 +1398,8 @@ ul {
 }
 
 .offers-grid .product-card {
-    flex: 0 0 280px;
-    min-width: 280px;
+    flex: 0 0 250px;
+    min-width: 250px;
 }
 
 /* Product Card */
@@ -1369,7 +1413,7 @@ ul {
     display: flex;
     flex-direction: column;
     height: 100%;
-    min-height: 520px;
+    min-height: 460px;
     /* Altura mínima uniforme */
 }
 
@@ -1382,7 +1426,7 @@ ul {
 .product-image {
     position: relative;
     width: 100%;
-    height: 240px;
+    height: 200px;
     background: #f8f8f8;
     overflow: hidden;
     border-radius: 12px 12px 0 0;
@@ -1474,6 +1518,18 @@ ul {
 /* Product Pricing */
 .product-pricing {
     margin-bottom: 12px;
+    min-height: 115px;
+    /* Altura fixa para uniformizar cards com/sem preço promocional */
+}
+
+/* Preço antigo riscado (quando tem promoção) */
+.product-price-old {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #999;
+    text-decoration: line-through;
+    margin-bottom: 2px;
 }
 
 .product-price {

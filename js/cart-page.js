@@ -74,7 +74,9 @@
             const hasDiscount = salePrice && salePrice < item.price;
 
             // Determinar imagem - verificar todas as possibilidades
-            let imageUrl = '../assets/images/placeholder-produto.png'; // Default
+            // Placeholder SVG inline (não depende de arquivos externos)
+            const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect fill='%23f0f0f0' width='200' height='200'/%3E%3Ctext x='50%25' y='45%25' fill='%23999' font-family='Arial' font-size='14' text-anchor='middle'%3ESem Imagem%3C/text%3E%3Ctext x='50%25' y='55%25' fill='%23ccc' font-family='Arial' font-size='30' text-anchor='middle'%3E📦%3C/text%3E%3C/svg%3E";
+            let imageUrl = PLACEHOLDER_IMG; // Default
 
             if (item.images && Array.isArray(item.images) && item.images.length > 0 && item.images[0]) {
                 imageUrl = item.images[0];
@@ -84,7 +86,7 @@
 
             // Verificar se parece uma URL válida
             if (!imageUrl || imageUrl === '' || imageUrl === 'null' || imageUrl === 'undefined') {
-                imageUrl = '../assets/images/placeholder-produto.png';
+                imageUrl = PLACEHOLDER_IMG;
             }
 
             // SKU tratado
@@ -93,7 +95,7 @@
             return `
                 <div class="cart-item" data-item-id="${item.id}">
                     <div class="item-image">
-                        <img src="${imageUrl}" alt="${item.name}" onerror="this.src='../assets/images/placeholder-produto.png'">
+                        <img src="${imageUrl}" alt="${item.name}" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'">
                     </div>
 
                     <div class="item-details">

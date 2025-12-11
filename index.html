@@ -288,7 +288,7 @@
                     </svg>
                 </button>
 
-                <!-- Grid de Produtos Mais Procurados -->
+                <!-- Grid de Produtos Mais Procurados (única linha) -->
                 <div class="most-searched-grid">
                     <!-- Produtos serão carregados dinamicamente do Supabase via home-supabase.js -->
                 </div>
@@ -300,6 +300,17 @@
                             stroke-linejoin="round" />
                     </svg>
                 </button>
+            </div>
+
+            <!-- Botão Ver Mais -->
+            <div class="most-searched-action">
+                <a href="pages/produtos.html" class="btn-view-more">
+                    <span>Ver todos os produtos</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
             </div>
         </div>
     </section>
@@ -458,7 +469,11 @@
     <!-- 10. Home Page Supabase Integration (depende de tudo acima) -->
     <script src="js/home-supabase.js"></script>
 
-    <!-- 11. Page-Specific Scripts (ÚLTIMO - pode sobrescrever comportamentos) -->
+    <!-- 11. Vehicle Filter System -->
+    <script src="js/vehicle-data.js"></script>
+    <script src="js/vehicle-filter.js"></script>
+
+    <!-- 12. Page-Specific Scripts (ÚLTIMO - pode sobrescrever comportamentos) -->
     <script src="js/script.js"></script>
 </body>
 

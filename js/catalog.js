@@ -197,13 +197,95 @@ async function loadBrands(supabaseAvailable) {
 // ==================== CHECK URL PARAMS ====================
 function checkUrlParams() {
     const params = new URLSearchParams(window.location.search);
-    const categoria = params.get('categoria');
 
+    // Filtro de categoria
+    const categoria = params.get('categoria');
     if (categoria) {
         currentFilters.categories.push(categoria);
         console.log('🔍 Filtro de categoria via URL:', categoria);
     }
+
+    // Filtro de veículo
+    const vehicleType = params.get('tipo');
+    const marca = params.get('marca');
+    const marcaNome = params.get('marca_nome');
+    const modelo = params.get('modelo');
+    const modeloNome = params.get('modelo_nome');
+    const ano = params.get('ano');
+
+    if (vehicleType && marca && modelo && ano) {
+        console.log(`🚗 Filtro de veículo: ${vehicleType} ${marcaNome || marca} ${modeloNome || modelo} ${ano}`);
+
+        // Salvar filtros de veículo
+        currentFilters.vehicle = {
+            type: vehicleType,
+            brand: marca,
+            brandName: marcaNome || marca,
+            model: modelo,
+            modelName: modeloNome || modelo,
+            year: ano
+        };
+
+        // Mostrar banner informativo
+        showVehicleFilterBanner(currentFilters.vehicle);
+    }
 }
+
+// ==================== SHOW VEHICLE FILTER BANNER ====================
+function showVehicleFilterBanner(vehicle) {
+    const container = document.querySelector('.catalog-header') || document.querySelector('.products-container');
+    if (!container) return;
+
+    // Remover banner existente
+    const existingBanner = document.querySelector('.vehicle-filter-banner');
+    if (existingBanner) existingBanner.remove();
+
+    const typeLabel = vehicle.type === 'moto' ? '🏍️ Moto' : '🚗 Carro';
+
+    const banner = document.createElement('div');
+    banner.className = 'vehicle-filter-banner';
+    banner.innerHTML = `
+        <div class="vehicle-filter-banner-content">
+            <span class="vehicle-filter-label">
+                <strong>${typeLabel}:</strong> ${vehicle.brandName} ${vehicle.modelName} ${vehicle.year}
+            </span>
+            <button class="vehicle-filter-clear" onclick="clearVehicleFilter()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Limpar filtro
+            </button>
+        </div>
+    `;
+
+    // Adicionar estilos inline para o banner
+    banner.style.cssText = `
+        background: linear-gradient(135deg, #ff7700 0%, #ff6600 100%);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+    `;
+
+    // Inserir no início do container
+    container.insertBefore(banner, container.firstChild);
+}
+
+// ==================== CLEAR VEHICLE FILTER ====================
+window.clearVehicleFilter = function () {
+    // Remover parâmetros de veículo da URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete('tipo');
+    url.searchParams.delete('marca');
+    url.searchParams.delete('marca_nome');
+    url.searchParams.delete('modelo');
+    url.searchParams.delete('modelo_nome');
+    url.searchParams.delete('ano');
+
+    // Recarregar sem os parâmetros de veículo
+    window.location.href = url.toString();
+};
 
 // ==================== RENDER CATEGORY FILTERS ====================
 function renderCategoryFilters() {
@@ -355,6 +437,37 @@ function applyFilters() {
         // In stock filter
         if (currentFilters.inStock && product.stock <= 0) {
             return false;
+        }
+
+        // Vehicle compatibility filter
+        if (currentFilters.vehicle) {
+            const v = currentFilters.vehicle;
+            const searchTerms = [
+                `${v.brandName} ${v.modelName}`,
+                `${v.brandName} ${v.modelName} ${v.year}`,
+                v.modelName
+            ].map(term => term.toLowerCase());
+
+            // Verificar no campo compatibility (array de strings)
+            const compatibility = product.compatibility || [];
+            const hasCompatibility = compatibility.some(comp => {
+                const compLower = (comp || '').toLowerCase();
+                return searchTerms.some(term => compLower.includes(term));
+            });
+
+            // Verificar também no vehicle_type
+            const productVehicleType = (product.vehicle_type || '').toLowerCase();
+            const isUniversal = productVehicleType === 'universal';
+            const matchesVehicleType = productVehicleType === v.type || isUniversal;
+
+            // Produto passa se: tem compatibilidade OU é universal
+            if (!hasCompatibility && !isUniversal) {
+                // Se não tem compatibilidade definida, mostrar apenas por tipo
+                if (compatibility.length === 0 && matchesVehicleType) {
+                    return true; // Mostrar produtos sem compatibilidade definida mas do mesmo tipo
+                }
+                return false;
+            }
         }
 
         return true;
@@ -579,9 +692,11 @@ function renderProducts() {
             imageUrl = product.image.startsWith('http') ? product.image : `../${product.image}`;
         }
 
-        // Placeholder se não tiver imagem
+        // Placeholder SVG inline (não depende de arquivos externos)
+        const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect fill='%23f0f0f0' width='200' height='200'/%3E%3Ctext x='50%25' y='45%25' fill='%23999' font-family='Arial' font-size='14' text-anchor='middle'%3ESem Imagem%3C/text%3E%3Ctext x='50%25' y='55%25' fill='%23ccc' font-family='Arial' font-size='30' text-anchor='middle'%3E📦%3C/text%3E%3C/svg%3E";
+
         if (!imageUrl) {
-            imageUrl = '../assets/images/placeholder-produto.png';
+            imageUrl = PLACEHOLDER_IMG;
         }
 
         // Badge
@@ -600,7 +715,7 @@ function renderProducts() {
         <div class="product-card-catalog">
             <div class="product-card-image">
                 <img src="${imageUrl}" alt="${product.name}" loading="lazy" 
-                     onerror="this.src='../assets/images/placeholder-produto.png'">
+                     onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'">
                 ${badge}
                 ${fastShipping ? '<span class="product-fast-badge">⚡ RÁPIDO</span>' : ''}
             </div>
