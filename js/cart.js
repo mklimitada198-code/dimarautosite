@@ -23,8 +23,9 @@ class ShoppingCart {
      * Adicionar produto ao carrinho
      */
     addItem(product) {
-        // Verificar se produto já existe no carrinho
-        const existingItem = this.items.find(item => item.id === product.id);
+        // Verificar se produto já existe no carrinho (comparar como string para UUIDs)
+        const productId = String(product.id);
+        const existingItem = this.items.find(item => String(item.id) === productId);
 
         if (existingItem) {
             // Aumentar quantidade
@@ -62,10 +63,11 @@ class ShoppingCart {
      * Remover produto do carrinho
      */
     removeItem(productId) {
-        const item = this.items.find(i => i.id === productId);
+        const targetId = String(productId);
+        const item = this.items.find(i => String(i.id) === targetId);
 
         if (item) {
-            this.items = this.items.filter(i => i.id !== productId);
+            this.items = this.items.filter(i => String(i.id) !== targetId);
             this.showNotification(`${item.name} removido do carrinho`, 'info');
 
             this.saveToStorage();
@@ -85,7 +87,8 @@ class ShoppingCart {
      * Atualizar quantidade de um item
      */
     updateQuantity(productId, quantity) {
-        const item = this.items.find(i => i.id === productId);
+        const targetId = String(productId);
+        const item = this.items.find(i => String(i.id) === targetId);
 
         if (item) {
             if (quantity <= 0) {
