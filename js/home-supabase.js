@@ -275,8 +275,11 @@
                             const cartItem = {
                                 id: data.id,
                                 name: data.name,
-                                price: data.sale_price || data.price,
+                                sku: data.sku || 'N/A',
+                                price: data.price,
+                                salePrice: data.sale_price || null,
                                 image: data.images && data.images.length > 0 ? data.images[0] : '',
+                                images: data.images || [],
                                 quantity: 1
                             };
                             window.cart.addItem(cartItem);

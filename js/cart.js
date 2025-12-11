@@ -50,8 +50,8 @@ class ShoppingCart {
         this.animateCartIcon();
 
         // Disparar evento customizado
-        window.dispatchEvent(new CustomEvent('cartUpdated', { 
-            detail: { items: this.items } 
+        window.dispatchEvent(new CustomEvent('cartUpdated', {
+            detail: { items: this.items }
         }));
 
         return true;
@@ -62,16 +62,16 @@ class ShoppingCart {
      */
     removeItem(productId) {
         const item = this.items.find(i => i.id === productId);
-        
+
         if (item) {
             this.items = this.items.filter(i => i.id !== productId);
             this.showNotification(`${item.name} removido do carrinho`, 'info');
-            
+
             this.saveToStorage();
             this.updateCartBadge();
 
-            window.dispatchEvent(new CustomEvent('cartUpdated', { 
-                detail: { items: this.items } 
+            window.dispatchEvent(new CustomEvent('cartUpdated', {
+                detail: { items: this.items }
             }));
 
             return true;
@@ -95,8 +95,8 @@ class ShoppingCart {
             this.saveToStorage();
             this.updateCartBadge();
 
-            window.dispatchEvent(new CustomEvent('cartUpdated', { 
-                detail: { items: this.items } 
+            window.dispatchEvent(new CustomEvent('cartUpdated', {
+                detail: { items: this.items }
             }));
 
             return true;
@@ -117,8 +117,8 @@ class ShoppingCart {
             this.updateCartBadge();
             this.showNotification('Carrinho limpo!', 'info');
 
-            window.dispatchEvent(new CustomEvent('cartUpdated', { 
-                detail: { items: this.items } 
+            window.dispatchEvent(new CustomEvent('cartUpdated', {
+                detail: { items: this.items }
             }));
 
             return true;
@@ -182,9 +182,9 @@ class ShoppingCart {
             this.activeCoupon = { code: couponCode.toUpperCase(), ...coupon };
             this.saveToStorage();
             this.showNotification(`Cupom aplicado: ${coupon.description}`, 'success');
-            
-            window.dispatchEvent(new CustomEvent('couponApplied', { 
-                detail: { coupon: this.activeCoupon } 
+
+            window.dispatchEvent(new CustomEvent('couponApplied', {
+                detail: { coupon: this.activeCoupon }
             }));
 
             return coupon;
@@ -342,6 +342,40 @@ class ShoppingCart {
             });
             cartIcon.dataset.listenerAdded = 'true';
         }
+    }
+
+    /**
+     * Calcular todos os totais (para uso na página de carrinho)
+     */
+    calculateTotals() {
+        const subtotal = this.getSubtotal();
+        const productDiscount = this.getTotalDiscount();
+        const couponDiscount = this.getCouponDiscount();
+        const total = this.getTotal();
+
+        return {
+            subtotal: subtotal,
+            productDiscount: productDiscount,
+            couponDiscount: couponDiscount,
+            discount: productDiscount + couponDiscount,
+            total: total,
+            freeShipping: total >= 200 || (this.activeCoupon && this.activeCoupon.type === 'shipping'),
+            shipping: total >= 200 ? 0 : 15.90
+        };
+    }
+
+    /**
+     * Alias para updateQuantity (compatibilidade)
+     */
+    updateItemQuantity(productId, quantity) {
+        return this.updateQuantity(productId, quantity);
+    }
+
+    /**
+     * Obter cupom ativo
+     */
+    get coupon() {
+        return this.activeCoupon;
     }
 
     /**
