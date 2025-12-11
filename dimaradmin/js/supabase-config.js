@@ -116,14 +116,23 @@
     // ==================== HELPER FUNCTIONS ====================
 
     function checkSupabaseConfig() {
-        const isConfigured = window.supabaseClient !== null && window.supabaseClient !== undefined;
-        console.log('🔍 checkSupabaseConfig chamado:', isConfigured ? 'CONECTADO' : 'NÃO CONECTADO');
+        // Simplificado: se supabaseClient existe e foi criado, está configurado
+        const isConfigured =
+            window.supabaseClient !== null &&
+            window.supabaseClient !== undefined;
+
+        console.log('🔍 checkSupabaseConfig:', {
+            clientExists: !!window.supabaseClient,
+            result: isConfigured ? 'CONECTADO ✅' : 'NÃO CONECTADO ❌'
+        });
+
         return isConfigured;
     }
 
-    // Export global
+    // Export globals
     window.supabaseClient = supabase;
     window.checkSupabaseConfig = checkSupabaseConfig;
+    window.SUPABASE_URL = SUPABASE_URL;  // Para debug
+    window.SUPABASE_KEY = 'HIDDEN';  // Não expor a key
 
 })();
-

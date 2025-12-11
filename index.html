@@ -273,11 +273,36 @@
         </div>
     </section>
 
-
     <!-- ==================== Mais Procurados Section ==================== -->
-    <!-- TODO: Esta seção será carregada dinamicamente do Supabase -->
-    <!-- Por enquanto removida para evitar imagens quebradas em produção -->
-    <!-- Implementar loadMostSearchedProducts() em home-supabase.js -->
+    <section class="most-searched" aria-label="Produtos mais procurados">
+        <div class="most-searched-container">
+            <h2 class="most-searched-title">Mais Procurados</h2>
+            <p class="most-searched-subtitle">Os produtos que estão em alta na nossa loja</p>
+
+            <div class="most-searched-carousel">
+                <!-- Botão Anterior -->
+                <button class="most-searched-nav-button prev" aria-label="Produtos anteriores">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+
+                <!-- Grid de Produtos Mais Procurados -->
+                <div class="most-searched-grid">
+                    <!-- Produtos serão carregados dinamicamente do Supabase via home-supabase.js -->
+                </div>
+
+                <!-- Botão Próximo -->
+                <button class="most-searched-nav-button next" aria-label="Próximos produtos">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
 
 
     <!-- ==================== Brands Section ==================== -->

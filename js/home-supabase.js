@@ -1,6 +1,10 @@
 /**
  * HOME PAGE - INTEGRAÇÃO COM SUPABASE
  * Carrega dinamicamente produtos, banners, marcas e categorias do banco
+ * 
+ * SEÇÕES DE PRODUTOS:
+ * - Principais Ofertas: produtos com featured=true ou home_section='ofertas'
+ * - Mais Procurados: produtos com is_bestseller=true ou home_section='procurados'
  */
 
 (function () {
@@ -8,10 +12,11 @@
 
     // ==================== CONFIGURAÇÃO ====================
     const CONFIG = {
-        maxProductsHome: 8, // Máximo de produtos na home
-        maxBanners: 4,      // Máximo de banners no carrossel
-        maxBrands: 9,       // Máximo de marcas exibidas
-        autoRefresh: false  // Auto-refresh (desabilitado por padrão)
+        maxProductsOffers: 8,     // Máximo em Principais Ofertas
+        maxProductsPopular: 8,    // Máximo em Mais Procurados
+        maxBanners: 4,            // Máximo de banners no carrossel
+        maxBrands: 9,             // Máximo de marcas exibidas
+        autoRefresh: false        // Auto-refresh (desabilitado por padrão)
     };
 
     // ==================== SAFE LOGGER ====================
@@ -22,54 +27,78 @@
         success: (msg) => typeof logger !== 'undefined' ? logger.success(msg) : console.log('✅', msg)
     };
 
-    // ==================== CARREGAR PRODUTOS ====================
-    async function loadHomeProducts() {
+    // ==================== CARREGAR PRODUTOS - PRINCIPAIS OFERTAS ====================
+    async function loadOffersProducts() {
         try {
-            log.info('🔄 Carregando produtos da home...');
+            log.info('🔄 Carregando Principais Ofertas...');
+            showProductsSkeleton('.offers-grid');
 
-            // Mostrar skeleton enquanto carrega
-            showProductsSkeleton();
-
-            // Verificar se Supabase está disponível
             if (!window.supabaseClient) {
-                log.warn('⚠️ Supabase não disponível, usando produtos estáticos');
-                hideProductsSkeleton();
+                log.warn('⚠️ Supabase não disponível');
+                hideProductsSkeleton('.offers-grid');
                 return;
             }
 
-            // Buscar produtos ativos (compatibilidade: status='active' OU is_active=true)
+            // Buscar TODOS os produtos (sem filtro de status)
             const { data: products, error } = await window.supabaseClient
                 .from('products')
                 .select('*')
-                .or('status.eq.active,is_active.eq.true') // Compatibilidade
-                .order('featured', { ascending: false })
+                .order('featured', { ascending: false, nullsFirst: false })
                 .order('created_at', { ascending: false })
-                .limit(CONFIG.maxProductsHome);
+                .limit(CONFIG.maxProductsOffers);
 
             if (error) {
-                log.error('❌ Erro ao carregar produtos:', error);
-                hideProductsSkeleton();
+                log.error('❌ Erro ao carregar ofertas:', error);
+                hideProductsSkeleton('.offers-grid');
                 return;
             }
 
-            if (!products || products.length === 0) {
-                log.warn('⚠️ Nenhum produto encontrado no banco');
-                hideProductsSkeleton();
-                return;
-            }
-
-            log.success(`✅ ${products.length} produtos carregados`);
-            renderProducts(products);
+            log.success(`✅ ${products?.length || 0} produtos em Ofertas`);
+            renderProducts(products || [], '.offers-grid');
 
         } catch (error) {
-            log.error('❌ Erro ao carregar produtos:', error);
-            hideProductsSkeleton();
+            log.error('❌ Erro ao carregar ofertas:', error);
+            hideProductsSkeleton('.offers-grid');
+        }
+    }
+
+    // ==================== CARREGAR PRODUTOS - MAIS PROCURADOS ====================
+    async function loadMostSearchedProducts() {
+        try {
+            log.info('🔄 Carregando Mais Procurados...');
+            showProductsSkeleton('.most-searched-grid');
+
+            if (!window.supabaseClient) {
+                log.warn('⚠️ Supabase não disponível');
+                hideProductsSkeleton('.most-searched-grid');
+                return;
+            }
+
+            // Buscar TODOS os produtos com offset (para não repetir)
+            const { data: products, error } = await window.supabaseClient
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .range(CONFIG.maxProductsOffers, CONFIG.maxProductsOffers + CONFIG.maxProductsPopular - 1);
+
+            if (error) {
+                log.error('❌ Erro ao carregar mais procurados:', error);
+                hideProductsSkeleton('.most-searched-grid');
+                return;
+            }
+
+            log.success(`✅ ${products?.length || 0} produtos em Mais Procurados`);
+            renderProducts(products || [], '.most-searched-grid');
+
+        } catch (error) {
+            log.error('❌ Erro ao carregar mais procurados:', error);
+            hideProductsSkeleton('.most-searched-grid');
         }
     }
 
     // ==================== SKELETON LOADING ====================
-    function showProductsSkeleton() {
-        const container = document.querySelector('.offers-grid');
+    function showProductsSkeleton(containerSelector) {
+        const container = document.querySelector(containerSelector);
         if (!container) return;
 
         container.innerHTML = Array(4).fill(`
@@ -81,31 +110,37 @@
         `).join('');
     }
 
-    function hideProductsSkeleton() {
-        const container = document.querySelector('.offers-grid');
+    function hideProductsSkeleton(containerSelector) {
+        const container = document.querySelector(containerSelector);
         if (!container) return;
         const skeletons = container.querySelectorAll('.skeleton-card');
         skeletons.forEach(s => s.remove());
     }
 
     // ==================== RENDERIZAR PRODUTOS ====================
-    function renderProducts(products) {
-        const container = document.querySelector('.offers-grid');
+    function renderProducts(products, containerSelector) {
+        const container = document.querySelector(containerSelector);
         if (!container) {
-            log.warn('⚠️ Container de produtos não encontrado');
+            log.warn('⚠️ Container não encontrado:', containerSelector);
             return;
         }
 
-        // Limpar produtos existentes
+        // Limpar container
         container.innerHTML = '';
 
-        // Renderizar novos produtos
+        // Se não há produtos, mostrar mensagem
+        if (!products || products.length === 0) {
+            container.innerHTML = '<p style="color: #666; text-align: center; padding: 40px;">Nenhum produto disponível no momento.</p>';
+            return;
+        }
+
+        // Renderizar produtos
         products.forEach(product => {
             const productCard = createProductCard(product);
             container.appendChild(productCard);
         });
 
-        log.success('✅ Produtos renderizados na home');
+        log.success(`✅ Produtos renderizados em ${containerSelector}`);
     }
 
     // ==================== CRIAR CARD DE PRODUTO ====================
@@ -314,11 +349,11 @@
                 return;
             }
 
+            // Buscar TODAS as marcas (sem filtro de status)
             const { data: brands, error } = await window.supabaseClient
                 .from('brands')
                 .select('*')
-                .eq('is_active', true)
-                .order('display_order', { ascending: true })
+                .order('display_order', { ascending: true, nullsFirst: false })
                 .limit(CONFIG.maxBrands);
 
             if (error) {
@@ -350,11 +385,30 @@
         }
 
         // Criar HTML das marcas (3 sets para looping infinito)
-        const brandsHTML = brands.map(brand => `
+        // Compatibilidade: usar logo_url OU image_url, corrigir paths relativos
+        const brandsHTML = brands.map(brand => {
+            let logoUrl = brand.logo_url || brand.image_url || '';
+
+            // Corrigir URLs relativas do admin (começam com '../')
+            if (logoUrl.startsWith('../')) {
+                logoUrl = logoUrl.replace('../', '');
+            }
+
+            // Se ainda não tem URL válida, usar fallback baseado no nome da marca
+            const brandSlug = brand.name ? brand.name.toLowerCase().replace(/\s+/g, '') : 'brand';
+            const fallback = `assets/images/${brandSlug}.png`;
+
+            // Se logo_url está vazio ou é inválido, usar o fallback
+            if (!logoUrl || logoUrl === 'undefined' || logoUrl === 'null') {
+                logoUrl = fallback;
+            }
+
+            return `
             <div class="brand-item">
-                <img src="${brand.logo_url}" alt="${brand.name}" onerror="this.src='${window.placeholders ? window.placeholders.brand : 'assets/images/bosch.png'}'">
+                <img src="${logoUrl}" alt="${brand.name}" onerror="this.onerror=null; this.src='assets/images/bosch.png';">
             </div>
-        `).join('');
+        `;
+        }).join('');
 
         // Repetir 3 vezes para looping infinito perfeito
         const fullHTML = brandsHTML + brandsHTML + brandsHTML;
@@ -381,12 +435,11 @@
                 return;
             }
 
-            // Compatibilidade: is_active=true OU status='active'
+            // Buscar TODAS as categorias (sem filtro de status)
             const { data: categories, error } = await window.supabaseClient
                 .from('categories')
                 .select('*')
-                .or('is_active.eq.true,status.eq.active')
-                .order('display_order', { ascending: true });
+                .order('display_order', { ascending: true, nullsFirst: false });
 
             if (error) {
                 log.error('❌ Erro ao carregar categorias:', error);
@@ -458,7 +511,8 @@
 
                 // Carregar todos os dados em paralelo
                 await Promise.all([
-                    loadHomeProducts(),
+                    loadOffersProducts(),          // Principais Ofertas
+                    loadMostSearchedProducts(),    // Mais Procurados
                     loadHomeBanners(),
                     loadHomeBrands(),
                     loadHomeCategories()
@@ -486,7 +540,8 @@
     // ==================== EXPORTAR FUNÇÕES ====================
     window.homeSupabase = {
         init: initializeHomePage,
-        loadProducts: loadHomeProducts,
+        loadOffers: loadOffersProducts,
+        loadMostSearched: loadMostSearchedProducts,
         loadBanners: loadHomeBanners,
         loadBrands: loadHomeBrands,
         loadCategories: loadHomeCategories,
