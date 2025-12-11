@@ -39,10 +39,11 @@
                 return;
             }
 
-            // Buscar TODOS os produtos (sem filtro de status)
+            // Buscar produtos com home_section = 'ofertas' ou 'ambas'
             const { data: products, error } = await window.supabaseClient
                 .from('products')
                 .select('*')
+                .or('home_section.eq.ofertas,home_section.eq.ambas')
                 .order('featured', { ascending: false, nullsFirst: false })
                 .order('created_at', { ascending: false })
                 .limit(CONFIG.maxProductsOffers);
@@ -74,12 +75,13 @@
                 return;
             }
 
-            // Buscar TODOS os produtos com offset (para não repetir)
+            // Buscar produtos com home_section = 'procurados' ou 'ambas'
             const { data: products, error } = await window.supabaseClient
                 .from('products')
                 .select('*')
+                .or('home_section.eq.procurados,home_section.eq.ambas')
                 .order('created_at', { ascending: false })
-                .range(CONFIG.maxProductsOffers, CONFIG.maxProductsOffers + CONFIG.maxProductsPopular - 1);
+                .limit(CONFIG.maxProductsPopular);
 
             if (error) {
                 log.error('❌ Erro ao carregar mais procurados:', error);

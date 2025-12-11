@@ -68,10 +68,36 @@
 
 ---
 
+### 5. Seleção de Seção da Homepage no Admin ✅
+
+**Problema:** Não era possível escolher em qual seção da homepage (Principais Ofertas ou Mais Procurados) um produto deveria aparecer.
+
+**Solução:**
+- Adicionado campo "Exibir na Homepage" no formulário de produtos do admin
+- Opções disponíveis:
+  - Não exibir na homepage
+  - 📦 Principais Ofertas
+  - 🔥 Mais Procurados
+  - ⭐ Ambas as seções
+- Homepage agora filtra produtos pelo campo `home_section`
+
+**Arquivos modificados:**
+- `dimaradmin/produtos.html`
+- `dimaradmin/js/produtos.js`
+- `js/home-supabase.js`
+
+**Migration SQL necessária:**
+- `database/migration-home-section.sql`
+
+---
+
 ## Resumo dos Arquivos Modificados
 
 | Arquivo | Tipo de Alteração |
 |---------|-------------------|
-| `js/home-supabase.js` | Logos de marcas + Efeito botão comprar |
+| `js/home-supabase.js` | Logos de marcas + Efeito botão + Filtro por seção |
 | `dimaradmin/js/categorias.js` | Sistema de categorias admin |
+| `dimaradmin/produtos.html` | Campo "Exibir na Homepage" |
+| `dimaradmin/js/produtos.js` | Salvar/carregar home_section |
 | `css/style.css` | Alinhamento de cards |
+| `database/migration-home-section.sql` | Migration para adicionar coluna |

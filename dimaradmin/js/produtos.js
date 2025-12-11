@@ -384,6 +384,7 @@ window.openProductModal = function (productId = null) {
             document.getElementById('productFastShipping').checked = product.fast_shipping || false;
             document.getElementById('productBadgeType').value = product.badge_type || '';
             document.getElementById('productCustomBadge').value = product.custom_badge_text || '';
+            document.getElementById('productHomeSection').value = product.home_section || '';
 
             const customGroup = document.getElementById('customBadgeGroup');
             customGroup.style.display = product.badge_type === 'personalizado' ? 'block' : 'none';
@@ -438,6 +439,7 @@ async function saveProduct() {
         fast_shipping: document.getElementById('productFastShipping').checked,
         badge_type: document.getElementById('productBadgeType').value || null,
         custom_badge_text: document.getElementById('productCustomBadge').value || null,
+        home_section: document.getElementById('productHomeSection').value || null,
         images: selectedImages
     };
 
