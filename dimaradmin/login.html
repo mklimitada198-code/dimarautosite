@@ -140,13 +140,26 @@
                 console.log('   Versão:', LOGIN_VERSION);
                 console.log('   Tipo de evento:', e ? e.type : 'chamada direta');
 
+                // DEBUG: Verificar inputs antes de ler valores
+                console.log('📋 DEBUG - Verificando inputs:');
+                console.log('   emailInput element:', emailInput);
+                console.log('   passwordInput element:', passwordInput);
+
                 const email = emailInput.value.trim();
                 const password = passwordInput.value.trim();
 
+                console.log('   Email value:', email);
+                console.log('   Email length:', email.length);
+                console.log('   Password length:', password.length);
+
                 if (!email || !password) {
+                    console.log('❌ VALIDAÇÃO FALHOU: campos vazios');
+                    console.log('   !email:', !email, '!password:', !password);
                     showError('Por favor, preencha todos os campos');
                     return;
                 }
+
+                console.log('✅ Campos validados OK, continuando...');
 
                 // Verificar se Supabase está disponível
                 if (!window.supabaseClient) {
