@@ -115,6 +115,10 @@
 
             // ==================== LOGIN HANDLER ====================
 
+            // LOG DE VERSÃO para debug de cache
+            const LOGIN_VERSION = '2.1.0-2024-12-11-13h00';
+            console.log('🔢 Login Script Versão:', LOGIN_VERSION);
+
             // LOG IMEDIATO para confirmar que script está rodando
             console.log('📝 Configurando event listener do formulário...');
             console.log('   loginForm element:', loginForm);
@@ -126,13 +130,15 @@
                 return;
             }
 
-            console.log('✅ Formulário encontrado! Adicionando event listener...');
+            console.log('✅ Formulário encontrado! Adicionando event listeners...');
 
-            loginForm.addEventListener('submit', async function (e) {
-                e.preventDefault();
+            // Função principal de login
+            async function handleLogin(e) {
+                if (e) e.preventDefault();
 
-                console.log('🎯 EVENTO SUBMIT DISPARADO!');
-                console.log('   Este log confirma que o formulário foi submetido');
+                console.log('🎯 EVENTO LOGIN DISPARADO!');
+                console.log('   Versão:', LOGIN_VERSION);
+                console.log('   Tipo de evento:', e ? e.type : 'chamada direta');
 
                 const email = emailInput.value.trim();
                 const password = passwordInput.value.trim();
@@ -270,8 +276,18 @@
                     showError('Erro inesperado ao fazer login. Tente novamente.');
                     setLoading(false);
                 }
-            });
+            }
 
+            // Event listener no formulário (submit)
+            loginForm.addEventListener('submit', handleLogin);
+            console.log('   ✅ Event listener SUBMIT adicionado ao form');
+
+            // Event listener BACKUP no botão (click)
+            loginBtn.addEventListener('click', function (e) {
+                console.log('🖱️ CLICK no botão Entrar detectado!');
+                handleLogin(e);
+            });
+            console.log('   ✅ Event listener CLICK adicionado ao botão');
             // ==================== DEBUG INFO ====================
 
             console.log('🔐 Sistema de Login Inicializado');
