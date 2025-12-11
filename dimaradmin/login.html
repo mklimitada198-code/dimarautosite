@@ -214,17 +214,52 @@
                             just_logged_in: localStorage.getItem('admin_just_logged_in')
                         });
 
-                        // CORREÇÃO FINAL: Redirect com window.location.replace
-                        console.log('🚀 REDIRECIONANDO para /dimaradmin/index.html');
-                        console.log('   Método: window.location.replace (absoluto)');
+                        // CORREÇÃO: Múltiplas estratégias de redirect para produção
+                        console.log('🚀 INICIANDO REDIRECIONAMENTO...');
                         console.log('   Timestamp:', new Date().toISOString());
+                        console.log('   Hostname:', window.location.hostname);
 
-                        // Usar timeout curto apenas para garantir que localStorage salvou
+                        // Determinar URL de destino baseado no ambiente
+                        const isProduction = window.location.hostname !== 'localhost' &&
+                            window.location.hostname !== '127.0.0.1';
+
+                        // Usar caminho relativo que funciona em ambos ambientes
+                        const redirectUrl = isProduction
+                            ? '/dimaradmin/index.html'  // Produção: caminho absoluto
+                            : 'index.html';             // Local: caminho relativo
+
+                        console.log('   URL destino:', redirectUrl);
+                        console.log('   Ambiente:', isProduction ? 'PRODUÇÃO' : 'LOCAL');
+
+                        // Estratégia 1: Redirect imediato com href (mais confiável)
+                        try {
+                            console.log('⚡ Tentativa 1: window.location.href');
+                            window.location.href = redirectUrl;
+                        } catch (e) {
+                            console.error('❌ Falha na tentativa 1:', e);
+                        }
+
+                        // Estratégia 2: Fallback com setTimeout (se tentativa 1 falhar)
                         setTimeout(() => {
-                            console.log('⚡ EXECUTANDO REDIRECT AGORA!');
-                            // window.location.replace evita que botão voltar retorne para login
-                            window.location.replace('/dimaradmin/index.html');
-                        }, 100);
+                            console.log('⚡ Tentativa 2 (fallback): window.location.assign');
+                            try {
+                                window.location.assign(redirectUrl);
+                            } catch (e) {
+                                console.error('❌ Falha na tentativa 2:', e);
+                            }
+                        }, 500);
+
+                        // Estratégia 3: Último recurso com replace
+                        setTimeout(() => {
+                            console.log('⚡ Tentativa 3 (último recurso): window.location.replace');
+                            try {
+                                window.location.replace(redirectUrl);
+                            } catch (e) {
+                                console.error('❌ Falha na tentativa 3:', e);
+                                // Se tudo falhar, mostrar link manual
+                                showError('Redirecionamento falhou. Clique aqui: <a href="' + redirectUrl + '">Ir para Dashboard</a>');
+                            }
+                        }, 1500);
                     } else {
                         showError('Erro inesperado: sessão não foi criada');
                         setLoading(false);
