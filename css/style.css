@@ -103,6 +103,32 @@ ul {
     color: #ff6600;
 }
 
+/* ==================== Sticky Header Wrapper ==================== */
+.sticky-header-wrapper {
+    position: relative;
+    width: 100%;
+    z-index: 1000;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Estado: Header fixo ao fazer scroll */
+.sticky-header-wrapper.is-scrolled {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Espaçador quando header está fixo */
+.header-spacer {
+    display: none;
+}
+
+.header-spacer.active {
+    display: block;
+}
+
 /* ==================== Main Header ==================== */
 .main-header {
     background: linear-gradient(180deg, #ff7700 0%, #ff6600 100%);
@@ -1354,6 +1380,13 @@ ul {
 
 .btn-view-more:hover svg {
     transform: translateX(5px);
+}
+
+/* Offers - Action Button */
+.offers-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
 }
 
 /* ==================== Main Offers Section ==================== */

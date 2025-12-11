@@ -27,133 +27,135 @@
     </div>
 </nav>
 
-<!-- Main Header with Diagonal Stripes -->
-<header class="main-header">
-    <!-- Diagonal Stripes Left -->
-    <div class="diagonal-stripes left">
-        <div class="stripe"></div>
-        <div class="stripe"></div>
-        <div class="stripe"></div>
-    </div>
-
-    <div class="header-container">
-        <!-- Logo -->
-        <div class="logo">
-            <a href="/index.html">
-                <img src="/assets/images/logo-dimar.png" alt="DIMAR - Auto Peças & Moto Peças">
-            </a>
+<!-- Sticky Header Wrapper -->
+<div class="sticky-header-wrapper">
+    <!-- Main Header with Diagonal Stripes -->
+    <header class="main-header">
+        <!-- Diagonal Stripes Left -->
+        <div class="diagonal-stripes left">
+            <div class="stripe"></div>
+            <div class="stripe"></div>
+            <div class="stripe"></div>
         </div>
 
-        <!-- Search Bar -->
-        <div class="search-container">
-            <input type="text" placeholder="Buscar produtos" class="search-input">
-            <button class="search-button" aria-label="Buscar">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M19 19L14.65 14.65M17 9C17 13.4183 13.4183 17 9 17C4.58172 17 1 13.4183 1 9C1 4.58172 4.58172 1 9 1C13.4183 1 17 4.58172 17 9Z"
-                        stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </button>
-        </div>
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo">
+                <a href="/index.html">
+                    <img src="/assets/images/logo-dimar.png" alt="DIMAR - Auto Peças & Moto Peças">
+                </a>
+            </div>
 
-        <!-- Header Actions -->
-        <div class="header-actions">
-            <!-- Televendas -->
-            <a href="tel:1140409090" class="header-action">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M3 5C3 3.89543 3.89543 3 5 3H8.27924C8.70967 3 9.09181 3.27543 9.22792 3.68377L10.7257 8.17721C10.8831 8.64932 10.6694 9.16531 10.2243 9.38787L7.96701 10.5165C9.06925 12.9612 11.0388 14.9308 13.4835 16.033L14.6121 13.7757C14.8347 13.3306 15.3507 13.1169 15.8228 13.2743L20.3162 14.7721C20.7246 14.9082 21 15.2903 21 15.7208V19C21 20.1046 20.1046 21 19 21H18C9.71573 21 3 14.2843 3 6V5Z"
-                        fill="white" />
-                </svg>
-                <div class="action-text">
-                    <span class="action-label">Televendas</span>
-                    <span class="action-value">(11) 4040-9090</span>
-                </div>
-            </a>
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" placeholder="Buscar produtos" class="search-input">
+                <button class="search-button" aria-label="Buscar">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M19 19L14.65 14.65M17 9C17 13.4183 13.4183 17 9 17C4.58172 17 1 13.4183 1 9C1 4.58172 4.58172 1 9 1C13.4183 1 17 4.58172 17 9Z"
+                            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
 
-            <!-- Meus Pedidos -->
-            <a href="#pedidos" class="header-action">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M9 11H15M9 15H12M7.00023 3H16.9998C17.0852 3 17.1695 3.01932 17.2461 3.05662L21.3462 5.10662C21.7217 5.29435 21.9649 5.67653 21.9847 6.09931C21.9949 6.28136 22.0001 6.46704 22.0001 6.65599V17C22.0001 19.2091 20.2092 21 18.0001 21H6.00023C3.79109 21 2.00023 19.2091 2.00023 17V6.65599C2.00023 6.46704 2.00531 6.28136 2.01554 6.09931C2.03532 5.67653 2.27854 5.29435 2.65401 5.10662L6.75408 3.05662C6.83072 3.01932 6.91495 3 7.00023 3Z"
-                        fill="white" />
-                </svg>
-                <div class="action-text">
-                    <span class="action-label">Meus</span>
-                    <span class="action-value">Pedidos</span>
-                </div>
-            </a>
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <!-- Televendas -->
+                <a href="tel:1140409090" class="header-action">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3 5C3 3.89543 3.89543 3 5 3H8.27924C8.70967 3 9.09181 3.27543 9.22792 3.68377L10.7257 8.17721C10.8831 8.64932 10.6694 9.16531 10.2243 9.38787L7.96701 10.5165C9.06925 12.9612 11.0388 14.9308 13.4835 16.033L14.6121 13.7757C14.8347 13.3306 15.3507 13.1169 15.8228 13.2743L20.3162 14.7721C20.7246 14.9082 21 15.2903 21 15.7208V19C21 20.1046 20.1046 21 19 21H18C9.71573 21 3 14.2843 3 6V5Z"
+                            fill="white" />
+                    </svg>
+                    <div class="action-text">
+                        <span class="action-label">Televendas</span>
+                        <span class="action-value">(11) 4040-9090</span>
+                    </div>
+                </a>
 
-            <!-- Entre ou Cadastre-se -->
-            <a href="#login" class="header-action">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
-                        fill="white" />
-                    <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" fill="white" />
-                </svg>
-                <div class="action-text">
-                    <span class="action-label">Entre ou</span>
-                    <span class="action-value">Cadastre-se</span>
-                </div>
-            </a>
+                <!-- Meus Pedidos -->
+                <a href="#pedidos" class="header-action">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M9 11H15M9 15H12M7.00023 3H16.9998C17.0852 3 17.1695 3.01932 17.2461 3.05662L21.3462 5.10662C21.7217 5.29435 21.9649 5.67653 21.9847 6.09931C21.9949 6.28136 22.0001 6.46704 22.0001 6.65599V17C22.0001 19.2091 20.2092 21 18.0001 21H6.00023C3.79109 21 2.00023 19.2091 2.00023 17V6.65599C2.00023 6.46704 2.00531 6.28136 2.01554 6.09931C2.03532 5.67653 2.27854 5.29435 2.65401 5.10662L6.75408 3.05662C6.83072 3.01932 6.91495 3 7.00023 3Z"
+                            fill="white" />
+                    </svg>
+                    <div class="action-text">
+                        <span class="action-label">Meus</span>
+                        <span class="action-value">Pedidos</span>
+                    </div>
+                </a>
 
-            <!-- Carrinho -->
-            <a href="/pages/carrinho.html" class="header-action cart cart-action">
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M8 10V6.66667C8 3.90524 10.2386 1.66667 13 1.66667V1.66667C15.7614 1.66667 18 3.90524 18 6.66667V10M3.66667 10H22.3333L23.6667 26.3333H2.33333L3.66667 10Z"
-                        stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <span class="cart-badge" id="cartBadge">0</span>
-            </a>
-        </div>
-    </div>
+                <!-- Entre ou Cadastre-se -->
+                <a href="#login" class="header-action">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                            fill="white" />
+                        <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" fill="white" />
+                    </svg>
+                    <div class="action-text">
+                        <span class="action-label">Entre ou</span>
+                        <span class="action-value">Cadastre-se</span>
+                    </div>
+                </a>
 
-    <!-- Diagonal Stripes Right -->
-    <div class="diagonal-stripes right">
-        <div class="stripe"></div>
-        <div class="stripe"></div>
-        <div class="stripe"></div>
-    </div>
-</header>
-
-<!-- Categories Bar -->
-<div class="categories-bar">
-    <div class="categories-container">
-        <!-- Categorias Dropdown -->
-        <div class="categories-dropdown">
-            <button class="categories-button" id="categoriesBtn">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 3H14M2 8H14M2 13H14" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" />
-                </svg>
-                <span>CATEGORIAS</span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    class="chevron">
-                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-            </button>
-            <!-- Dropdown Menu (Hidden by default) -->
-            <div class="categories-menu" id="categoriesMenu">
-                <a href="#motor">Motor</a>
-                <a href="#freios">Freios</a>
-                <a href="#suspensao">Suspensão</a>
-                <a href="#eletrica">Elétrica</a>
-                <a href="#filtros">Filtros</a>
-                <a href="#iluminacao">Iluminação</a>
-                <a href="#acessorios">Acessórios</a>
+                <!-- Carrinho -->
+                <a href="/pages/carrinho.html" class="header-action cart cart-action">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M8 10V6.66667C8 3.90524 10.2386 1.66667 13 1.66667V1.66667C15.7614 1.66667 18 3.90524 18 6.66667V10M3.66667 10H22.3333L23.6667 26.3333H2.33333L3.66667 10Z"
+                            stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </a>
             </div>
         </div>
 
-        <!-- Category Links -->
-        <nav class="category-links">
-            <a href="#pecas-carros">Peças Carros</a>
-            <a href="#pecas-motos">Peças Motos</a>
-            <a href="#rastrear-pedido">Rastrear Pedido</a>
-            <a href="#nossos-servicos">Nossos Serviços</a>
-        </nav>
+        <!-- Diagonal Stripes Right -->
+        <div class="diagonal-stripes right">
+            <div class="stripe"></div>
+            <div class="stripe"></div>
+            <div class="stripe"></div>
+        </div>
+    </header>
+
+    <!-- Categories Bar -->
+    <div class="categories-bar">
+        <div class="categories-container">
+            <!-- Categorias Dropdown -->
+            <div class="categories-dropdown">
+                <button class="categories-button" id="categoriesBtn">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 3H14M2 8H14M2 13H14" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                    </svg>
+                    <span>CATEGORIAS</span>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        class="chevron">
+                        <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <!-- Dropdown Menu (Hidden by default) -->
+                <div class="categories-menu" id="categoriesMenu">
+                    <a href="#motor">Motor</a>
+                    <a href="#freios">Freios</a>
+                    <a href="#suspensao">Suspensão</a>
+                    <a href="#eletrica">Elétrica</a>
+                    <a href="#filtros">Filtros</a>
+                    <a href="#iluminacao">Iluminação</a>
+                    <a href="#acessorios">Acessórios</a>
+                </div>
+            </div>
+
+            <!-- Category Links -->
+            <nav class="category-links">
+                <a href="#pecas-carros">Peças Carros</a>
+                <a href="#pecas-motos">Peças Motos</a>
+                <a href="#rastrear-pedido">Rastrear Pedido</a>
+                <a href="#nossos-servicos">Nossos Serviços</a>
+            </nav>
+        </div>
     </div>
 </div>
-

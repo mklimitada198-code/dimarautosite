@@ -1,79 +1,87 @@
 # Changelog - 11/12/2024 (Sessão 2)
 
 ## Resumo
-Implementações focadas em melhorias de UX na homepage e funcionalidade do filtro de veículos.
+Implementações focadas em melhorias de UX na homepage, filtro de veículos funcional e header sticky profissional.
+
+---
+
+## 📌 Header Sticky (Fixo ao Scroll)
+
+### Comportamento Implementado
+- **No topo da página**: Todos elementos visíveis (barra de anúncio, menu navegação, header laranja, categorias)
+- **Ao fazer scroll** (após 100px): Apenas header laranja + categorias fica fixo com sombra
+- **Ao voltar ao topo**: Todos elementos reaparecem
+
+### Arquivos Modificados
+- **`templates/header.html`** - Wrapper `.sticky-header-wrapper` adicionado
+- **`js/templates.js`** - Função `initStickyHeader()` integrada ao carregamento de templates
+- **`css/style.css`** - Estilos para estados normal e `.is-scrolled`
+
+### Detalhes Técnicos
+- Espaçador dinâmico criado via JS para evitar saltos no conteúdo
+- `requestAnimationFrame` usado para performance no scroll
+- Evento `headerLoaded` disparado para scripts externos
 
 ---
 
 ## 🚗 Filtro de Veículos Funcional
 
 ### Arquivos Criados
-- **`js/vehicle-data.js`** - Dados de veículos brasileiros
-  - 17 marcas de carros (Chevrolet, Fiat, VW, Ford, Toyota, Honda, etc.)
-  - 10 marcas de motos (Honda, Yamaha, Suzuki, Kawasaki, etc.)
-  - Modelos populares para cada marca
-  - Anos de 2000 até atual + 1
+| Arquivo | Descrição |
+|---------|-----------|
+| `js/vehicle-data.js` | Dados de 17 marcas de carros e 10 de motos |
+| `js/vehicle-filter.js` | Lógica de cascata e redirecionamento |
 
-- **`js/vehicle-filter.js`** - Lógica completa do filtro
-  - Alternância entre tabs Carro/Moto
-  - Cascata de selects: Marca → Modelo → Ano
-  - Validação de campos obrigatórios
-  - Redirecionamento para página de produtos com parâmetros URL
-
-### Arquivos Modificados
-- **`index.html`** - Scripts adicionados (linhas 472-475)
-- **`js/catalog.js`** - Leitura de parâmetros de veículo
-  - Banner informativo com veículo selecionado
-  - Botão para limpar filtro
-  - Filtro por compatibilidade no array de produtos
+### Funcionalidades
+- Alternância entre abas Carro/Moto
+- Selects em cascata: Marca → Modelo → Ano
+- Validação de campos obrigatórios
+- Redirecionamento para produtos com parâmetros URL
 
 ---
 
-## 📦 Campo de Compatibilidade no Admin
+## 📦 Campo Compatibilidade no Admin
 
-### Arquivo Modificado: `dimaradmin/produtos.html`
-- Seção "Compatibilidade de Veículos" adicionada ao formulário
-- Campo `vehicle_type`: Carro / Moto / Universal
-- Campo `compatibility`: Textarea para listar veículos (um por linha)
+### Modificações em `dimaradmin/produtos.html`
+- Campo `vehicle_type`: Dropdown (Carro/Moto/Universal)
+- Campo `compatibility`: Textarea para veículos compatíveis
 
-### Arquivo Modificado: `dimaradmin/js/produtos.js`
-- `openProductModal()`: Carrega `vehicle_type` e `compatibility`
-- `saveProduct()`: Salva campos no Supabase
-- `parseCompatibility()`: Converte texto em array
+### Modificações em `dimaradmin/js/produtos.js`
+- Função `parseCompatibility()` para converter texto em array
+- Campos carregados/salvos no formulário de produtos
 
 ---
 
-## 🎨 Correções de Layout
+## 🎨 Botões "Ver Mais"
 
-### Cards de Produtos (CSS)
-- **Problema**: Cards com/sem preço promocional tinham alturas diferentes
-- **Solução**: `min-height: 115px` na área `.product-pricing`
-- **Arquivo**: `css/style.css` (linhas 1474-1501)
+### Adicionados em
+- Seção "Principais ofertas para você"
+- Seção "Mais Procurados"
 
-### Seção "Mais Procurados"
-- **Problema**: Produtos em múltiplas linhas
-- **Solução**: `flex-wrap: nowrap !important` + `max-height: 520px`
-- **Adicionado**: Botão "Ver todos os produtos" com link para catálogo
-- **Arquivo**: `css/style.css` (linhas 1314-1353)
+### Estilo
+- Botão laranja com gradiente e sombra
+- Ícone de seta com animação no hover
+- Link para página de produtos
 
 ---
 
-## 📁 Arquivos Modificados (Resumo)
+## 📁 Resumo de Arquivos
 
 | Arquivo | Tipo | Descrição |
 |---------|------|-----------|
-| `js/vehicle-data.js` | NOVO | Dados de carros e motos |
-| `js/vehicle-filter.js` | NOVO | Lógica do filtro de veículos |
-| `index.html` | MODIFICADO | Scripts de filtro + botão Ver Mais |
+| `js/vehicle-data.js` | NOVO | Dados de veículos |
+| `js/vehicle-filter.js` | NOVO | Lógica do filtro |
+| `js/sticky-header.js` | NOVO | (não utilizado - lógica em templates.js) |
+| `js/templates.js` | MODIFICADO | Sticky header integrado |
+| `templates/header.html` | MODIFICADO | Wrapper sticky |
+| `css/style.css` | MODIFICADO | Estilos sticky + botões |
+| `index.html` | MODIFICADO | Botões ver mais + scripts |
 | `js/catalog.js` | MODIFICADO | Filtro por compatibilidade |
-| `css/style.css` | MODIFICADO | Correções de layout |
-| `dimaradmin/produtos.html` | MODIFICADO | Campo de compatibilidade |
+| `dimaradmin/produtos.html` | MODIFICADO | Campos compatibilidade |
 | `dimaradmin/js/produtos.js` | MODIFICADO | Salvar/carregar compatibilidade |
 
 ---
 
-## 🔧 Próximos Passos Recomendados
+## ✅ Status
+Todas as funcionalidades testadas e funcionando corretamente.
 
-1. **Cadastrar compatibilidade nos produtos existentes** no admin
-2. **Testar filtro de veículos** na homepage com produtos cadastrados
-3. **Verificar responsividade** do novo layout em mobile
