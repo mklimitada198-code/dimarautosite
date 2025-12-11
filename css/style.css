@@ -2545,6 +2545,208 @@ ul {
     }
 }
 
+/* ==================== Vehicle Type Section ==================== */
+.vehicle-type-section {
+    padding: 60px 0;
+    background: linear-gradient(180deg, #f8f8f8 0%, #ffffff 100%);
+}
+
+.vehicle-type-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.vehicle-type-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.vehicle-type-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.vehicle-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.vehicle-type-card {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+    border-radius: 16px;
+    padding: 30px;
+    text-decoration: none;
+    color: #1a1a1a;
+    position: relative;
+    overflow: hidden;
+    min-height: 180px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.vehicle-type-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.vehicle-card-car {
+    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+}
+
+.vehicle-card-moto {
+    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+}
+
+.vehicle-card-icon {
+    width: 80px;
+    height: 80px;
+    background: #003366;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 24px;
+    flex-shrink: 0;
+    color: white;
+}
+
+.vehicle-card-icon svg {
+    width: 50px;
+    height: 50px;
+}
+
+.vehicle-card-content {
+    text-align: left;
+    flex: 1;
+    z-index: 1;
+}
+
+.vehicle-card-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #003366;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.vehicle-card-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #003366;
+    margin: 4px 0 12px 0;
+}
+
+.vehicle-card-cta {
+    font-size: 14px;
+    font-weight: 600;
+    color: #003366;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 51, 102, 0.1);
+    padding: 6px 14px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.vehicle-type-card:hover .vehicle-card-cta {
+    background: #003366;
+    color: white;
+}
+
+.vehicle-card-image {
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    width: 180px;
+    height: 180px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.vehicle-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Responsive Vehicle Type */
+@media (max-width: 768px) {
+    .vehicle-type-section {
+        padding: 40px 0;
+    }
+
+    .vehicle-type-title {
+        font-size: 26px;
+    }
+
+    .vehicle-type-subtitle {
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+
+    .vehicle-type-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .vehicle-type-card {
+        padding: 24px;
+        min-height: 140px;
+    }
+
+    .vehicle-card-icon {
+        width: 60px;
+        height: 60px;
+        margin-right: 16px;
+    }
+
+    .vehicle-card-icon svg {
+        width: 36px;
+        height: 36px;
+    }
+
+    .vehicle-card-title {
+        font-size: 20px;
+    }
+
+    .vehicle-card-image {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .vehicle-type-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+
+    .vehicle-card-icon {
+        margin-right: 0;
+        margin-bottom: 16px;
+    }
+
+    .vehicle-card-content {
+        text-align: center;
+    }
+
+    .vehicle-card-image {
+        display: none;
+    }
+}
+
 /* ==================== Free Shipping CTA ==================== */
 .free-shipping-cta {
     background: linear-gradient(135deg, #ff6600 0%, #ff7700 100%);
