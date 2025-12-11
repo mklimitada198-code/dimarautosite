@@ -101,3 +101,40 @@
 | `dimaradmin/js/produtos.js` | Salvar/carregar home_section |
 | `css/style.css` | Alinhamento de cards |
 | `database/migration-home-section.sql` | Migration para adicionar coluna |
+
+---
+
+### 6. Correção da Página de Catálogo de Produtos ✅
+
+**Problema:** Página `pages/produtos.html` não carregava produtos e exibia categorias como "undefined".
+
+**Solução:**
+- Refatorado `catalog.js` para integração com Supabase
+- Adicionado CDN do Supabase ao HTML da página
+- Corrigido formato de categorias em `products-catalog.js`
+- Removidos produtos de exemplo (usa apenas Supabase)
+- Cards mais compactos: 220px min, imagem 85%, padding 12px
+- Adicionado skeleton loading durante carregamento
+
+**Arquivos modificados:**
+- `js/catalog.js` - Refatoração completa
+- `js/products-catalog.js` - Formato de categorias
+- `css/catalog.css` - Cards compactos + skeleton
+- `pages/produtos.html` - CDN Supabase adicionado
+
+---
+
+## Resumo dos Arquivos Modificados (Sessão Completa)
+
+| Arquivo | Tipo de Alteração |
+|---------|-------------------|
+| `js/home-supabase.js` | Logos de marcas + Efeito botão + Filtro por seção |
+| `dimaradmin/js/categorias.js` | Sistema de categorias admin |
+| `dimaradmin/produtos.html` | Campo "Exibir na Homepage" |
+| `dimaradmin/js/produtos.js` | Salvar/carregar home_section |
+| `css/style.css` | Alinhamento de cards homepage |
+| `database/migration-home-section.sql` | Migration para adicionar coluna |
+| `js/catalog.js` | Refatoração página de catálogo |
+| `js/products-catalog.js` | Formato de categorias |
+| `css/catalog.css` | Cards compactos + skeleton |
+| `pages/produtos.html` | CDN Supabase |

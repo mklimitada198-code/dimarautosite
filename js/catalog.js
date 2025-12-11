@@ -1,13 +1,18 @@
 /**
- * Catalog Page - Main Script
- * Filtros, ordenação, paginação e renderização de produtos
+ * Catalog Page - Main Script (REFATORADO)
+ * Integração com Supabase + Filtros, ordenação, paginação
  */
 
-// State
+// ==================== STATE ====================
+let allProducts = [];
+let filteredProducts = [];
+let allCategories = [];
+let allBrands = [];
+
 let currentFilters = {
     categories: [],
     brands: [],
-    vehicleType: [], // car, moto, universal
+    vehicleType: [],
     promo: false,
     fastShipping: false,
     inStock: false
@@ -16,49 +21,223 @@ let currentFilters = {
 let currentSort = 'featured';
 let currentPage = 1;
 const itemsPerPage = 12;
-let filteredProducts = [];
 
-// Initialize
+console.log('📦 catalog.js carregado (VERSÃO REFATORADA)');
+
+// ==================== WAIT FOR SUPABASE ====================
+function waitForSupabase(callback) {
+    let attempts = 0;
+    const maxAttempts = 50; // 5 segundos max
+
+    const checkInterval = setInterval(() => {
+        attempts++;
+
+        if (window.supabaseClient) {
+            console.log('✅ Supabase detectado!');
+            clearInterval(checkInterval);
+            callback(true);
+        } else if (attempts >= maxAttempts) {
+            console.warn('⚠️ Timeout aguardando Supabase, usando dados estáticos');
+            clearInterval(checkInterval);
+            callback(false);
+        }
+    }, 100);
+}
+
+// ==================== INICIALIZAÇÃO ====================
 document.addEventListener('DOMContentLoaded', () => {
-    initializeCatalog();
+    console.log('🚀 DOM pronto, aguardando Supabase...');
+    showLoadingSkeleton();
+
+    waitForSupabase(async (supabaseAvailable) => {
+        await initializeCatalog(supabaseAvailable);
+    });
 });
 
 /**
  * Initialize catalog
  */
-function initializeCatalog() {
-    renderCategoryFilters();
-    renderBrandFilters();
-    setupEventListeners();
-    applyFilters();
-    
-    console.log('✅ Catálogo inicializado');
+async function initializeCatalog(supabaseAvailable) {
+    try {
+        // Carregar dados
+        await loadProducts(supabaseAvailable);
+        await loadCategories(supabaseAvailable);
+        await loadBrands(supabaseAvailable);
+
+        // Renderizar filtros
+        renderCategoryFilters();
+        renderBrandFilters();
+
+        // Setup e aplicar
+        setupEventListeners();
+        checkUrlParams();
+        applyFilters();
+
+        console.log('✅ Catálogo inicializado com', allProducts.length, 'produtos');
+    } catch (error) {
+        console.error('❌ Erro ao inicializar catálogo:', error);
+        hideLoadingSkeleton();
+    }
 }
 
-/**
- * Render category filters
- */
+// ==================== LOADING SKELETON ====================
+function showLoadingSkeleton() {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+
+    grid.innerHTML = Array(8).fill(`
+        <div class="product-card-catalog skeleton-card">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-content">
+                <div class="skeleton-text" style="width: 80%; height: 16px;"></div>
+                <div class="skeleton-text" style="width: 50%; height: 14px;"></div>
+                <div class="skeleton-text" style="width: 60%; height: 20px;"></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function hideLoadingSkeleton() {
+    const skeletons = document.querySelectorAll('.skeleton-card');
+    skeletons.forEach(s => s.remove());
+}
+
+// ==================== CARREGAR PRODUTOS ====================
+async function loadProducts(supabaseAvailable) {
+    console.log('📥 Carregando produtos...');
+
+    if (supabaseAvailable && window.supabaseClient) {
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('products')
+                .select('*')
+                .eq('status', 'active')
+                .order('featured', { ascending: false })
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            allProducts = data || [];
+            console.log(`✅ ${allProducts.length} produtos carregados do Supabase`);
+            return;
+        } catch (error) {
+            console.error('❌ Erro ao carregar do Supabase:', error);
+        }
+    }
+
+    // Se não conectou ao Supabase, mostra mensagem de erro
+    allProducts = [];
+    console.log('⚠️ Nenhum produto disponível - Supabase não conectado');
+}
+
+// ==================== CARREGAR CATEGORIAS ====================
+async function loadCategories(supabaseAvailable) {
+    console.log('📥 Carregando categorias...');
+
+    if (supabaseAvailable && window.supabaseClient) {
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('categories')
+                .select('*')
+                .order('name');
+
+            if (error) throw error;
+
+            allCategories = (data || []).map(cat => ({
+                id: cat.slug || cat.id,
+                name: cat.name,
+                icon: cat.icon || '📦'
+            }));
+            console.log(`✅ ${allCategories.length} categorias carregadas`);
+            return;
+        } catch (error) {
+            console.error('❌ Erro ao carregar categorias:', error);
+        }
+    }
+
+    // Fallback: categorias padrão
+    allCategories = [
+        { id: 'motor', name: 'Motor', icon: '🔧' },
+        { id: 'freios', name: 'Freios', icon: '🛑' },
+        { id: 'suspensao', name: 'Suspensão', icon: '🔩' },
+        { id: 'eletrica', name: 'Elétrica', icon: '⚡' },
+        { id: 'filtros', name: 'Filtros', icon: '🌀' },
+        { id: 'iluminacao', name: 'Iluminação', icon: '💡' },
+        { id: 'acessorios', name: 'Acessórios', icon: '🎯' }
+    ];
+    console.log('📦 Categorias padrão carregadas');
+}
+
+// ==================== CARREGAR MARCAS ====================
+async function loadBrands(supabaseAvailable) {
+    console.log('📥 Carregando marcas...');
+
+    if (supabaseAvailable && window.supabaseClient) {
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('brands')
+                .select('name')
+                .order('name');
+
+            if (error) throw error;
+
+            allBrands = (data || []).map(b => b.name);
+            console.log(`✅ ${allBrands.length} marcas carregadas`);
+            return;
+        } catch (error) {
+            console.error('❌ Erro ao carregar marcas:', error);
+        }
+    }
+
+    // Fallback: extrair das marcas dos produtos
+    allBrands = [...new Set(allProducts.map(p => p.brand).filter(Boolean))].sort();
+    console.log('📦 Marcas extraídas dos produtos');
+}
+
+// ==================== CHECK URL PARAMS ====================
+function checkUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    const categoria = params.get('categoria');
+
+    if (categoria) {
+        currentFilters.categories.push(categoria);
+        console.log('🔍 Filtro de categoria via URL:', categoria);
+    }
+}
+
+// ==================== RENDER CATEGORY FILTERS ====================
 function renderCategoryFilters() {
     const container = document.getElementById('categoriesFilter');
-    
-    container.innerHTML = window.categories.map(cat => `
+    if (!container) return;
+
+    if (allCategories.length === 0) {
+        container.innerHTML = '<p style="color: #999; font-size: 14px;">Nenhuma categoria</p>';
+        return;
+    }
+
+    container.innerHTML = allCategories.map(cat => `
         <label class="filter-checkbox">
             <input 
                 type="checkbox" 
                 value="${cat.id}"
+                ${currentFilters.categories.includes(cat.id) ? 'checked' : ''}
                 onchange="toggleCategoryFilter('${cat.id}')">
             <span>${cat.icon} ${cat.name}</span>
         </label>
     `).join('');
 }
 
-/**
- * Render brand filters
- */
+// ==================== RENDER BRAND FILTERS ====================
 function renderBrandFilters() {
     const container = document.getElementById('brandsFilter');
-    
-    container.innerHTML = window.brands.map(brand => `
+    if (!container) return;
+
+    if (allBrands.length === 0) {
+        container.innerHTML = '<p style="color: #999; font-size: 14px;">Nenhuma marca</p>';
+        return;
+    }
+
+    container.innerHTML = allBrands.map(brand => `
         <label class="filter-checkbox">
             <input 
                 type="checkbox" 
@@ -69,9 +248,7 @@ function renderBrandFilters() {
     `).join('');
 }
 
-/**
- * Setup event listeners
- */
+// ==================== SETUP EVENT LISTENERS ====================
 function setupEventListeners() {
     // Filter toggle (mobile)
     document.getElementById('filterToggle')?.addEventListener('click', () => {
@@ -83,10 +260,10 @@ function setupEventListeners() {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
+
             const view = btn.dataset.view;
             const grid = document.getElementById('productsGrid');
-            
+
             if (view === 'list') {
                 grid.classList.add('list-view');
             } else {
@@ -99,48 +276,42 @@ function setupEventListeners() {
     document.getElementById('brandSearch')?.addEventListener('input', (e) => {
         const search = e.target.value.toLowerCase();
         const checkboxes = document.querySelectorAll('#brandsFilter .filter-checkbox');
-        
+
         checkboxes.forEach(cb => {
             const text = cb.textContent.toLowerCase();
             cb.style.display = text.includes(search) ? 'flex' : 'none';
         });
     });
+
+    console.log('✅ Event listeners configurados');
 }
 
-/**
- * Toggle category filter
- */
+// ==================== TOGGLE FILTERS ====================
 function toggleCategoryFilter(categoryId) {
     const index = currentFilters.categories.indexOf(categoryId);
-    
+
     if (index === -1) {
         currentFilters.categories.push(categoryId);
     } else {
         currentFilters.categories.splice(index, 1);
     }
-    
+
     applyFilters();
 }
 
-/**
- * Toggle brand filter
- */
 function toggleBrandFilter(brand) {
     const index = currentFilters.brands.indexOf(brand);
-    
+
     if (index === -1) {
         currentFilters.brands.push(brand);
     } else {
         currentFilters.brands.splice(index, 1);
     }
-    
+
     applyFilters();
 }
 
-
-/**
- * Apply all filters
- */
+// ==================== APPLY FILTERS ====================
 function applyFilters() {
     // Get vehicle type filters
     currentFilters.vehicleType = [];
@@ -154,34 +325,30 @@ function applyFilters() {
     currentFilters.inStock = document.getElementById('filterInStock')?.checked || false;
 
     // Filter products
-    filteredProducts = window.catalogProducts.filter(product => {
-        // Category filter
-        if (currentFilters.categories.length > 0 && 
-            !currentFilters.categories.includes(product.category)) {
-            return false;
+    filteredProducts = allProducts.filter(product => {
+        // Category filter (compatível com Supabase - usa 'category' como string)
+        if (currentFilters.categories.length > 0) {
+            const productCategory = product.category?.toLowerCase() || '';
+            const matches = currentFilters.categories.some(cat =>
+                productCategory === cat.toLowerCase() ||
+                productCategory.includes(cat.toLowerCase())
+            );
+            if (!matches) return false;
         }
 
         // Brand filter
-        if (currentFilters.brands.length > 0 && 
+        if (currentFilters.brands.length > 0 &&
             !currentFilters.brands.includes(product.brand)) {
             return false;
         }
 
-        // Vehicle type filter (assumindo que todos produtos são universal por enquanto)
-        // Você pode adicionar essa propriedade aos produtos depois
-        // if (currentFilters.vehicleType.length > 0 && 
-        //     product.vehicleType && 
-        //     !currentFilters.vehicleType.includes(product.vehicleType)) {
-        //     return false;
-        // }
-
-        // Promo filter
-        if (currentFilters.promo && !product.salePrice) {
+        // Promo filter (compatível com Supabase - usa 'sale_price')
+        if (currentFilters.promo && !product.sale_price && !product.salePrice) {
             return false;
         }
 
         // Fast shipping filter
-        if (currentFilters.fastShipping && !product.fastShipping) {
+        if (currentFilters.fastShipping && !product.fast_shipping && !product.fastShipping) {
             return false;
         }
 
@@ -195,10 +362,10 @@ function applyFilters() {
 
     // Apply sort
     applySort();
-    
+
     // Reset to page 1
     currentPage = 1;
-    
+
     // Render
     renderActiveFilters();
     renderProducts();
@@ -206,9 +373,7 @@ function applyFilters() {
     updateResultsCount();
 }
 
-/**
- * Apply sorting
- */
+// ==================== APPLY SORT ====================
 function applySort() {
     const sortValue = document.getElementById('sortSelect')?.value || currentSort;
     currentSort = sortValue;
@@ -216,56 +381,56 @@ function applySort() {
     switch (sortValue) {
         case 'price-asc':
             filteredProducts.sort((a, b) => {
-                const priceA = a.salePrice || a.price;
-                const priceB = b.salePrice || b.price;
+                const priceA = a.sale_price || a.salePrice || a.price;
+                const priceB = b.sale_price || b.salePrice || b.price;
                 return priceA - priceB;
             });
             break;
-        
+
         case 'price-desc':
             filteredProducts.sort((a, b) => {
-                const priceA = a.salePrice || a.price;
-                const priceB = b.salePrice || b.price;
+                const priceA = a.sale_price || a.salePrice || a.price;
+                const priceB = b.sale_price || b.salePrice || b.price;
                 return priceB - priceA;
             });
             break;
-        
+
         case 'name-asc':
             filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
             break;
-        
+
         case 'name-desc':
             filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
             break;
-        
+
         case 'newest':
-            filteredProducts.sort((a, b) => b.id.localeCompare(a.id));
+            filteredProducts.sort((a, b) => {
+                const dateA = new Date(a.created_at || 0);
+                const dateB = new Date(b.created_at || 0);
+                return dateB - dateA;
+            });
             break;
-        
+
         default: // featured
             filteredProducts.sort((a, b) => {
                 if (a.featured && !b.featured) return -1;
                 if (!a.featured && b.featured) return 1;
-                return b.rating - a.rating;
+                return 0;
             });
     }
-
-    renderProducts();
 }
 
-/**
- * Render active filters
- */
+// ==================== RENDER ACTIVE FILTERS ====================
 function renderActiveFilters() {
     const container = document.getElementById('activeFilters');
+    if (!container) return;
+
     const tags = [];
 
     // Categories
     currentFilters.categories.forEach(catId => {
-        const cat = window.categories.find(c => c.id === catId);
-        if (cat) {
-            tags.push({ type: 'category', value: catId, label: cat.name });
-        }
+        const cat = allCategories.find(c => c.id === catId);
+        tags.push({ type: 'category', value: catId, label: cat?.name || catId });
     });
 
     // Brands
@@ -309,48 +474,47 @@ function renderActiveFilters() {
     `).join('');
 }
 
-/**
- * Remove filter
- */
+// ==================== REMOVE FILTER ====================
 function removeFilter(type, value) {
     switch (type) {
         case 'category':
             const catIndex = currentFilters.categories.indexOf(value);
             if (catIndex !== -1) {
                 currentFilters.categories.splice(catIndex, 1);
-                document.querySelector(`#categoriesFilter input[value="${value}"]`).checked = false;
+                const checkbox = document.querySelector(`#categoriesFilter input[value="${value}"]`);
+                if (checkbox) checkbox.checked = false;
             }
             break;
-        
+
         case 'brand':
             const brandIndex = currentFilters.brands.indexOf(value);
             if (brandIndex !== -1) {
                 currentFilters.brands.splice(brandIndex, 1);
-                document.querySelector(`#brandsFilter input[value="${value}"]`).checked = false;
+                const checkbox = document.querySelector(`#brandsFilter input[value="${value}"]`);
+                if (checkbox) checkbox.checked = false;
             }
             break;
-        
+
         case 'vehicleType':
             const vtIndex = currentFilters.vehicleType.indexOf(value);
             if (vtIndex !== -1) {
                 currentFilters.vehicleType.splice(vtIndex, 1);
             }
-            // Atualiza checkboxes
             if (value === 'car') document.getElementById('filterCar').checked = false;
             if (value === 'moto') document.getElementById('filterMoto').checked = false;
             if (value === 'universal') document.getElementById('filterUniversal').checked = false;
             break;
-        
+
         case 'promo':
             currentFilters.promo = false;
             document.getElementById('filterPromo').checked = false;
             break;
-        
+
         case 'fastShipping':
             currentFilters.fastShipping = false;
             document.getElementById('filterFastShipping').checked = false;
             break;
-        
+
         case 'inStock':
             currentFilters.inStock = false;
             document.getElementById('filterInStock').checked = false;
@@ -360,9 +524,7 @@ function removeFilter(type, value) {
     applyFilters();
 }
 
-/**
- * Clear all filters
- */
+// ==================== CLEAR ALL FILTERS ====================
 function clearAllFilters() {
     currentFilters = {
         categories: [],
@@ -381,45 +543,74 @@ function clearAllFilters() {
     applyFilters();
 }
 
-/**
- * Render products
- */
+// ==================== RENDER PRODUCTS ====================
 function renderProducts() {
     const grid = document.getElementById('productsGrid');
     const noResults = document.getElementById('noResults');
 
+    if (!grid) return;
+
     if (filteredProducts.length === 0) {
         grid.style.display = 'none';
-        noResults.style.display = 'block';
+        if (noResults) noResults.style.display = 'block';
         return;
     }
 
     grid.style.display = 'grid';
-    noResults.style.display = 'none';
+    if (noResults) noResults.style.display = 'none';
 
     // Paginate
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     const productsToShow = filteredProducts.slice(start, end);
 
-    grid.innerHTML = productsToShow.map(product => `
+    grid.innerHTML = productsToShow.map(product => {
+        // Compatibilidade de campos entre Supabase e dados estáticos
+        const salePrice = product.sale_price || product.salePrice;
+        const fastShipping = product.fast_shipping || product.fastShipping;
+        const shortDesc = product.short_description || product.description || '';
+
+        // Determinar imagem (Supabase usa array 'images', estático usa 'image')
+        let imageUrl = '';
+        if (product.images && product.images.length > 0) {
+            imageUrl = product.images[0];
+        } else if (product.image) {
+            // Se já é URL absoluta, não adicionar '../'
+            imageUrl = product.image.startsWith('http') ? product.image : `../${product.image}`;
+        }
+
+        // Placeholder se não tiver imagem
+        if (!imageUrl) {
+            imageUrl = '../assets/images/placeholder-produto.png';
+        }
+
+        // Badge
+        let badge = '';
+        if (product.badge_type === 'destaque' || product.featured) {
+            badge = '<span class="product-badge-catalog destaque">Destaque</span>';
+        } else if (product.badge_type === 'oferta' || salePrice) {
+            badge = '<span class="product-badge-catalog promo">Oferta</span>';
+        } else if (product.badge_type === 'mais-vendido') {
+            badge = '<span class="product-badge-catalog hot">Mais Vendido</span>';
+        } else if (product.custom_badge_text) {
+            badge = `<span class="product-badge-catalog">${product.custom_badge_text}</span>`;
+        }
+
+        return `
         <div class="product-card-catalog">
             <div class="product-card-image">
-                <img src="../${product.image}" alt="${product.name}" loading="lazy">
-                ${product.salePrice ? '<span class="product-badge-catalog promo">Oferta</span>' : ''}
-                ${product.fastShipping ? '<span class="product-fast-badge">⚡ RÁPIDO</span>' : ''}
+                <img src="${imageUrl}" alt="${product.name}" loading="lazy" 
+                     onerror="this.src='../assets/images/placeholder-produto.png'">
+                ${badge}
+                ${fastShipping ? '<span class="product-fast-badge">⚡ RÁPIDO</span>' : ''}
             </div>
             <div class="product-card-content">
                 <h3 class="product-card-title">${product.name}</h3>
-                <p class="product-card-sku">SKU: ${product.sku}</p>
-                <div class="product-card-rating">
-                    <span class="stars">${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5 - Math.floor(product.rating))}</span>
-                    <span class="reviews-count">(${product.reviews})</span>
-                </div>
+                <p class="product-card-sku">SKU: ${product.sku || 'N/A'}</p>
                 <div class="product-card-price">
-                    ${product.salePrice ? `
+                    ${salePrice ? `
                         <span class="price-original">R$ ${formatPrice(product.price)}</span>
-                        <span class="price-current">R$ ${formatPrice(product.salePrice)}</span>
+                        <span class="price-current">R$ ${formatPrice(salePrice)}</span>
                     ` : `
                         <span class="price-normal">R$ ${formatPrice(product.price)}</span>
                     `}
@@ -434,14 +625,14 @@ function renderProducts() {
                 </div>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
-/**
- * Render pagination
- */
+// ==================== RENDER PAGINATION ====================
 function renderPagination() {
     const container = document.getElementById('pagination');
+    if (!container) return;
+
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
     if (totalPages <= 1) {
@@ -457,8 +648,8 @@ function renderPagination() {
 
     for (let i = 1; i <= totalPages; i++) {
         if (
-            i === 1 || 
-            i === totalPages || 
+            i === 1 ||
+            i === totalPages ||
             (i >= currentPage - 1 && i <= currentPage + 1)
         ) {
             html += `
@@ -482,53 +673,53 @@ function renderPagination() {
     container.innerHTML = html;
 }
 
-/**
- * Change page
- */
+// ==================== CHANGE PAGE ====================
 function changePage(page) {
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-    
+
     if (page < 1 || page > totalPages) return;
-    
+
     currentPage = page;
     renderProducts();
     renderPagination();
-    
+
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/**
- * Update results count
- */
+// ==================== UPDATE RESULTS COUNT ====================
 function updateResultsCount() {
     const count = filteredProducts.length;
     const text = count === 1 ? 'produto encontrado' : 'produtos encontrados';
-    document.getElementById('resultsCount').textContent = `${count} ${text}`;
+    const el = document.getElementById('resultsCount');
+    if (el) el.textContent = `${count} ${text}`;
 }
 
-/**
- * Add product to cart
- */
+// ==================== ADD TO CART ====================
 function addProductToCart(productId, button) {
-    const product = window.catalogProducts.find(p => p.id === productId);
-    
-    if (!product) return;
+    const product = allProducts.find(p => p.id === productId);
+
+    if (!product) {
+        console.warn('Produto não encontrado:', productId);
+        return;
+    }
 
     // Animate button
     button.style.transform = 'scale(0.95)';
     setTimeout(() => button.style.transform = 'scale(1)', 150);
 
-    // Add to cart
-    window.cart.addItem({
-        id: product.id,
-        name: product.name,
-        sku: product.sku,
-        price: product.price,
-        salePrice: product.salePrice,
-        image: product.image,
-        quantity: 1
-    });
+    // Add to cart (compatível com Supabase)
+    if (window.cart && window.cart.addItem) {
+        window.cart.addItem({
+            id: product.id,
+            name: product.name,
+            sku: product.sku,
+            price: product.price,
+            salePrice: product.sale_price || product.salePrice,
+            image: product.images?.[0] || product.image,
+            quantity: 1
+        });
+    }
 
     // Visual feedback
     const originalHTML = button.innerHTML;
@@ -541,17 +732,15 @@ function addProductToCart(productId, button) {
     }, 2000);
 }
 
-/**
- * View product details
- */
+// ==================== VIEW PRODUCT ====================
 function viewProduct(productId) {
     window.location.href = `produto.html?id=${productId}`;
 }
 
-/**
- * Format price
- */
+// ==================== FORMAT PRICE ====================
 function formatPrice(value) {
-    return value.toFixed(2).replace('.', ',');
+    if (!value && value !== 0) return '0,00';
+    return parseFloat(value).toFixed(2).replace('.', ',');
 }
 
+console.log('✅ catalog.js totalmente carregado!');

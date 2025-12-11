@@ -377,8 +377,24 @@ const catalogProducts = [
     }
 ];
 
-// Extrair categorias únicas
-const categories = [...new Set(catalogProducts.map(p => p.category))].sort();
+// Mapa de ícones para categorias
+const categoryIcons = {
+    'Motor': '🔧',
+    'Freios': '🛑',
+    'Suspensão': '🔩',
+    'Elétrica': '⚡',
+    'Filtros': '🌀',
+    'Iluminação': '💡',
+    'Acessórios': '🎯'
+};
+
+// Extrair categorias únicas com formato correto {id, name, icon}
+const categoryNames = [...new Set(catalogProducts.map(p => p.category))].sort();
+const categories = categoryNames.map(name => ({
+    id: name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+    name: name,
+    icon: categoryIcons[name] || '📦'
+}));
 
 // Extrair marcas únicas
 const brands = [...new Set(catalogProducts.map(p => p.brand))].sort();
@@ -387,3 +403,4 @@ const brands = [...new Set(catalogProducts.map(p => p.brand))].sort();
 window.catalogProducts = catalogProducts;
 window.categories = categories;
 window.brands = brands;
+
