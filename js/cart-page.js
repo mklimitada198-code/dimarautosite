@@ -1,46 +1,86 @@
 /**
- * Cart Page Script (REFATORADO)
+ * Cart Page Script (REFATORADO v3 - Simplificado)
  * Gerenciamento da interface da página do carrinho
+ * Usa funções globais simples que são mais robustas
  */
 
 (function () {
     'use strict';
 
-    console.log('🛒 cart-page.js carregado');
+    console.log('🛒 cart-page.js v3 carregado');
 
-    // Aguardar carregar
-    window.addEventListener('load', () => {
-        setTimeout(initCartPage, 300);
-    });
+    // Aguardar DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 
-    function initCartPage() {
+    function init() {
+        // Aguardar cart.js carregar
+        checkCartAndInit();
+    }
+
+    function checkCartAndInit() {
         if (!window.cart) {
-            console.error('❌ Cart system not loaded');
+            console.log('⏳ Aguardando cart.js...');
+            setTimeout(checkCartAndInit, 200);
             return;
         }
 
         console.log('✅ Initializing cart page...');
 
-        updateCartDisplay();
-        setupEventListeners();
+        // Configurar listeners estáticos (elementos que já existem)
+        setupStaticListeners();
 
-        // Listen for cart changes (cart.js dispara pelo window)
+        // Atualizar display inicial
+        updateCartDisplay();
+
+        // Escutar mudanças no carrinho
         window.addEventListener('cartUpdated', updateCartDisplay);
     }
 
-    function setupEventListeners() {
-        // Coupon input (Enter key)
+    function setupStaticListeners() {
+        // Botão Limpar Carrinho
+        const clearBtn = document.getElementById('clearCartBtn');
+        if (clearBtn) {
+            clearBtn.onclick = function () {
+                if (window.cart && confirm('Deseja realmente limpar o carrinho?')) {
+                    window.cart.items = [];
+                    window.cart.saveToStorage();
+                    window.cart.updateCartBadge();
+                    updateCartDisplay();
+                    showToast('Carrinho limpo!', 'info');
+                }
+            };
+        }
+
+        // Botão Aplicar Cupom
+        const applyBtn = document.querySelector('.btn-apply');
+        if (applyBtn) {
+            applyBtn.onclick = window.applyCouponHandler;
+        }
+
+        // Cupom com Enter
         const couponInput = document.getElementById('couponInput');
         if (couponInput) {
-            couponInput.addEventListener('keypress', (e) => {
+            couponInput.onkeypress = function (e) {
                 if (e.key === 'Enter') {
-                    applyCoupon();
+                    window.applyCouponHandler();
                 }
-            });
+            };
+        }
+
+        // Botão Checkout
+        const checkoutBtn = document.querySelector('.btn-checkout');
+        if (checkoutBtn) {
+            checkoutBtn.onclick = window.proceedToCheckout;
         }
     }
 
     function updateCartDisplay() {
+        if (!window.cart) return;
+
         const items = window.cart.getItems();
         const isEmpty = items.length === 0;
 
@@ -67,41 +107,40 @@
         const container = document.getElementById('cartItemsList');
         if (!container) return;
 
-        container.innerHTML = items.map(item => {
+        const html = items.map(item => {
             const salePrice = item.sale_price || item.salePrice;
             const price = salePrice || item.price;
             const subtotal = price * item.quantity;
             const hasDiscount = salePrice && salePrice < item.price;
 
-            // Determinar imagem - verificar todas as possibilidades
-            // Placeholder SVG inline (não depende de arquivos externos)
-            const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect fill='%23f0f0f0' width='200' height='200'/%3E%3Ctext x='50%25' y='45%25' fill='%23999' font-family='Arial' font-size='14' text-anchor='middle'%3ESem Imagem%3C/text%3E%3Ctext x='50%25' y='55%25' fill='%23ccc' font-family='Arial' font-size='30' text-anchor='middle'%3E📦%3C/text%3E%3C/svg%3E";
-            let imageUrl = PLACEHOLDER_IMG; // Default
-
-            if (item.images && Array.isArray(item.images) && item.images.length > 0 && item.images[0]) {
+            // Determinar imagem - priorizar array de imagens
+            let imageUrl = '';
+            if (item.images && Array.isArray(item.images) && item.images.length > 0) {
                 imageUrl = item.images[0];
-            } else if (item.image && item.image.trim() !== '') {
-                imageUrl = item.image.startsWith('http') ? item.image : `../${item.image}`;
+            } else if (item.image && typeof item.image === 'string' && item.image.trim()) {
+                imageUrl = item.image;
             }
 
-            // Verificar se parece uma URL válida
-            if (!imageUrl || imageUrl === '' || imageUrl === 'null' || imageUrl === 'undefined') {
-                imageUrl = PLACEHOLDER_IMG;
+            // Limpar URLs inválidas
+            if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined') {
+                imageUrl = '';
             }
 
-            // SKU tratado
             const sku = item.sku || 'N/A';
+            const safeName = escapeHtml(item.name || 'Produto');
+            const safeId = String(item.id).replace(/'/g, "\\'"); // Escapar aspas simples para JS
+
+            // HTML da imagem
+            const imgHtml = imageUrl
+                ? `<img src="${escapeHtml(imageUrl)}" alt="${safeName}" loading="lazy">`
+                : `<div class="cart-item-placeholder">📦</div>`;
 
             return `
-                <div class="cart-item" data-item-id="${item.id}">
-                    <div class="item-image">
-                        <img src="${imageUrl}" alt="${item.name}" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'">
-                    </div>
-
+                <div class="cart-item" data-item-id="${escapeHtml(item.id)}">
+                    <div class="item-image">${imgHtml}</div>
                     <div class="item-details">
-                        <h4 class="item-name">${item.name}</h4>
-                        <p class="item-sku">SKU: ${sku}</p>
-                        
+                        <h4 class="item-name">${safeName}</h4>
+                        <p class="item-sku">SKU: ${escapeHtml(sku)}</p>
                         <div class="item-price">
                             ${hasDiscount ? `
                                 <span class="item-price-original">R$ ${formatPrice(item.price)}</span>
@@ -111,27 +150,18 @@
                             `}
                         </div>
                     </div>
-
                     <div class="item-actions">
                         <div class="quantity-control">
-                            <button class="qty-btn qty-minus" onclick="changeQuantity('${item.id}', -1)">−</button>
-                            <input 
-                                type="number" 
-                                class="qty-input" 
-                                value="${item.quantity}" 
-                                min="1" 
-                                max="99"
-                                onchange="updateQuantity('${item.id}', this.value)"
-                            >
-                            <button class="qty-btn qty-plus" onclick="changeQuantity('${item.id}', 1)">+</button>
+                            <button type="button" class="qty-btn qty-minus" onclick="window.cartChangeQty('${safeId}', -1)">−</button>
+                            <input type="number" class="qty-input" value="${item.quantity}" min="1" max="99" 
+                                   onchange="window.cartSetQty('${safeId}', this.value)">
+                            <button type="button" class="qty-btn qty-plus" onclick="window.cartChangeQty('${safeId}', 1)">+</button>
                         </div>
-                        
                         <div class="item-subtotal">
                             <span class="subtotal-label">Subtotal:</span>
                             <span class="subtotal-value">R$ ${formatPrice(subtotal)}</span>
                         </div>
-
-                        <button class="remove-btn" onclick="removeItem('${item.id}')">
+                        <button type="button" class="remove-btn" onclick="window.cartRemoveItem('${safeId}')">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                 <path d="M4 4L12 12M4 12L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
@@ -141,14 +171,17 @@
                 </div>
             `;
         }).join('');
+
+        container.innerHTML = html;
     }
 
     function renderSummary() {
-        const totals = window.cart.calculateTotals();
+        if (!window.cart || !window.cart.calculateTotals) return;
 
+        const totals = window.cart.calculateTotals();
         console.log('📊 Totais:', totals);
 
-        // Atualizar subtotal (ID: summarySubtotal)
+        // Subtotal
         const subtotalEl = document.getElementById('summarySubtotal');
         if (subtotalEl) subtotalEl.textContent = `R$ ${formatPrice(totals.subtotal)}`;
 
@@ -156,9 +189,8 @@
         const productDiscountEl = document.getElementById('summaryProductDiscount');
         const productDiscountRow = document.getElementById('productDiscountRow');
         if (productDiscountEl && productDiscountRow) {
-            const productDiscount = totals.productDiscount || 0;
-            if (productDiscount > 0) {
-                productDiscountEl.textContent = `- R$ ${formatPrice(productDiscount)}`;
+            if (totals.productDiscount > 0) {
+                productDiscountEl.textContent = `- R$ ${formatPrice(totals.productDiscount)}`;
                 productDiscountRow.style.display = 'flex';
             } else {
                 productDiscountRow.style.display = 'none';
@@ -169,9 +201,8 @@
         const couponDiscountEl = document.getElementById('summaryCouponDiscount');
         const couponDiscountRow = document.getElementById('couponDiscountRow');
         if (couponDiscountEl && couponDiscountRow) {
-            const couponDiscount = totals.couponDiscount || 0;
-            if (couponDiscount > 0) {
-                couponDiscountEl.textContent = `- R$ ${formatPrice(couponDiscount)}`;
+            if (totals.couponDiscount > 0) {
+                couponDiscountEl.textContent = `- R$ ${formatPrice(totals.couponDiscount)}`;
                 couponDiscountRow.style.display = 'flex';
             } else {
                 couponDiscountRow.style.display = 'none';
@@ -185,110 +216,101 @@
         // Cupom ativo
         const activeCoupon = document.getElementById('activeCoupon');
         const couponCode = document.getElementById('couponCode');
-        const couponInput = document.getElementById('couponInput');
+        const couponInputGroup = document.querySelector('.coupon-input-group');
 
         if (activeCoupon && window.cart.coupon) {
             activeCoupon.style.display = 'flex';
             if (couponCode) couponCode.textContent = window.cart.coupon.code;
-            if (couponInput) couponInput.style.display = 'none';
+            if (couponInputGroup) couponInputGroup.style.display = 'none';
         } else if (activeCoupon) {
             activeCoupon.style.display = 'none';
-            if (couponInput) couponInput.style.display = 'block';
+            if (couponInputGroup) couponInputGroup.style.display = 'flex';
         }
     }
 
-    // Global functions for inline onclick
-    window.changeQuantity = function (itemId, delta) {
+    // ============ FUNÇÕES GLOBAIS ============
+
+    // Remover item
+    window.cartRemoveItem = function (itemId) {
+        console.log('🗑️ Removendo item:', itemId);
+        if (confirm('Deseja remover este item do carrinho?')) {
+            window.cart.removeItem(itemId);
+            updateCartDisplay();
+            showToast('Item removido do carrinho', 'info');
+        }
+    };
+
+    // Mudar quantidade (+/-)
+    window.cartChangeQty = function (itemId, delta) {
         const item = window.cart.getItems().find(i => i.id === itemId);
         if (item) {
             const newQty = item.quantity + delta;
             if (newQty > 0 && newQty <= 99) {
-                window.cart.updateItemQuantity(itemId, newQty);
+                window.cart.updateQuantity(itemId, newQty);
+                updateCartDisplay();
+            } else if (newQty <= 0) {
+                window.cartRemoveItem(itemId);
             }
         }
     };
 
-    window.updateQuantity = function (itemId, value) {
+    // Definir quantidade diretamente
+    window.cartSetQty = function (itemId, value) {
         const qty = parseInt(value);
         if (qty > 0 && qty <= 99) {
-            window.cart.updateItemQuantity(itemId, qty);
-        } else {
+            window.cart.updateQuantity(itemId, qty);
             updateCartDisplay();
+        } else {
+            updateCartDisplay(); // Reset para valor válido
         }
     };
 
-    window.removeItem = function (itemId) {
-        if (confirm('Deseja remover este item do carrinho?')) {
-            window.cart.removeItem(itemId);
-        }
-    };
-
-    window.applyCoupon = function () {
+    // Aplicar cupom
+    window.applyCouponHandler = function () {
         const input = document.getElementById('couponInput');
         if (!input) return;
 
         const code = input.value.trim().toUpperCase();
-
         if (!code) {
             showToast('Digite um código de cupom', 'warning');
             return;
         }
 
         const result = window.cart.applyCoupon(code);
-
-        if (result.success) {
+        if (result) {
             input.value = '';
-            showToast(`✅ Cupom aplicado! ${result.message}`, 'success');
+            showToast('✅ Cupom aplicado com sucesso!', 'success');
             updateCartDisplay();
         } else {
-            showToast(`❌ ${result.message}`, 'error');
+            showToast('❌ Cupom inválido', 'error');
         }
     };
 
+    // Checkout
     window.proceedToCheckout = function () {
         const items = window.cart.getItems();
         if (items.length === 0) {
-            showToast('Adicione produtos ao carrinho primeiro!', 'warning');
+            showToast('Adicione produtos primeiro!', 'warning');
             return;
         }
-
-        // Por enquanto, apenas mostra mensagem
-        showToast('Redirecionando para o checkout...', 'info');
-
-        // TODO: Implementar checkout real
-        // window.location.href = 'checkout.html';
+        showToast('Redirecionando para checkout...', 'info');
+        // TODO: Implementar checkout
     };
 
-    // Toast notification simples
-    function showToast(message, type = 'info') {
-        // Se existir toast anterior, remover
-        const existingToast = document.querySelector('.cart-toast');
-        if (existingToast) existingToast.remove();
+    // Aliases para compatibilidade
+    window.removeItem = window.cartRemoveItem;
+    window.changeQuantity = window.cartChangeQty;
+    window.updateQuantity = window.cartSetQty;
+    window.applyCoupon = window.applyCouponHandler;
+    window.updateCartPage = updateCartDisplay;
 
-        const toast = document.createElement('div');
-        toast.className = `cart-toast cart-toast-${type}`;
-        toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : type === 'warning' ? '#f39c12' : '#3498db'};
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            z-index: 9999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            animation: slideUp 0.3s ease;
-        `;
+    // ============ UTILITÁRIOS ============
 
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
     }
 
     function formatPrice(value) {
@@ -296,7 +318,39 @@
         return parseFloat(value).toFixed(2).replace('.', ',');
     }
 
-    // Expor updateCartDisplay para uso externo
-    window.updateCartPage = updateCartDisplay;
+    function showToast(message, type = 'info') {
+        const existing = document.querySelector('.cart-toast');
+        if (existing) existing.remove();
+
+        const colors = {
+            success: '#27ae60',
+            error: '#e74c3c',
+            warning: '#f39c12',
+            info: '#3498db'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = 'cart-toast';
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${colors[type]};
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        `;
+
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
 
 })();

@@ -36,8 +36,9 @@ class ShoppingCart {
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                salePrice: product.salePrice || null,
-                image: product.image,
+                salePrice: product.salePrice || product.sale_price || null,
+                image: product.image || (product.images && product.images[0]) || '',
+                images: product.images || [],
                 sku: product.sku,
                 quantity: product.quantity || 1,
                 addedAt: new Date().toISOString()
