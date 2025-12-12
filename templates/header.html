@@ -159,3 +159,94 @@
         </div>
     </div>
 </div>
+
+<!-- ==================== MOBILE MENU ==================== -->
+
+<!-- Mobile Menu Button (hamburger) - visível apenas em mobile -->
+<button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu" aria-expanded="false">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+</button>
+
+<!-- Mobile Overlay (backdrop escuro) -->
+<div class="mobile-overlay" id="mobileOverlay"></div>
+
+<!-- Mobile Drawer (menu lateral) -->
+<nav class="mobile-drawer" id="mobileDrawer" aria-label="Menu mobile">
+    <div class="mobile-drawer-header">
+        <img src="/assets/images/logo-dimar.png" alt="Logo Dimar" class="mobile-drawer-logo">
+        <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="Fechar menu">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- User Quick Actions (Mobile) -->
+    <div class="mobile-user-section">
+        <a href="/pages/login.html" class="mobile-user-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                    fill="currentColor" />
+                <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" fill="currentColor" />
+            </svg>
+            <span>Entre ou Cadastre-se</span>
+        </a>
+    </div>
+
+    <!-- Main Navigation -->
+    <ul class="mobile-nav-links">
+        <li><a href="/index.html"><span class="nav-icon">🏠</span> Home</a></li>
+        <li><a href="/pages/produtos.html"><span class="nav-icon">📦</span> Produtos</a></li>
+        <li><a href="/pages/sobre-nos.html"><span class="nav-icon">ℹ️</span> Sobre Nós</a></li>
+        <li><a href="/pages/contato.html"><span class="nav-icon">📧</span> Contato</a></li>
+        <li><a href="/pages/lojas.html"><span class="nav-icon">📍</span> Nossas Lojas</a></li>
+        <li><a href="/pages/central-ajuda.html"><span class="nav-icon">❓</span> Atendimento</a></li>
+    </ul>
+
+    <!-- Categories Section -->
+    <div class="mobile-categories-section">
+        <h3 class="mobile-section-title">Categorias</h3>
+        <ul class="mobile-categories-list">
+            <li><a href="/pages/produtos.html?categoria=motor">Motor</a></li>
+            <li><a href="/pages/produtos.html?categoria=freios">Freios</a></li>
+            <li><a href="/pages/produtos.html?categoria=suspensao">Suspensão</a></li>
+            <li><a href="/pages/produtos.html?categoria=eletrica">Elétrica</a></li>
+            <li><a href="/pages/produtos.html?categoria=filtros">Filtros</a></li>
+            <li><a href="/pages/produtos.html?categoria=iluminacao">Iluminação</a></li>
+            <li><a href="/pages/produtos.html?categoria=acessorios">Acessórios</a></li>
+        </ul>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="mobile-quick-links">
+        <a href="/pages/produtos.html?tipo=carros" class="mobile-quick-link">
+            <span class="quick-icon">🚗</span> Peças Carros
+        </a>
+        <a href="/pages/produtos.html?tipo=motos" class="mobile-quick-link">
+            <span class="quick-icon">🏍️</span> Peças Motos
+        </a>
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="mobile-drawer-footer">
+        <a href="tel:1140409090" class="mobile-phone">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M3 5C3 3.89543 3.89543 3 5 3H8.27924C8.70967 3 9.09181 3.27543 9.22792 3.68377L10.7257 8.17721C10.8831 8.64932 10.6694 9.16531 10.2243 9.38787L7.96701 10.5165C9.06925 12.9612 11.0388 14.9308 13.4835 16.033L14.6121 13.7757C14.8347 13.3306 15.3507 13.1169 15.8228 13.2743L20.3162 14.7721C20.7246 14.9082 21 15.2903 21 15.7208V19C21 20.1046 20.1046 21 19 21H18C9.71573 21 3 14.2843 3 6V5Z"
+                    fill="currentColor" />
+            </svg>
+            <span>(11) 4040-9090</span>
+        </a>
+        <a href="/pages/meus-pedidos.html" class="mobile-orders-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M9 11H15M9 15H12M7 3H17C17.0852 3 17.1695 3.01932 17.2461 3.05662L21.3462 5.10662C21.7217 5.29435 21.9649 5.67653 21.9847 6.09931C21.9949 6.28136 22.0001 6.46704 22.0001 6.65599V17C22.0001 19.2091 20.2092 21 18.0001 21H6C3.79086 21 2 19.2091 2 17V6.65599C2 6.46704 2.00531 6.28136 2.01554 6.09931C2.03532 5.67653 2.27854 5.29435 2.65401 5.10662L6.75408 3.05662C6.83072 3.01932 6.91495 3 7 3Z"
+                    fill="currentColor" />
+            </svg>
+            <span>Meus Pedidos</span>
+        </a>
+    </div>
+</nav>
