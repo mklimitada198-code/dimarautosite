@@ -12,6 +12,9 @@
     const itemsPerPage = 10;
     let searchTerm = '';
 
+    // Referência ao Supabase Client
+    let supabase = null;
+
     // ==================== INITIALIZATION ====================
 
     /**
@@ -19,6 +22,28 @@
      */
     async function init() {
         console.log('🚀 Initializing Customers Page...');
+
+        // Aguardar Supabase estar disponível
+        let attempts = 0;
+        while (!window.supabaseClient && attempts < 50) {
+            await new Promise(r => setTimeout(r, 100));
+            attempts++;
+        }
+
+        if (!window.supabaseClient) {
+            console.error('❌ Supabase não disponível');
+            document.getElementById('customersTableBody').innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #e74c3c;">
+                        ❌ Erro: Sistema não conectado ao banco de dados
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        supabase = window.supabaseClient;
+        console.log('✅ Supabase conectado para página de clientes');
 
         // Load initial data
         await Promise.all([

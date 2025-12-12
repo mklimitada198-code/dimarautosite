@@ -1,27 +1,54 @@
 -- =====================================================
--- POLICY: Permitir Admin visualizar todos os clientes
--- Data: 2024-12-12
+-- DIMAR AUTO PEÇAS - Políticas RLS para Admin ver Clientes
 -- Execute no SQL Editor do Supabase
 -- =====================================================
 
--- Permitir admin (usuário autenticado) visualizar todos os clientes
-DROP POLICY IF EXISTS "Admin can view all customers" ON customers;
-CREATE POLICY "Admin can view all customers" ON customers
-    FOR SELECT USING (auth.role() = 'authenticated');
+-- =====================================================
+-- 1. POLÍTICAS PARA TABELA customers
+-- =====================================================
 
--- Permitir admin visualizar todos os endereços (para detalhes do cliente)
-DROP POLICY IF EXISTS "Admin can view all addresses" ON customer_addresses;
-CREATE POLICY "Admin can view all addresses" ON customer_addresses
-    FOR SELECT USING (auth.role() = 'authenticated');
+-- Permitir que qualquer usuário autenticado veja todos os clientes
+-- (Necessário para o painel admin funcionar)
+DROP POLICY IF EXISTS "Admin pode ver todos clientes" ON customers;
+CREATE POLICY "Admin pode ver todos clientes" ON customers
+    FOR SELECT
+    USING (auth.role() = 'authenticated');
 
--- Permitir admin visualizar todos os pedidos
-DROP POLICY IF EXISTS "Admin can view all orders" ON orders;
-CREATE POLICY "Admin can view all orders" ON orders
-    FOR SELECT USING (auth.role() = 'authenticated');
+-- Alternativamente, se quiser restringir apenas para certos emails:
+-- CREATE POLICY "Admin pode ver todos clientes" ON customers
+--     FOR SELECT
+--     USING (
+--         auth.jwt()->>'email' IN ('admin@dimar.com.br', 'mk.cardoso198@gmail.com')
+--     );
 
--- Verificar policies criadas
-SELECT schemaname, tablename, policyname 
-FROM pg_policies 
-WHERE tablename IN ('customers', 'customer_addresses', 'orders')
-  AND policyname LIKE 'Admin%'
-ORDER BY tablename;
+-- =====================================================
+-- 2. POLÍTICAS PARA TABELA customer_addresses
+-- =====================================================
+
+DROP POLICY IF EXISTS "Admin pode ver todos enderecos" ON customer_addresses;
+CREATE POLICY "Admin pode ver todos enderecos" ON customer_addresses
+    FOR SELECT
+    USING (auth.role() = 'authenticated');
+
+-- =====================================================
+-- 3. POLÍTICAS PARA TABELA orders
+-- =====================================================
+
+DROP POLICY IF EXISTS "Admin pode ver todos pedidos" ON orders;
+CREATE POLICY "Admin pode ver todos pedidos" ON orders
+    FOR SELECT
+    USING (auth.role() = 'authenticated');
+
+-- =====================================================
+-- 4. POLÍTICAS PARA TABELA order_items
+-- =====================================================
+
+DROP POLICY IF EXISTS "Admin pode ver todos itens" ON order_items;
+CREATE POLICY "Admin pode ver todos itens" ON order_items
+    FOR SELECT
+    USING (auth.role() = 'authenticated');
+
+-- =====================================================
+-- PRONTO! Execute este arquivo no SQL Editor do Supabase
+-- Depois atualize a página de clientes no admin
+-- =====================================================
