@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Rastrear Pedido - Dimar | Acompanhe sua Encomenda</title>
+    <meta name="description"
+        content="Rastreie seu pedido Dimar. Acompanhe o status da sua encomenda em tempo real com o número do pedido.">
+    <meta name="keywords" content="rastrear pedido dimar, acompanhar entrega, tracking pedido, status entrega">
+    <meta name="author" content="Dimar Auto Peças">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.dimar.com.br/rastrear-pedido">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32x32.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .tracking-form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tracking-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .tracking-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .tracking-form input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .tracking-form input:focus {
+            border-color: #ff6600;
+            outline: none;
+        }
+
+        .tracking-form button {
+            width: 100%;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ff6600, #ff7700);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .tracking-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+        }
+
+        .tracking-info {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .tracking-info h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .tracking-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tracking-info li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tracking-info li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main id="main-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <div class="container">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <span class="current">Rastrear Pedido</span>
+            </div>
+        </nav>
+
+        <section class="about-hero">
+            <div class="container">
+                <h1 class="page-title">Rastrear Pedido</h1>
+                <p class="page-subtitle">Acompanhe o status da sua encomenda</p>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <div class="container">
+                <div class="tracking-form-container">
+                    <form class="tracking-form" id="trackingForm">
+                        <div class="form-group">
+                            <label for="orderNumber">Número do Pedido</label>
+                            <input type="text" id="orderNumber" name="orderNumber" placeholder="Ex: DIM123456789"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderEmail">E-mail usado na compra</label>
+                            <input type="email" id="orderEmail" name="orderEmail" placeholder="seu@email.com" required>
+                        </div>
+                        <button type="submit">🔍 Rastrear Pedido</button>
+                    </form>
+
+                    <div class="tracking-info">
+                        <h3>💡 Dicas para Rastrear</h3>
+                        <ul>
+                            <li>📧 O número do pedido foi enviado por e-mail após a compra</li>
+                            <li>📱 Você também pode acompanhar em "Minha Conta"</li>
+                            <li>⏰ Atualizações podem levar até 24h para aparecer</li>
+                            <li>📞 Problemas? Ligue: (11) 4040-9090</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2>Precisa de Ajuda?</h2>
+                <p>Nossa equipe está pronta para atender você</p>
+                <div class="cta-buttons">
+                    <a href="https://wa.me/5511999999999?text=Olá! Preciso rastrear meu pedido." target="_blank"
+                        class="btn btn-primary">Falar no WhatsApp</a>
+                    <a href="central-ajuda.html" class="btn btn-secondary">Central de Ajuda</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="../js/navigation-fix.js"></script>
+    <script src="../js/templates.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/products-catalog.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/global-init.js"></script>
+    <script src="../js/script.js"></script>
+    <script>
+        document.getElementById('trackingForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            alert('Função de rastreamento será integrada com o sistema de pedidos. Por enquanto, entre em contato pelo WhatsApp.');
+        });
+    </script>
+</body>
+
+</html>
