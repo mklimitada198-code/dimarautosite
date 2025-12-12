@@ -1,10 +1,14 @@
 -- =====================================================
 -- DIMAR AUTO PEÇAS - Sistema de Clientes
--- Migration: Criar tabelas para autenticação de clientes
+-- Migration SEGURA: Pode ser executada múltiplas vezes
 -- Data: 2024-12-12
 -- =====================================================
 
--- 1. Tabela de Clientes (perfil do usuário)
+-- =====================================================
+-- 1. CRIAR TABELAS (IF NOT EXISTS = seguro)
+-- =====================================================
+
+-- Tabela de Clientes
 CREATE TABLE IF NOT EXISTS customers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
@@ -16,7 +20,7 @@ CREATE TABLE IF NOT EXISTS customers (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2. Tabela de Endereços dos Clientes
+-- Tabela de Endereços
 CREATE TABLE IF NOT EXISTS customer_addresses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     customer_id UUID REFERENCES customers(id) ON DELETE CASCADE,
@@ -32,7 +36,7 @@ CREATE TABLE IF NOT EXISTS customer_addresses (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 3. Tabela de Pedidos
+-- Tabela de Pedidos
 CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_number SERIAL,
@@ -50,11 +54,11 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 4. Tabela de Itens do Pedido
+-- Tabela de Itens do Pedido
 CREATE TABLE IF NOT EXISTS order_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES products(id),
+    product_id UUID,
     product_name VARCHAR(255) NOT NULL,
     product_sku VARCHAR(100),
     quantity INTEGER NOT NULL DEFAULT 1,
@@ -64,7 +68,7 @@ CREATE TABLE IF NOT EXISTS order_items (
 );
 
 -- =====================================================
--- ÍNDICES
+-- 2. CRIAR ÍNDICES (IF NOT EXISTS = seguro)
 -- =====================================================
 CREATE INDEX IF NOT EXISTS idx_customers_user_id ON customers(user_id);
 CREATE INDEX IF NOT EXISTS idx_customer_addresses_customer_id ON customer_addresses(customer_id);
@@ -73,40 +77,50 @@ CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
 
 -- =====================================================
--- ROW LEVEL SECURITY (RLS)
+-- 3. HABILITAR RLS (seguro executar múltiplas vezes)
 -- =====================================================
-
--- Habilitar RLS nas tabelas
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE customer_addresses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 
+-- =====================================================
+-- 4. POLÍTICAS RLS (DROP antes de CREATE = seguro)
+-- =====================================================
+
 -- Políticas para customers
+DROP POLICY IF EXISTS "Customers can view own profile" ON customers;
 CREATE POLICY "Customers can view own profile" ON customers
     FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Customers can update own profile" ON customers;
 CREATE POLICY "Customers can update own profile" ON customers
     FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Anyone can insert customer" ON customers;
 CREATE POLICY "Anyone can insert customer" ON customers
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Políticas para customer_addresses
+DROP POLICY IF EXISTS "Customers can view own addresses" ON customer_addresses;
 CREATE POLICY "Customers can view own addresses" ON customer_addresses
     FOR SELECT USING (customer_id IN (SELECT id FROM customers WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Customers can manage own addresses" ON customer_addresses;
 CREATE POLICY "Customers can manage own addresses" ON customer_addresses
     FOR ALL USING (customer_id IN (SELECT id FROM customers WHERE user_id = auth.uid()));
 
 -- Políticas para orders
+DROP POLICY IF EXISTS "Customers can view own orders" ON orders;
 CREATE POLICY "Customers can view own orders" ON orders
     FOR SELECT USING (customer_id IN (SELECT id FROM customers WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Customers can create orders" ON orders;
 CREATE POLICY "Customers can create orders" ON orders
     FOR INSERT WITH CHECK (customer_id IN (SELECT id FROM customers WHERE user_id = auth.uid()));
 
 -- Políticas para order_items
+DROP POLICY IF EXISTS "Customers can view own order items" ON order_items;
 CREATE POLICY "Customers can view own order items" ON order_items
     FOR SELECT USING (order_id IN (
         SELECT o.id FROM orders o
@@ -115,8 +129,10 @@ CREATE POLICY "Customers can view own order items" ON order_items
     ));
 
 -- =====================================================
--- TRIGGER: Atualizar updated_at
+-- 5. FUNÇÕES (CREATE OR REPLACE = seguro)
 -- =====================================================
+
+-- Função para atualizar updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -125,17 +141,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_customers_updated_at
-    BEFORE UPDATE ON customers
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_orders_updated_at
-    BEFORE UPDATE ON orders
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- =====================================================
--- TRIGGER: Criar perfil de cliente automaticamente
--- =====================================================
+-- Função para criar perfil de cliente automaticamente
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -145,8 +151,28 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- =====================================================
+-- 6. TRIGGERS (DROP antes de CREATE = seguro)
+-- =====================================================
+
+-- Trigger para updated_at em customers
+DROP TRIGGER IF EXISTS update_customers_updated_at ON customers;
+CREATE TRIGGER update_customers_updated_at
+    BEFORE UPDATE ON customers
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Trigger para updated_at em orders
+DROP TRIGGER IF EXISTS update_orders_updated_at ON orders;
+CREATE TRIGGER update_orders_updated_at
+    BEFORE UPDATE ON orders
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- Trigger para criar customer quando user é criado
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- =====================================================
+-- PRONTO! Execute este arquivo inteiro no SQL Editor
+-- =====================================================
