@@ -80,12 +80,23 @@
 
         } catch (error) {
             console.error('❌ Erro no login:', error);
+            console.error('❌ Mensagem completa:', error.message);
 
             let errorMsg = 'Erro ao fazer login';
+
             if (error.message.includes('Invalid login credentials')) {
                 errorMsg = 'Email ou senha incorretos';
             } else if (error.message.includes('Email not confirmed')) {
-                errorMsg = 'Confirme seu email antes de entrar';
+                errorMsg = 'Você precisa confirmar seu email antes de entrar. Verifique sua caixa de entrada.';
+            } else if (error.message.includes('User not found')) {
+                errorMsg = 'Usuário não encontrado. Verifique o email ou crie uma conta.';
+            } else if (error.message.includes('Too many requests')) {
+                errorMsg = 'Muitas tentativas. Aguarde alguns minutos.';
+            } else if (error.message.includes('Network') || error.message.includes('fetch')) {
+                errorMsg = 'Erro de conexão. Verifique sua internet.';
+            } else {
+                // Mostrar erro original para debug
+                errorMsg = `Erro: ${error.message}`;
             }
 
             showError('loginError', errorMsg);
@@ -154,22 +165,64 @@
 
             if (error) throw error;
 
-            console.log('✅ Cadastro realizado:', data.user.email);
-            showSuccess('registerSuccess');
+            console.log('✅ Cadastro realizado:', data);
+            console.log('📧 Session:', data.session);
+            console.log('👤 User:', data.user);
 
-            // Redirecionar após 1.5 segundos
-            setTimeout(() => {
-                window.location.href = 'minha-conta.html';
-            }, 1500);
+            // Verificar se precisa confirmar email
+            if (data.user && !data.session) {
+                // Confirm email está ATIVADO - usuário precisa confirmar
+                console.log('📧 Confirmação de email necessária');
+
+                // Mostrar mensagem de sucesso com instrução
+                const successElement = document.getElementById('registerSuccess');
+                if (successElement) {
+                    successElement.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
+                            <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Conta criada! Verifique seu email para confirmar o cadastro.</span>
+                    `;
+                }
+                showSuccess('registerSuccess');
+
+                // Não redirecionar - usuário precisa confirmar email primeiro
+            } else if (data.session) {
+                // Confirm email DESATIVADO - usuário já está logado
+                console.log('✅ Usuário logado automaticamente');
+                showSuccess('registerSuccess');
+
+                // Redirecionar após 1.5 segundos
+                setTimeout(() => {
+                    window.location.href = 'minha-conta.html';
+                }, 1500);
+            } else {
+                // Caso inesperado
+                console.warn('⚠️ Resposta inesperada do Supabase:', data);
+                showSuccess('registerSuccess');
+            }
 
         } catch (error) {
             console.error('❌ Erro no cadastro:', error);
+            console.error('❌ Mensagem completa:', error.message);
 
             let errorMsg = 'Erro ao criar conta';
-            if (error.message.includes('already registered')) {
-                errorMsg = 'Este email já está cadastrado';
+            if (error.message.includes('already registered') || error.message.includes('already been registered')) {
+                errorMsg = 'Este email já está cadastrado. Tente fazer login.';
             } else if (error.message.includes('Password')) {
-                errorMsg = 'Senha muito fraca. Use letras e números';
+                errorMsg = 'Senha muito fraca. Use letras, números e caracteres especiais.';
+            } else if (error.message.includes('Signups not allowed') || error.message.includes('signups not allowed')) {
+                errorMsg = 'O cadastro de novos usuários está temporariamente desabilitado. Entre em contato conosco.';
+            } else if (error.message.includes('Invalid email')) {
+                errorMsg = 'Email inválido. Verifique e tente novamente.';
+            } else if (error.message.includes('Email rate limit') || error.message.includes('rate limit')) {
+                errorMsg = 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+            } else if (error.message.includes('Network') || error.message.includes('fetch')) {
+                errorMsg = 'Erro de conexão. Verifique sua internet e tente novamente.';
+            } else {
+                // Mostrar erro original para debug
+                errorMsg = `Erro: ${error.message}`;
             }
 
             showError('registerError', errorMsg);

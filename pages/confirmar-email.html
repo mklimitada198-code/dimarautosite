@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmando Email | Dimar Auto Peças</title>
+    <meta name="description" content="Confirmando seu email na Dimar Auto Peças">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/customer-auth.css">
+
+    <style>
+        .confirm-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        }
+
+        .confirm-card {
+            background: white;
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .confirm-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-icon.loading {
+            background: linear-gradient(135deg, #ff6600, #ff7700);
+            animation: pulse 1.5s infinite;
+        }
+
+        .confirm-icon.success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .confirm-icon.error {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+        }
+
+        .confirm-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        .confirm-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .confirm-message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .confirm-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #ff6600, #ff7700);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 102, 0, 0.3);
+        }
+
+        .spinner-small {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="confirm-container">
+        <div class="confirm-card">
+            <!-- Loading State -->
+            <div id="loadingState">
+                <div class="confirm-icon loading">
+                    <div class="spinner-small"></div>
+                </div>
+                <h1 class="confirm-title">Confirmando seu email...</h1>
+                <p class="confirm-message">Aguarde um momento enquanto validamos sua conta.</p>
+            </div>
+
+            <!-- Success State -->
+            <div id="successState" class="hidden">
+                <div class="confirm-icon success">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h1 class="confirm-title">Email confirmado!</h1>
+                <p class="confirm-message">Sua conta foi ativada com sucesso. Você será redirecionado automaticamente.
+                </p>
+                <a href="minha-conta.html" class="confirm-btn">
+                    Ir para Minha Conta
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="hidden">
+                <div class="confirm-icon error">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M15 9l-6 6M9 9l6 6" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <h1 class="confirm-title">Ops! Algo deu errado</h1>
+                <p class="confirm-message" id="errorMessage">O link pode ter expirado ou já foi utilizado.</p>
+                <a href="login.html" class="confirm-btn">
+                    Fazer Login
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // Elementos
+            const loadingState = document.getElementById('loadingState');
+            const successState = document.getElementById('successState');
+            const errorState = document.getElementById('errorState');
+            const errorMessage = document.getElementById('errorMessage');
+
+            function showSuccess() {
+                loadingState.classList.add('hidden');
+                successState.classList.remove('hidden');
+
+                // Redirecionar após 2 segundos
+                setTimeout(() => {
+                    window.location.href = 'minha-conta.html';
+                }, 2000);
+            }
+
+            function showError(message) {
+                loadingState.classList.add('hidden');
+                errorState.classList.remove('hidden');
+                if (message) {
+                    errorMessage.textContent = message;
+                }
+            }
+
+            // Processar confirmação de email
+            async function processEmailConfirmation() {
+                try {
+                    // Aguardar Supabase carregar
+                    let attempts = 0;
+                    while (!window.supabaseClient && attempts < 50) {
+                        await new Promise(r => setTimeout(r, 100));
+                        attempts++;
+                    }
+
+                    if (!window.supabaseClient) {
+                        throw new Error('Não foi possível conectar ao servidor');
+                    }
+
+                    // O Supabase automaticamente processa o token da URL
+                    // Verificar se há um hash com token
+                    const hash = window.location.hash;
+                    const params = new URLSearchParams(window.location.search);
+
+                    console.log('🔍 Hash:', hash);
+                    console.log('🔍 Params:', params.toString());
+
+                    // Verificar erro na URL
+                    if (params.has('error')) {
+                        const error = params.get('error_description') || params.get('error');
+                        throw new Error(error);
+                    }
+
+                    // O Supabase detecta automaticamente o token na URL via hash
+                    // Aguardar sessão ser estabelecida
+                    const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    if (session) {
+                        console.log('✅ Sessão encontrada:', session.user.email);
+                        showSuccess();
+                    } else {
+                        // Tentar extrair token do hash manualmente
+                        if (hash && hash.includes('access_token')) {
+                            // Aguardar um pouco mais para o Supabase processar
+                            await new Promise(r => setTimeout(r, 1000));
+
+                            const { data: { session: newSession } } = await window.supabaseClient.auth.getSession();
+
+                            if (newSession) {
+                                console.log('✅ Sessão estabelecida após aguardar');
+                                showSuccess();
+                            } else {
+                                throw new Error('Não foi possível validar o token');
+                            }
+                        } else {
+                            // Sem token, redirecionar para login
+                            console.log('⚠️ Sem token na URL, redirecionando para login');
+                            window.location.href = 'login.html';
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('❌ Erro na confirmação:', error);
+                    showError(error.message || 'O link pode ter expirado ou já foi utilizado.');
+                }
+            }
+
+            // Iniciar processamento
+            document.addEventListener('DOMContentLoaded', () => {
+                // Pequeno delay para garantir que Supabase carregou
+                setTimeout(processEmailConfirmation, 500);
+            });
+        })();
+    </script>
+</body>
+
+</html>

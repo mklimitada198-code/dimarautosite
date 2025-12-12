@@ -40,9 +40,21 @@
         }
 
         try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            // Configuração do cliente com storage separado para clientes
+            const clientConfig = {
+                auth: {
+                    storage: window.localStorage,
+                    storageKey: 'dimar-customer-session', // Diferente do admin
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true // Importante para confirmação de email
+                }
+            };
+
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, clientConfig);
             window.supabaseClient = supabase;
             log.success('Supabase conectado com sucesso!');
+            log.info('📦 Storage key: dimar-customer-session');
             return true;
         } catch (error) {
             log.error('Erro ao conectar Supabase:', error);
