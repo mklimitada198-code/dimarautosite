@@ -3,7 +3,7 @@
 
 class SearchResultsPage {
     constructor() {
-        this.allProducts = window.productsData || [];
+        this.allProducts = [];
         this.searchQuery = '';
         this.filteredProducts = [];
         this.currentPage = 1;
@@ -16,7 +16,7 @@ class SearchResultsPage {
         };
         this.sortBy = 'relevance';
         this.searchStartTime = Date.now();
-        
+
         this.init();
     }
 
@@ -28,12 +28,15 @@ class SearchResultsPage {
         }
     }
 
-    setup() {
+    async setup() {
         // Obter query da URL
         const urlParams = new URLSearchParams(window.location.search);
         this.searchQuery = urlParams.get('q') || '';
 
+        console.log('🔍 SearchResults: Query da URL =', this.searchQuery);
+
         if (!this.searchQuery) {
+            console.log('🔍 SearchResults: Sem query, redirecionando para home');
             window.location.href = '../index.html';
             return;
         }
@@ -41,8 +44,21 @@ class SearchResultsPage {
         // Exibir query
         document.getElementById('search-query').textContent = `"${this.searchQuery}"`;
 
-        // Realizar busca
+        // Mostrar loading
+        const productGrid = document.getElementById('product-grid');
+        if (productGrid) {
+            productGrid.innerHTML = '<div style="text-align:center;padding:40px;color:#666;">Buscando produtos...</div>';
+        }
+
+        // Carregar produtos do Supabase
+        await this.loadProducts();
+
+        console.log('🔍 SearchResults: Produtos carregados =', this.allProducts.length);
+
+        // Realizar busca/filtro
         this.performSearch();
+
+        console.log('🔍 SearchResults: Produtos filtrados =', this.filteredProducts.length);
 
         // Setup event listeners
         this.setupEventListeners();
@@ -54,14 +70,98 @@ class SearchResultsPage {
         this.loadRelatedSearches();
     }
 
+    async loadProducts() {
+        console.log('🔍 SearchResults: Carregando produtos...');
+
+        // Aguardar Supabase estar pronto
+        let attempts = 0;
+        while (!window.supabaseClient && attempts < 30) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+
+        try {
+            if (window.supabaseClient) {
+                console.log('🔍 SearchResults: Buscando do Supabase...');
+                const { data, error } = await window.supabaseClient
+                    .from('products')
+                    .select('*')
+                    .eq('status', 'active')
+                    .order('name', { ascending: true });
+
+                if (!error && data && data.length > 0) {
+                    this.allProducts = data.map(p => this.normalizeProduct(p));
+                    console.log(`✅ SearchResults: ${this.allProducts.length} produtos carregados`);
+                    return;
+                } else if (error) {
+                    console.warn('⚠️ SearchResults: Erro Supabase:', error.message);
+                }
+            }
+        } catch (err) {
+            console.warn('⚠️ SearchResults: Erro ao carregar do Supabase:', err);
+        }
+
+        // Fallback para dados locais
+        if (window.productsData && window.productsData.length > 0) {
+            this.allProducts = window.productsData;
+            console.log('✅ SearchResults: Produtos carregados (productsData local)');
+        } else if (window.catalogProducts && window.catalogProducts.length > 0) {
+            this.allProducts = window.catalogProducts;
+            console.log('✅ SearchResults: Produtos carregados (catalogProducts local)');
+        } else {
+            console.warn('⚠️ SearchResults: Nenhum produto disponível');
+        }
+    }
+
+    normalizeProduct(product) {
+        // Normalizar dados do produto do Supabase
+        const price = product.sale_price || product.price;
+        const formattedPrice = typeof price === 'number'
+            ? `R$ ${price.toFixed(2).replace('.', ',')}`
+            : price;
+
+        // Determinar imagem principal
+        let image = '../assets/images/produto-1.jpg';
+        if (product.images && product.images.length > 0) {
+            const firstImage = product.images[0];
+            if (firstImage && typeof firstImage === 'string') {
+                image = firstImage.startsWith('http') || firstImage.startsWith('data:')
+                    ? firstImage
+                    : '../' + firstImage;
+            }
+        }
+
+        return {
+            id: product.id,
+            name: product.name,
+            sku: product.sku || '',
+            category: product.category || '',
+            brand: product.brand || '',
+            description: product.description || '',
+            price: formattedPrice,
+            numericPrice: product.sale_price || product.price,
+            salePrice: product.sale_price,
+            oldPrice: product.sale_price ? `R$ ${product.price.toFixed(2).replace('.', ',')}` : null,
+            image: image,
+            inStock: product.stock > 0,
+            fastShipping: product.fast_shipping || false,
+            vehicleType: product.vehicle_type || '',
+            installments: price > 100 ? `10x de R$ ${(price / 10).toFixed(2).replace('.', ',')} sem juros` : null
+        };
+    }
+
     performSearch() {
         const normalizedQuery = this.normalizeString(this.searchQuery);
         const results = [];
 
+        console.log('🔍 performSearch: Buscando por:', normalizedQuery);
+        console.log('🔍 performSearch: Total de produtos para filtrar:', this.allProducts.length);
+
         this.allProducts.forEach(product => {
             const score = this.calculateRelevanceScore(product, normalizedQuery);
-            
+
             if (score > 0) {
+                console.log(`   ✓ Match: "${product.name}" (score: ${score})`);
                 results.push({
                     ...product,
                     relevanceScore: score
@@ -69,11 +169,13 @@ class SearchResultsPage {
             }
         });
 
+        console.log('🔍 performSearch: Resultados encontrados:', results.length);
+
         // Ordenar por relevância inicialmente
         results.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
         this.filteredProducts = results;
-        
+
         // Calcular tempo de busca
         const searchTime = Date.now() - this.searchStartTime;
         document.getElementById('search-time').textContent = `(${searchTime}ms)`;
@@ -139,7 +241,7 @@ class SearchResultsPage {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
-                
+
                 const filter = e.target.dataset.filter;
                 this.filterByType(filter);
             });
@@ -403,7 +505,7 @@ class SearchResultsPage {
             btn.addEventListener('click', (e) => {
                 const productId = e.currentTarget.dataset.productId;
                 const product = this.filteredProducts.find(p => p.id === productId);
-                
+
                 if (product && window.cart) {
                     window.cart.addItem(product);
                 }

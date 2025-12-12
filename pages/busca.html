@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados da Busca - Dimar Auto Peças & Moto Peças</title>
-    <meta name="description" content="Resultados da busca de produtos na Dimar. Encontre auto peças e moto peças com o melhor preço.">
+    <meta name="description"
+        content="Resultados da busca de produtos na Dimar. Encontre auto peças e moto peças com o melhor preço.">
     <meta name="keywords" content="busca, pesquisa, produtos, auto peças, moto peças">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/catalog.css">
     <link rel="stylesheet" href="../css/search-results.css">
 </head>
+
 <body>
     <div id="header-placeholder"></div>
 
@@ -110,8 +114,8 @@
                     <!-- No Results Message -->
                     <div id="no-results" class="no-results" style="display: none;">
                         <svg width="120" height="120" viewBox="0 0 24 24" fill="none">
-                            <circle cx="11" cy="11" r="7" stroke="#ddd" stroke-width="2"/>
-                            <path d="M16 16L21 21" stroke="#ddd" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="11" cy="11" r="7" stroke="#ddd" stroke-width="2" />
+                            <path d="M16 16L21 21" stroke="#ddd" stroke-width="2" stroke-linecap="round" />
                         </svg>
                         <h2>Nenhum produto encontrado</h2>
                         <p>Tente buscar com outras palavras ou explore nossas categorias.</p>
@@ -142,29 +146,30 @@
     <script src="../js/logger.js"></script>
     <script src="../js/safe-logger.js"></script>
     <script src="../js/navigation-fix.js"></script>
-    
+
     <!-- 2. Templates (header/footer) -->
     <script src="../js/templates.js"></script>
-    
+
     <!-- 3. Loading States (UX) -->
     <script src="../js/loading-states.js"></script>
-    
-    <!-- 4. Configuração Supabase -->
+
+    <!-- 4. Supabase SDK + Configuration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-config.js"></script>
-    
+
     <!-- 4. Carrinho -->
     <script src="../js/cart.js"></script>
-    
+
     <!-- 5. Dados de produtos -->
     <script src="../js/products-data.js"></script>
     <script src="../js/products-catalog.js"></script>
-    
+
     <!-- 6. Busca (lógica específica desta página) -->
     <script src="../js/search.js"></script>
     <script src="../js/search-results.js"></script>
-    
+
     <!-- 7. Inicialização global (deve ser o último) -->
     <script src="../js/global-init.js"></script>
 </body>
-</html>
 
+</html>

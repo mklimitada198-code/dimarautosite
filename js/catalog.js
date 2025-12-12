@@ -198,6 +198,19 @@ async function loadBrands(supabaseAvailable) {
 function checkUrlParams() {
     const params = new URLSearchParams(window.location.search);
 
+    // Filtro de busca por texto (aceita: q, busca, ou search)
+    const searchQuery = params.get('q') || params.get('busca') || params.get('search');
+    if (searchQuery) {
+        currentFilters.searchQuery = searchQuery.toLowerCase();
+        console.log('🔍 Filtro de busca via URL:', searchQuery);
+
+        // Atualizar título da página para mostrar a busca
+        const pageTitle = document.querySelector('.page-title') || document.querySelector('h1');
+        if (pageTitle) {
+            pageTitle.innerHTML = `Resultados para: <span style="color: #FF6B00;">"${searchQuery}"</span>`;
+        }
+    }
+
     // Filtro de categoria
     const categoria = params.get('categoria');
     if (categoria) {
@@ -408,6 +421,28 @@ function applyFilters() {
 
     // Filter products
     filteredProducts = allProducts.filter(product => {
+        // Text search filter (busca por texto)
+        if (currentFilters.searchQuery) {
+            const query = currentFilters.searchQuery.toLowerCase();
+            const name = (product.name || '').toLowerCase();
+            const description = (product.description || '').toLowerCase();
+            const category = (product.category || '').toLowerCase();
+            const brand = (product.brand || '').toLowerCase();
+            const sku = (product.sku || '').toLowerCase();
+
+            // Verifica se o termo de busca está em algum campo
+            const matchesSearch =
+                name.includes(query) ||
+                description.includes(query) ||
+                category.includes(query) ||
+                brand.includes(query) ||
+                sku.includes(query);
+
+            if (!matchesSearch) {
+                return false; // Não corresponde à busca
+            }
+        }
+
         // Category filter (compatível com Supabase - usa 'category' como string)
         if (currentFilters.categories.length > 0) {
             const productCategory = product.category?.toLowerCase() || '';

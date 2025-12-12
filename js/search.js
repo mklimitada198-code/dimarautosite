@@ -16,7 +16,7 @@ class SearchSystem {
     init() {
         // Aguarda produtos carregarem
         this.waitForProducts();
-        
+
         // Aguarda o DOM estar pronto
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.setupSearch());
@@ -26,40 +26,89 @@ class SearchSystem {
     }
 
     waitForProducts() {
-        // Tenta carregar produtos imediatamente
+        // Tentar carregar do Supabase primeiro
+        this.loadProductsFromSupabase();
+    }
+
+    async loadProductsFromSupabase() {
+        console.log('🔍 Search: Carregando produtos...');
+
+        // Aguardar Supabase estar pronto
+        let attempts = 0;
+        while (!window.supabaseClient && attempts < 30) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+
+        try {
+            if (window.supabaseClient) {
+                console.log('🔍 Search: Buscando do Supabase...');
+                const { data, error } = await window.supabaseClient
+                    .from('products')
+                    .select('*')
+                    .eq('status', 'active')
+                    .order('name', { ascending: true });
+
+                if (!error && data && data.length > 0) {
+                    this.allProducts = data.map(p => this.normalizeProductData(p));
+                    this.productsLoaded = true;
+                    console.log(`✅ Search: ${this.allProducts.length} produtos carregados do Supabase`);
+                    return;
+                } else if (error) {
+                    console.warn('⚠️ Search: Erro Supabase:', error.message);
+                }
+            }
+        } catch (err) {
+            console.warn('⚠️ Search: Erro ao carregar do Supabase:', err);
+        }
+
+        // Fallback para dados locais
         if (window.productsData && window.productsData.length > 0) {
             this.allProducts = window.productsData;
             this.productsLoaded = true;
-            return;
-        }
-
-        if (window.catalogProducts && window.catalogProducts.length > 0) {
+            console.log('✅ Search: Produtos carregados (productsData local)');
+        } else if (window.catalogProducts && window.catalogProducts.length > 0) {
             this.allProducts = window.catalogProducts;
             this.productsLoaded = true;
-            return;
+            console.log('✅ Search: Produtos carregados (catalogProducts local)');
+        } else {
+            console.warn('⚠️ Search: Nenhum produto disponível');
+        }
+    }
+
+    normalizeProductData(product) {
+        // Normalizar dados do produto do Supabase
+        const price = product.sale_price || product.price;
+        const formattedPrice = typeof price === 'number'
+            ? `R$ ${price.toFixed(2).replace('.', ',')}`
+            : price;
+
+        // Determinar imagem principal
+        let image = '../assets/images/produto-1.jpg';
+        if (product.images && product.images.length > 0) {
+            const firstImage = product.images[0];
+            if (firstImage && typeof firstImage === 'string') {
+                image = firstImage.startsWith('http') || firstImage.startsWith('data:')
+                    ? firstImage
+                    : '../' + firstImage;
+            }
         }
 
-        // Espera os produtos carregarem (máximo 5 segundos)
-        let attempts = 0;
-        const checkInterval = setInterval(() => {
-            attempts++;
-            
-            if (window.productsData && window.productsData.length > 0) {
-                this.allProducts = window.productsData;
-                this.productsLoaded = true;
-                clearInterval(checkInterval);
-                console.log('✅ Search: Produtos carregados (productsData)');
-            } else if (window.catalogProducts && window.catalogProducts.length > 0) {
-                this.allProducts = window.catalogProducts;
-                this.productsLoaded = true;
-                clearInterval(checkInterval);
-                console.log('✅ Search: Produtos carregados (catalogProducts)');
-            } else if (attempts > 50) {
-                // Timeout após 5 segundos
-                clearInterval(checkInterval);
-                console.warn('⚠️ Search: Produtos não carregaram a tempo');
-            }
-        }, 100);
+        return {
+            id: product.id,
+            name: product.name,
+            sku: product.sku || '',
+            category: product.category || '',
+            brand: product.brand || '',
+            description: product.description || '',
+            price: formattedPrice,
+            numericPrice: product.sale_price || product.price,
+            salePrice: product.sale_price,
+            originalPrice: product.price,
+            image: image,
+            inStock: product.stock > 0,
+            fastShipping: product.fast_shipping || false
+        };
     }
 
     setupSearch() {
@@ -95,7 +144,7 @@ class SearchSystem {
         this.suggestionsContainer = document.createElement('div');
         this.suggestionsContainer.className = 'search-suggestions';
         this.suggestionsContainer.style.display = 'none';
-        
+
         const searchContainer = this.searchInput.closest('.search-container');
         searchContainer.style.position = 'relative';
         searchContainer.appendChild(this.suggestionsContainer);
@@ -106,7 +155,7 @@ class SearchSystem {
 
         // Debounce para não buscar a cada letra
         clearTimeout(this.debounceTimer);
-        
+
         if (query.length < 2) {
             this.hideSuggestions();
             return;
@@ -118,8 +167,27 @@ class SearchSystem {
     }
 
     generateSuggestions(query) {
+        // Mostrar loading enquanto processa
+        if (!this.productsLoaded) {
+            this.suggestionsContainer.innerHTML = `
+                <div class="suggestion-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Carregando produtos...</p>
+                </div>
+            `;
+            this.showSuggestions();
+
+            // Tentar novamente após 500ms
+            setTimeout(() => {
+                if (this.productsLoaded) {
+                    this.generateSuggestions(query);
+                }
+            }, 500);
+            return;
+        }
+
         const suggestions = this.getSuggestions(query);
-        
+
         if (suggestions.length === 0) {
             this.showNoResults();
             return;
@@ -215,16 +283,21 @@ class SearchSystem {
             item.dataset.index = index;
 
             if (suggestion.type === 'product') {
+                const product = suggestion.product;
+                const imageUrl = product.image || '../assets/images/produto-1.jpg';
+
                 item.innerHTML = `
-                    <img src="${suggestion.product.image}" alt="${suggestion.product.name}">
+                    <img src="${imageUrl}" alt="${product.name}" onerror="this.src='../assets/images/produto-1.jpg'">
                     <div class="suggestion-info">
-                        <div class="suggestion-name">${this.highlightQuery(suggestion.product.name)}</div>
-                        <div class="suggestion-price">${suggestion.product.price}</div>
+                        <div class="suggestion-name">${this.highlightQuery(product.name)}</div>
+                        <div class="suggestion-price">${product.price}</div>
                     </div>
                     <span class="suggestion-type">Produto</span>
                 `;
                 item.addEventListener('click', () => {
-                    window.location.href = `pages/produto.html?id=${suggestion.product.id}`;
+                    const targetUrl = this.getBasePath() + `produto.html?id=${product.id}`;
+                    console.log('🔍 Navegando para produto:', targetUrl);
+                    window.location.href = targetUrl;
                 });
             } else if (suggestion.type === 'category') {
                 item.innerHTML = `
@@ -313,37 +386,62 @@ class SearchSystem {
 
     performSearch() {
         const query = this.searchInput.value.trim();
-        
+
         if (query.length < 2) {
-            alert('Digite pelo menos 2 caracteres para buscar');
+            // Mostrar mensagem mais amigável
+            this.suggestionsContainer.innerHTML = `
+                <div class="suggestion-no-results">
+                    <p>🔍 Digite pelo menos 2 caracteres para buscar</p>
+                </div>
+            `;
+            this.showSuggestions();
             return;
         }
 
         // Adicionar ao histórico
         this.addToHistory(query);
 
-        // Redirecionar para página de resultados
-        window.location.href = `pages/busca.html?q=${encodeURIComponent(query)}`;
+        // Navegar para página de produtos com busca
+        const targetUrl = this.getBasePath() + `produtos.html?q=${encodeURIComponent(query)}`;
+        console.log('🔍 Navegando para:', targetUrl);
+        window.location.href = targetUrl;
     }
 
     searchByCategory(category) {
-        window.location.href = `pages/produtos.html?categoria=${encodeURIComponent(category)}`;
+        const targetUrl = this.getBasePath() + `produtos.html?categoria=${encodeURIComponent(category)}`;
+        console.log('🔍 Navegando para categoria:', targetUrl);
+        window.location.href = targetUrl;
     }
 
     searchByBrand(brand) {
-        window.location.href = `pages/produtos.html?marca=${encodeURIComponent(brand)}`;
+        const targetUrl = this.getBasePath() + `produtos.html?marca=${encodeURIComponent(brand)}`;
+        console.log('🔍 Navegando para marca:', targetUrl);
+        window.location.href = targetUrl;
+    }
+
+    getBasePath() {
+        const path = window.location.pathname;
+        console.log('🔍 Path atual:', path);
+
+        // Se já estamos em /pages/, não precisa adicionar
+        if (path.includes('/pages/')) {
+            return '';
+        }
+
+        // Se estamos na raiz ou no index
+        return 'pages/';
     }
 
     addToHistory(query) {
         // Remove se já existe
         this.searchHistory = this.searchHistory.filter(item => item !== query);
-        
+
         // Adiciona no início
         this.searchHistory.unshift(query);
-        
+
         // Limita a 10 itens
         this.searchHistory = this.searchHistory.slice(0, 10);
-        
+
         // Salva no localStorage
         this.saveSearchHistory();
     }
@@ -376,4 +474,3 @@ class SearchSystem {
 
 // Inicializar sistema de busca globalmente
 window.searchSystem = new SearchSystem();
-
