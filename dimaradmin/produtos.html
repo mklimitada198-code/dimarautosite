@@ -429,6 +429,79 @@ Fiat Argo 2019"></textarea>
                     </div>
                 </div>
 
+                <!-- Especificações Técnicas (para página do produto) -->
+                <div class="form-group"
+                    style="background: #e8f4fd; padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px solid #bee5eb;">
+                    <label class="form-label" style="font-size: 16px; margin-bottom: 16px; color: #0c5460;">
+                        📋 Especificações Técnicas (exibidas na página do produto)
+                    </label>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Peso (kg)</label>
+                            <input type="number" step="0.01" class="form-control" id="productWeight"
+                                placeholder="Ex: 1.5">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Dimensões (cm)</label>
+                            <input type="text" class="form-control" id="productDimensions"
+                                placeholder="Ex: 20 x 15 x 10">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Material</label>
+                            <input type="text" class="form-control" id="productMaterial"
+                                placeholder="Ex: Aço inoxidável">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Origem</label>
+                            <select class="form-control" id="productOrigin">
+                                <option value="">Selecione...</option>
+                                <option value="nacional">Nacional</option>
+                                <option value="importado">Importado</option>
+                                <option value="fabricacao_propria">Fabricação Própria</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Garantia</label>
+                            <select class="form-control" id="productWarranty">
+                                <option value="">Sem garantia especificada</option>
+                                <option value="30_dias">30 dias</option>
+                                <option value="3_meses">3 meses</option>
+                                <option value="6_meses">6 meses</option>
+                                <option value="1_ano">1 ano</option>
+                                <option value="2_anos">2 anos</option>
+                                <option value="fabricante">Garantia do fabricante</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Código de Barras (EAN)</label>
+                            <input type="text" class="form-control" id="productBarcode" placeholder="Ex: 7891234567890">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Especificações Adicionais</label>
+                        <textarea class="form-control" id="productSpecs" rows="4" placeholder="Digite especificações técnicas detalhadas.
+Ex:
+- Voltagem: 12V
+- Amperagem: 60Ah
+- Polaridade: Positivo direito
+- Tipo: Selada"></textarea>
+                        <small style="color: #7f8c8d; display: block; margin-top: 6px;">
+                            Essas informações aparecerão na aba "Especificações" da página do produto
+                        </small>
+                    </div>
+                </div>
+
                 <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 30px;">
                     <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Salvar Produto</button>

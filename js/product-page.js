@@ -15,29 +15,190 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * Load product from URL parameter
  */
-function loadProduct() {
+async function loadProduct() {
     // Get product ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
     if (!productId) {
-        alert('Produto não encontrado!');
-        window.location.href = 'produtos.html';
+        showError('Produto não encontrado!');
         return;
     }
 
-    // Find product in catalog
-    currentProduct = window.catalogProducts.find(p => p.id === productId);
+    // Mostrar loading
+    showLoading(true);
 
-    if (!currentProduct) {
-        alert('Produto não encontrado!');
-        window.location.href = 'produtos.html';
-        return;
+    // Aguardar Supabase estar pronto (max 3 segundos)
+    await waitForSupabase();
+
+    try {
+        // Tentar buscar do Supabase primeiro
+        if (window.supabaseClient) {
+            console.log('🔄 Buscando produto do Supabase...', productId);
+
+            const { data: product, error } = await window.supabaseClient
+                .from('products')
+                .select('*')
+                .eq('id', productId)
+                .single();
+
+            if (error) {
+                console.warn('⚠️ Erro ao buscar do Supabase:', error.message);
+            }
+
+            if (!error && product) {
+                console.log('✅ Produto encontrado no Supabase:', product.name);
+                currentProduct = normalizeProduct(product);
+                renderProduct();
+                renderRelatedProducts();
+                showLoading(false);
+                return;
+            }
+        } else {
+            console.warn('⚠️ Supabase não disponível');
+        }
+
+        // Fallback: buscar do catálogo local
+        if (window.catalogProducts) {
+            console.log('🔄 Buscando produto no catálogo local...');
+            currentProduct = window.catalogProducts.find(p => String(p.id) === String(productId));
+
+            if (currentProduct) {
+                console.log('✅ Produto encontrado no catálogo local');
+                renderProduct();
+                renderRelatedProducts();
+                showLoading(false);
+                return;
+            }
+        }
+
+        // Produto não encontrado
+        console.error('❌ Produto não encontrado em nenhuma fonte:', productId);
+        showError('Produto não encontrado na base de dados.');
+
+    } catch (error) {
+        console.error('❌ Erro ao carregar produto:', error);
+        showError('Erro ao carregar produto. Tente novamente.');
+    }
+}
+
+/**
+ * Wait for Supabase to be ready
+ */
+function waitForSupabase() {
+    return new Promise((resolve) => {
+        let attempts = 0;
+        const maxAttempts = 30; // 3 segundos
+
+        const check = setInterval(() => {
+            attempts++;
+
+            if (window.supabaseClient) {
+                clearInterval(check);
+                console.log('✅ Supabase disponível após', attempts * 100, 'ms');
+                resolve(true);
+            } else if (attempts >= maxAttempts) {
+                clearInterval(check);
+                console.warn('⚠️ Timeout aguardando Supabase');
+                resolve(false);
+            }
+        }, 100);
+    });
+}
+
+/**
+ * Normalize product data from Supabase to match expected format
+ */
+function normalizeProduct(product) {
+    // Extrair primeira imagem válida do array de imagens
+    let primaryImage = '../assets/images/produto-1.jpg'; // fallback padrão
+
+    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+        // Filtrar apenas URLs/strings válidas
+        const validImages = product.images.filter(img =>
+            img && typeof img === 'string' && img.trim() !== ''
+        );
+        if (validImages.length > 0) {
+            primaryImage = validImages[0];
+        }
+    } else if (product.image_url && typeof product.image_url === 'string') {
+        // Fallback para campo image_url se existir
+        primaryImage = product.image_url;
     }
 
-    // Render product
-    renderProduct();
-    renderRelatedProducts();
+    console.log('🖼️ Imagem do produto:', {
+        id: product.id,
+        name: product.name,
+        hasImages: Boolean(product.images?.length),
+        primaryImage: primaryImage.substring(0, 50) + '...'
+    });
+
+    return {
+        id: product.id,
+        name: product.name,
+        sku: product.sku || 'N/A',
+        price: product.price,
+        salePrice: product.sale_price || null,
+        image: primaryImage,
+        images: product.images && product.images.length > 0
+            ? product.images.filter(img => img && typeof img === 'string' && img.trim() !== '')
+            : [primaryImage],
+        category: product.category_id || product.category,
+        brand: product.brand || 'N/A',
+        description: product.description || '',
+        shortDescription: product.short_description || '',
+        stock: product.stock_quantity || product.stock || 10,
+        fastShipping: product.fast_shipping || false,
+        rating: 4.5,
+        reviews: Math.floor(Math.random() * 50) + 5,
+        // Especificações Técnicas
+        weight: product.weight || null,
+        dimensions: product.dimensions || null,
+        material: product.material || null,
+        origin: product.origin || null,
+        warranty: product.warranty || null,
+        barcode: product.barcode || null,
+        specs: product.specs || null,
+        compatibility: product.compatibility || []
+    };
+}
+
+/**
+ * Show/hide loading state
+ */
+function showLoading(show) {
+    const content = document.querySelector('.product-content');
+    if (!content) return;
+
+    if (show) {
+        content.style.opacity = '0.5';
+        content.style.pointerEvents = 'none';
+    } else {
+        content.style.opacity = '1';
+        content.style.pointerEvents = '';
+    }
+}
+
+/**
+ * Show error message
+ */
+function showError(message) {
+    showLoading(false);
+    const content = document.querySelector('.product-content');
+    if (content) {
+        content.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px;">
+                <svg width="80" height="80" fill="#e74c3c" viewBox="0 0 24 24" style="margin-bottom: 20px;">
+                    <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z"/>
+                </svg>
+                <h2 style="color: #333; margin-bottom: 10px;">Ops!</h2>
+                <p style="color: #666; margin-bottom: 20px;">${message}</p>
+                <a href="produtos.html" style="display: inline-block; background: #ff6600; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    Ver Todos os Produtos
+                </a>
+            </div>
+        `;
+    }
 }
 
 /**
@@ -68,7 +229,7 @@ function renderProduct() {
     if (currentProduct.salePrice) {
         document.getElementById('priceOriginal').style.display = 'block';
         document.getElementById('priceOldValue').textContent = formatPrice(currentProduct.price);
-        
+
         const discount = currentProduct.price - currentProduct.salePrice;
         document.getElementById('discountBadge').style.display = 'inline-block';
         document.getElementById('discountValue').textContent = formatPrice(discount);
@@ -76,12 +237,12 @@ function renderProduct() {
 
     // Installments
     const installmentValue = price / 10;
-    document.getElementById('priceInstallment').textContent = 
+    document.getElementById('priceInstallment').textContent =
         `ou 10x de R$ ${formatPrice(installmentValue)} sem juros`;
 
     // Stock
     if (currentProduct.stock > 0) {
-        document.getElementById('stockStatus').textContent = 
+        document.getElementById('stockStatus').textContent =
             `${currentProduct.stock} unidades disponíveis`;
     } else {
         document.getElementById('stockStatus').textContent = 'Produto indisponível';
@@ -118,32 +279,83 @@ function renderProduct() {
  * Render product gallery
  */
 function renderGallery() {
-    // Main image
     const mainImage = document.getElementById('mainImage');
-    mainImage.src = '../' + currentProduct.image;
-    mainImage.alt = currentProduct.name;
-
-    // Thumbnails (usando a mesma imagem múltiplas vezes por enquanto)
     const thumbnails = document.getElementById('thumbnails');
-    const images = [currentProduct.image, currentProduct.image, currentProduct.image, currentProduct.image];
-    
-    thumbnails.innerHTML = images.map((img, index) => `
-        <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="changeImage(${index})">
-            <img src="../${img}" alt="${currentProduct.name}">
+
+    // Determinar URL da imagem (Supabase usa URLs absolutas, local usa relativas)
+    const getImageUrl = (img) => {
+        // Verificar se a imagem é válida
+        if (!img || typeof img !== 'string' || img.trim() === '') {
+            console.warn('⚠️ Imagem inválida, usando placeholder');
+            return '../assets/images/produto-1.jpg';
+        }
+
+        // Se começa com http/https ou data: (base64), usar diretamente
+        if (img.startsWith('http') || img.startsWith('data:')) {
+            return img;
+        }
+
+        // Para caminhos relativos, ajustar o path
+        if (img.startsWith('../')) {
+            return img;
+        }
+        if (img.startsWith('assets/')) {
+            return '../' + img;
+        }
+
+        // Fallback: assumir caminho relativo
+        return '../' + img;
+    };
+
+    // Main image
+    const mainImageUrl = getImageUrl(currentProduct.image);
+    console.log('🖼️ Renderizando galeria:', {
+        mainImage: mainImageUrl.substring(0, 50) + '...',
+        totalImages: currentProduct.images?.length || 0
+    });
+
+    mainImage.src = mainImageUrl;
+    mainImage.alt = currentProduct.name;
+    mainImage.onerror = function () {
+        console.warn('⚠️ Erro ao carregar imagem principal, usando placeholder');
+        this.src = '../assets/images/produto-1.jpg';
+    };
+
+    // Thumbnails - usar array de imagens se disponível
+    let images = [];
+
+    if (currentProduct.images && currentProduct.images.length > 0) {
+        images = currentProduct.images;
+    } else if (currentProduct.image) {
+        // Se só tem uma imagem, mostrar apenas ela
+        images = [currentProduct.image];
+    } else {
+        // Nenhuma imagem, usar placeholder
+        images = ['../assets/images/produto-1.jpg'];
+    }
+
+    // Renderizar thumbnails
+    thumbnails.innerHTML = images.map((img, index) => {
+        const imgUrl = getImageUrl(img);
+        return `
+        <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="changeImage(${index}, '${imgUrl.replace(/'/g, "\\'")}')">
+            <img src="${imgUrl}" alt="${currentProduct.name} - Imagem ${index + 1}" 
+                 onerror="this.src='../assets/images/produto-1.jpg'">
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 /**
  * Change main image
  */
-function changeImage(index) {
+function changeImage(index, imageUrl) {
     const thumbnails = document.querySelectorAll('.thumbnail');
     thumbnails.forEach(t => t.classList.remove('active'));
     thumbnails[index].classList.add('active');
 
     const mainImage = document.getElementById('mainImage');
-    mainImage.src = '../' + currentProduct.image;
+    mainImage.src = imageUrl;
 }
 
 /**
@@ -153,7 +365,7 @@ function zoomImage() {
     const modal = document.getElementById('zoomModal');
     const modalImg = document.getElementById('zoomedImage');
     const mainImg = document.getElementById('mainImage');
-    
+
     modal.style.display = 'block';
     modalImg.src = mainImg.src;
 }
@@ -179,15 +391,59 @@ document.addEventListener('keydown', (e) => {
  * Render specs table
  */
 function renderSpecs() {
-    const specs = {
-        'Marca': currentProduct.brand,
-        'SKU': currentProduct.sku,
-        'Categoria': window.categories.find(c => c.id === currentProduct.category)?.name || '-',
-        'Estoque': currentProduct.stock + ' unidades',
-        'Entrega Rápida': currentProduct.fastShipping ? 'Sim' : 'Não',
-        'Garantia': 'Garantia do fabricante',
-        'Origem': 'Nacional/Importado'
+    // Formatar garantia para exibição
+    const formatWarranty = (warranty) => {
+        const warranties = {
+            '30_dias': '30 dias',
+            '3_meses': '3 meses',
+            '6_meses': '6 meses',
+            '1_ano': '1 ano',
+            '2_anos': '2 anos',
+            'fabricante': 'Garantia do fabricante'
+        };
+        return warranties[warranty] || warranty || 'Consultar';
     };
+
+    // Formatar origem para exibição
+    const formatOrigin = (origin) => {
+        const origins = {
+            'nacional': 'Nacional',
+            'importado': 'Importado',
+            'fabricacao_propria': 'Fabricação Própria'
+        };
+        return origins[origin] || origin || '-';
+    };
+
+    // Construir objeto de specs com dados reais
+    const specs = {};
+
+    specs['Marca'] = currentProduct.brand || '-';
+    specs['SKU'] = currentProduct.sku;
+
+    if (currentProduct.barcode) {
+        specs['Código de Barras (EAN)'] = currentProduct.barcode;
+    }
+
+    if (window.categories) {
+        specs['Categoria'] = window.categories.find(c => c.id === currentProduct.category)?.name || '-';
+    }
+
+    if (currentProduct.weight) {
+        specs['Peso'] = currentProduct.weight + ' kg';
+    }
+
+    if (currentProduct.dimensions) {
+        specs['Dimensões'] = currentProduct.dimensions;
+    }
+
+    if (currentProduct.material) {
+        specs['Material'] = currentProduct.material;
+    }
+
+    specs['Origem'] = formatOrigin(currentProduct.origin);
+    specs['Garantia'] = formatWarranty(currentProduct.warranty);
+    specs['Estoque'] = currentProduct.stock + ' unidades';
+    specs['Entrega Rápida'] = currentProduct.fastShipping ? 'Sim ✓' : 'Não';
 
     const table = document.getElementById('specsTable');
     table.innerHTML = Object.entries(specs).map(([key, value]) => `
@@ -196,6 +452,34 @@ function renderSpecs() {
             <td>${value}</td>
         </tr>
     `).join('');
+
+    // Renderizar especificações adicionais se existirem
+    if (currentProduct.specs) {
+        const additionalSpecs = document.createElement('div');
+        additionalSpecs.style.cssText = 'margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;';
+        additionalSpecs.innerHTML = `
+            <h4 style="margin-bottom: 10px; color: #333;">Especificações Adicionais</h4>
+            <pre style="white-space: pre-wrap; color: #666; font-family: inherit; margin: 0;">${currentProduct.specs}</pre>
+        `;
+        table.parentElement.appendChild(additionalSpecs);
+    }
+
+    // Renderizar compatibilidade se existir
+    if (currentProduct.compatibility && currentProduct.compatibility.length > 0) {
+        const compatPanel = document.getElementById('compatibility');
+        if (compatPanel) {
+            compatPanel.innerHTML = `
+                <h4 style="margin-bottom: 15px; color: #333;">Veículos Compatíveis</h4>
+                <ul style="list-style: none; padding: 0;">
+                    ${currentProduct.compatibility.map(vehicle => `
+                        <li style="padding: 8px 0; border-bottom: 1px solid #eee; color: #666;">
+                            🚗 ${vehicle}
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+        }
+    }
 }
 
 /**
@@ -208,7 +492,7 @@ function renderRelatedProducts() {
         .slice(0, 4);
 
     const grid = document.getElementById('relatedProducts');
-    
+
     if (related.length === 0) {
         grid.innerHTML = '<p style="text-align: center; color: #666;">Nenhum produto relacionado encontrado.</p>';
         return;
@@ -251,15 +535,15 @@ function renderRelatedProducts() {
  */
 function setupTabs() {
     const tabBtns = document.querySelectorAll('.tab-btn');
-    
+
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetTab = btn.dataset.tab;
-            
+
             // Remove active from all
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            
+
             // Add active to clicked
             btn.classList.add('active');
             document.getElementById(targetTab).classList.add('active');
@@ -292,7 +576,7 @@ function decreaseQty() {
 document.addEventListener('DOMContentLoaded', () => {
     const qtyInput = document.getElementById('quantity');
     if (qtyInput) {
-        qtyInput.addEventListener('change', function() {
+        qtyInput.addEventListener('change', function () {
             let value = parseInt(this.value);
             if (isNaN(value) || value < 1) {
                 value = 1;
@@ -361,7 +645,7 @@ function buyNow() {
  */
 function addToCartQuick(productId, button) {
     const product = window.catalogProducts.find(p => p.id === productId);
-    
+
     if (!product) return;
 
     window.cart.addItem({

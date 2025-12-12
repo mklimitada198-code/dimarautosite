@@ -1,4 +1,166 @@
+/**
+ * ==================== BANNER CAROUSEL - GLOBAL FUNCTIONS ====================
+ * Funções exportadas globalmente para permitir re-inicialização após carga dinâmica
+ */
+
+(function () {
+    'use strict';
+
+    // Estado do carrossel (encapsulado no closure)
+    let carouselState = {
+        currentSlide: 0,
+        autoRotateInterval: null,
+        isHovering: false,
+        initialized: false
+    };
+
+    /**
+     * Vai para um slide específico
+     * @param {number} index - Índice do slide (0-based)
+     */
+    window.goToSlide = function (index) {
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.carousel-indicators .indicator');
+
+        if (slides.length === 0) return;
+
+        // Normalizar índice
+        if (index < 0) index = slides.length - 1;
+        if (index >= slides.length) index = 0;
+
+        // Remove classe 'active' de todos
+        slides.forEach(slide => slide.classList.remove('active'));
+        indicators.forEach(indicator => indicator.classList.remove('active'));
+
+        // Adiciona classe 'active' ao correto
+        if (slides[index]) slides[index].classList.add('active');
+        if (indicators[index]) indicators[index].classList.add('active');
+
+        carouselState.currentSlide = index;
+    };
+
+    /**
+     * Avança para o próximo slide
+     */
+    function nextSlide() {
+        const slides = document.querySelectorAll('.carousel-slide');
+        let next = (carouselState.currentSlide + 1) % slides.length;
+        window.goToSlide(next);
+    }
+
+    /**
+     * Volta para o slide anterior
+     */
+    function prevSlide() {
+        const slides = document.querySelectorAll('.carousel-slide');
+        let prev = (carouselState.currentSlide - 1 + slides.length) % slides.length;
+        window.goToSlide(prev);
+    }
+
+    /**
+     * Inicia rotação automática
+     */
+    function startAutoRotate() {
+        stopAutoRotate();
+        if (!carouselState.isHovering) {
+            carouselState.autoRotateInterval = setInterval(nextSlide, 4000);
+        }
+    }
+
+    /**
+     * Para rotação automática
+     */
+    function stopAutoRotate() {
+        if (carouselState.autoRotateInterval !== null) {
+            clearInterval(carouselState.autoRotateInterval);
+            carouselState.autoRotateInterval = null;
+        }
+    }
+
+    /**
+     * Inicializa ou re-inicializa o carrossel de banners
+     * Chamado após carga dinâmica de banners do Supabase
+     */
+    window.initCarousel = function () {
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.carousel-indicators .indicator');
+        const prevBtn = document.querySelector('.carousel-button.prev');
+        const nextBtn = document.querySelector('.carousel-button.next');
+        const carouselContainer = document.querySelector('.banner-carousel');
+
+        // Se não há slides, não fazer nada
+        if (slides.length === 0) {
+            console.log('🎠 Carrossel: Nenhum slide encontrado');
+            return;
+        }
+
+        console.log(`🎠 Carrossel: Inicializando com ${slides.length} slides`);
+
+        // Parar qualquer rotação anterior
+        stopAutoRotate();
+
+        // Reset do estado
+        carouselState.currentSlide = 0;
+        carouselState.isHovering = false;
+
+        // Garantir que primeiro slide está ativo
+        window.goToSlide(0);
+
+        // Remover event listeners antigos clonando os botões
+        if (prevBtn) {
+            const newPrevBtn = prevBtn.cloneNode(true);
+            prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+            newPrevBtn.addEventListener('click', function () {
+                prevSlide();
+                stopAutoRotate();
+                startAutoRotate();
+            });
+        }
+
+        if (nextBtn) {
+            const newNextBtn = nextBtn.cloneNode(true);
+            nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+            newNextBtn.addEventListener('click', function () {
+                nextSlide();
+                stopAutoRotate();
+                startAutoRotate();
+            });
+        }
+
+        // Re-adicionar listeners nos indicadores (já são novos após renderização dinâmica)
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', function () {
+                window.goToSlide(index);
+                stopAutoRotate();
+                startAutoRotate();
+            });
+        });
+
+        // Hover pause (remove listeners antigos primeiro se já inicializado)
+        if (carouselContainer && !carouselState.initialized) {
+            carouselContainer.addEventListener('mouseenter', function () {
+                carouselState.isHovering = true;
+                stopAutoRotate();
+            });
+
+            carouselContainer.addEventListener('mouseleave', function () {
+                carouselState.isHovering = false;
+                startAutoRotate();
+            });
+        }
+
+        // Iniciar rotação automática
+        startAutoRotate();
+        carouselState.initialized = true;
+
+        console.log('🎠 Carrossel: Inicializado com sucesso!');
+    };
+
+})();
+
+// ==================== MAIN SCRIPT ====================
 document.addEventListener('DOMContentLoaded', function () {
+
 
     // ==================== Vehicle Filter Logic ====================
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -16,21 +178,21 @@ document.addEventListener('DOMContentLoaded', function () {
     // Tab switching
     if (tabButtons && tabButtons.length > 0) {
         tabButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            // Remove active class from all tabs
-            tabButtons.forEach(tab => tab.classList.remove('active'));
-            // Add active class to clicked tab
-            this.classList.add('active');
+            button.addEventListener('click', function () {
+                // Remove active class from all tabs
+                tabButtons.forEach(tab => tab.classList.remove('active'));
+                // Add active class to clicked tab
+                this.classList.add('active');
 
-            // Reset form when switching tabs
-            if (brandSelect) {
-                brandSelect.selectedIndex = 0;
-                modelSelect.selectedIndex = 0;
-                modelSelect.disabled = true;
-                yearSelect.selectedIndex = 0;
-                yearSelect.disabled = true;
-            }
-        });
+                // Reset form when switching tabs
+                if (brandSelect) {
+                    brandSelect.selectedIndex = 0;
+                    modelSelect.selectedIndex = 0;
+                    modelSelect.disabled = true;
+                    yearSelect.selectedIndex = 0;
+                    yearSelect.disabled = true;
+                }
+            });
         });
     }
 
@@ -143,119 +305,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==================== Banner Carousel Logic ====================
-    const slides = document.querySelectorAll('.carousel-slide');
-    const indicators = document.querySelectorAll('.carousel-indicators .indicator');
-    const prevBtn = document.querySelector('.carousel-button.prev');
-    const nextBtn = document.querySelector('.carousel-button.next');
-    const carouselContainer = document.querySelector('.banner-carousel');
+    // Inicializar carrossel pela primeira vez (se tiver slides estáticos)
+    window.initCarousel();
 
-    if (slides.length > 0) {
-        let currentSlide = 0;
-        let autoRotateInterval = null;
-        let isHovering = false;
-
-        /**
-         * Mostra um slide específico
-         * @param {number} index - Índice do slide a ser exibido
-         */
-        function showSlide(index) {
-            // Remove classe 'active' de todos os slides e indicadores
-            slides.forEach(slide => slide.classList.remove('active'));
-            indicators.forEach(indicator => indicator.classList.remove('active'));
-
-            // Adiciona classe 'active' ao slide e indicador corretos
-            slides[index].classList.add('active');
-            if (indicators[index]) {
-                indicators[index].classList.add('active');
-            }
-            
-            currentSlide = index;
-        }
-
-        /**
-         * Avança para o próximo slide
-         */
-        function nextSlide() {
-            let next = (currentSlide + 1) % slides.length;
-            showSlide(next);
-        }
-
-        /**
-         * Volta para o slide anterior
-         */
-        function prevSlide() {
-            let prev = (currentSlide - 1 + slides.length) % slides.length;
-            showSlide(prev);
-        }
-
-        /**
-         * Inicia a rotação automática
-         * Só inicia se não estiver com hover
-         */
-        function startAutoRotate() {
-            // Limpa qualquer intervalo existente primeiro
-            stopAutoRotate();
-            
-            // Só inicia se não estiver com hover
-            if (!isHovering) {
-                autoRotateInterval = setInterval(nextSlide, 3000);
-            }
-        }
-
-        /**
-         * Para a rotação automática
-         */
-        function stopAutoRotate() {
-            if (autoRotateInterval !== null) {
-                clearInterval(autoRotateInterval);
-                autoRotateInterval = null;
-            }
-        }
-
-        // ==================== Event Listeners ====================
-
-        // Navegação com botões (prev/next)
-        if (prevBtn) {
-            prevBtn.addEventListener('click', function () {
-                prevSlide();
-                stopAutoRotate();
-                startAutoRotate(); // Reinicia timer após navegação manual
-            });
-        }
-
-        if (nextBtn) {
-            nextBtn.addEventListener('click', function () {
-                nextSlide();
-                stopAutoRotate();
-                startAutoRotate(); // Reinicia timer após navegação manual
-            });
-        }
-
-        // Navegação com indicadores
-        indicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', function () {
-                showSlide(index);
-                stopAutoRotate();
-                startAutoRotate(); // Reinicia timer após navegação manual
-            });
-        });
-
-        // Pausa ao passar o mouse (hover)
-        if (carouselContainer) {
-            carouselContainer.addEventListener('mouseenter', function () {
-                isHovering = true;
-                stopAutoRotate();
-            });
-
-            carouselContainer.addEventListener('mouseleave', function () {
-                isHovering = false;
-                startAutoRotate(); // Retoma a rotação quando o mouse sai
-            });
-        }
-
-        // Inicia a rotação automática quando a página carrega
-        startAutoRotate();
-    }
 
     // ==================== Main Offers Navigation ====================
     const offersGrid = document.querySelector('.offers-grid');
@@ -265,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (offersGrid && offersPrevBtn && offersNextBtn) {
         let scrollAmount = 0;
 
-        offersNextBtn.addEventListener('click', function() {
+        offersNextBtn.addEventListener('click', function () {
             const cardWidth = offersGrid.querySelector('.product-card').offsetWidth;
             const gap = 24;
             scrollAmount = cardWidth + gap;
@@ -275,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        offersPrevBtn.addEventListener('click', function() {
+        offersPrevBtn.addEventListener('click', function () {
             const cardWidth = offersGrid.querySelector('.product-card').offsetWidth;
             const gap = 24;
             scrollAmount = cardWidth + gap;
@@ -360,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 indicator.addEventListener('click', () => {
                     const scrollWidth = categoriesCarousel.scrollWidth - categoriesCarousel.offsetWidth;
                     const scrollPosition = (scrollWidth / (categoryIndicators.length - 1)) * index;
-                    
+
                     categoriesCarousel.scrollTo({
                         left: scrollPosition,
                         behavior: 'smooth'
@@ -372,35 +424,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ==================== Newsletter Form ====================
     const newsletterForm = document.querySelector('.newsletter-form');
-    
+
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            
+
             const emailInput = newsletterForm.querySelector('.newsletter-input');
             const email = emailInput.value.trim();
-            
+
             // Validação de email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            
+
             if (!email) {
                 alert('❌ Por favor, digite seu e-mail');
                 emailInput.focus();
                 return;
             }
-            
+
             if (!emailRegex.test(email)) {
                 alert('❌ Por favor, digite um e-mail válido');
                 emailInput.focus();
                 return;
             }
-            
+
             // Simular envio (em produção, enviar para backend)
             emailInput.disabled = true;
             const button = newsletterForm.querySelector('.newsletter-button');
             const originalHTML = button.innerHTML;
             button.innerHTML = '✓';
-            
+
             setTimeout(() => {
                 alert(`✅ Obrigado por se cadastrar!\n\nE-mail: ${email}\n\nVocê receberá nossas ofertas exclusivas!`);
                 emailInput.value = '';
@@ -412,30 +464,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ==================== Vehicle Filter Form ====================
     const vehicleSearchBtn = document.querySelector('.vehicle-search-button');
-    
+
     if (vehicleSearchBtn) {
         vehicleSearchBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            
+
             const brand = document.getElementById('brand-select')?.value;
             const model = document.getElementById('model-select')?.value;
             const year = document.getElementById('year-select')?.value;
-            
+
             if (!brand || brand === '') {
                 alert('❌ Selecione uma marca');
                 return;
             }
-            
+
             if (!model || model === '') {
                 alert('❌ Selecione um modelo');
                 return;
             }
-            
+
             if (!year || year === '') {
                 alert('❌ Selecione um ano');
                 return;
             }
-            
+
             // Redirecionar para produtos com filtros
             window.location.href = `pages/produtos.html?marca=${encodeURIComponent(brand)}&modelo=${encodeURIComponent(model)}&ano=${year}`;
         });

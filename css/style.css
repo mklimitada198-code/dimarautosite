@@ -1512,6 +1512,21 @@ ul {
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
+/* Product Card Link - torna todo o card clicável */
+.product-card-link {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.product-card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
 /* Product Image */
 .product-image {
     position: relative;

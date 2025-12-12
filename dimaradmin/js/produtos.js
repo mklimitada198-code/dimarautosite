@@ -393,6 +393,31 @@ window.openProductModal = function (productId = null) {
                 compatibilityTextarea.value = (product.compatibility || []).join('\n');
             }
 
+            // Especificações Técnicas
+            const weightField = document.getElementById('productWeight');
+            if (weightField) weightField.value = product.weight || '';
+
+            const dimensionsField = document.getElementById('productDimensions');
+            if (dimensionsField) dimensionsField.value = product.dimensions || '';
+
+            const materialField = document.getElementById('productMaterial');
+            if (materialField) materialField.value = product.material || '';
+
+            const originField = document.getElementById('productOrigin');
+            if (originField) originField.value = product.origin || '';
+
+            const warrantyField = document.getElementById('productWarranty');
+            if (warrantyField) warrantyField.value = product.warranty || '';
+
+            const barcodeField = document.getElementById('productBarcode');
+            if (barcodeField) barcodeField.value = product.barcode || '';
+
+            const specsField = document.getElementById('productSpecs');
+            if (specsField) specsField.value = product.specs || '';
+
+            const bestsellerField = document.getElementById('productBestseller');
+            if (bestsellerField) bestsellerField.checked = product.is_bestseller || false;
+
             const customGroup = document.getElementById('customBadgeGroup');
             customGroup.style.display = product.badge_type === 'personalizado' ? 'block' : 'none';
 
@@ -443,12 +468,21 @@ async function saveProduct() {
         short_description: document.getElementById('productShortDesc').value,
         description: document.getElementById('productDescription').value,
         featured: document.getElementById('productFeatured').checked,
+        is_bestseller: document.getElementById('productBestseller')?.checked || false,
         fast_shipping: document.getElementById('productFastShipping').checked,
         badge_type: document.getElementById('productBadgeType').value || null,
         custom_badge_text: document.getElementById('productCustomBadge').value || null,
         home_section: document.getElementById('productHomeSection').value || null,
         vehicle_type: document.getElementById('productVehicleType').value || null,
         compatibility: parseCompatibility(document.getElementById('productCompatibility').value),
+        // Especificações Técnicas
+        weight: document.getElementById('productWeight')?.value ? parseFloat(document.getElementById('productWeight').value) : null,
+        dimensions: document.getElementById('productDimensions')?.value || null,
+        material: document.getElementById('productMaterial')?.value || null,
+        origin: document.getElementById('productOrigin')?.value || null,
+        warranty: document.getElementById('productWarranty')?.value || null,
+        barcode: document.getElementById('productBarcode')?.value || null,
+        specs: document.getElementById('productSpecs')?.value || null,
         images: selectedImages
     };
 

@@ -197,35 +197,40 @@
             ? product.images[0]
             : (window.placeholders ? window.placeholders.product : 'assets/images/produto-1.jpg');
 
+        // URL da página do produto
+        const productPageUrl = `pages/produto.html?id=${product.id}`;
+
         card.innerHTML = `
-            <div class="product-image">
-                <img src="${imageUrl}" alt="${product.name}" loading="lazy" onerror="this.src='${window.placeholders ? window.placeholders.product : 'assets/images/produto-1.jpg'}'">
-                ${badge}
-            </div>
-            ${product.fast_shipping ? `
-            <div class="product-shipping-top">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M13 16V6C13 4.89543 12.1046 4 11 4H3C1.89543 4 1 4.89543 1 6V16M13 16H1M13 16L16.5 16C16.7652 16 17.0196 15.8946 17.2071 15.7071L22.5 10.4142C22.7761 10.1381 22.7761 9.69289 22.5 9.41675L19.7929 6.70966C19.6054 6.52213 19.351 6.41675 19.0858 6.41675L13 6.41675M13 16V6.41675" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>Produto com entrega <strong>RÁPIDA</strong></span>
-            </div>
-            ` : ''}
-            <div class="product-info">
-                <h3 class="product-title">${product.name}</h3>
-                <div class="product-pricing">
-                    ${originalPrice ? `<span class="product-price-old">R$ ${originalPrice.toFixed(2).replace('.', ',')}</span>` : ''}
-                    <span class="product-price">R$ ${price.toFixed(2).replace('.', ',')}</span>
-                    <span class="product-installment">à vista no Pix ou Boleto</span>
-                    <span class="product-installment-detail">ou R$ ${(price * 1.1).toFixed(2).replace('.', ',')} em 10x de R$ ${installmentValue.replace('.', ',')} sem juros no cartão</span>
+            <a href="${productPageUrl}" class="product-card-link" aria-label="Ver detalhes de ${product.name}">
+                <div class="product-image">
+                    <img src="${imageUrl}" alt="${product.name}" loading="lazy" onerror="this.src='${window.placeholders ? window.placeholders.product : 'assets/images/produto-1.jpg'}'">
+                    ${badge}
                 </div>
-            </div>
+                ${product.fast_shipping ? `
+                <div class="product-shipping-top">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 16V6C13 4.89543 12.1046 4 11 4H3C1.89543 4 1 4.89543 1 6V16M13 16H1M13 16L16.5 16C16.7652 16 17.0196 15.8946 17.2071 15.7071L22.5 10.4142C22.7761 10.1381 22.7761 9.69289 22.5 9.41675L19.7929 6.70966C19.6054 6.52213 19.351 6.41675 19.0858 6.41675L13 6.41675M13 16V6.41675" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Produto com entrega <strong>RÁPIDA</strong></span>
+                </div>
+                ` : ''}
+                <div class="product-info">
+                    <h3 class="product-title">${product.name}</h3>
+                    <div class="product-pricing">
+                        ${originalPrice ? `<span class="product-price-old">R$ ${originalPrice.toFixed(2).replace('.', ',')}</span>` : ''}
+                        <span class="product-price">R$ ${price.toFixed(2).replace('.', ',')}</span>
+                        <span class="product-installment">à vista no Pix ou Boleto</span>
+                        <span class="product-installment-detail">ou R$ ${(price * 1.1).toFixed(2).replace('.', ',')} em 10x de R$ ${installmentValue.replace('.', ',')} sem juros no cartão</span>
+                    </div>
+                </div>
+            </a>
             <div class="product-button-space">
-                <button class="product-buy-button" onclick="addToCartFromHome('${product.id}', event)">
+                <a href="${productPageUrl}" class="product-buy-button">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.70711 15.2929C4.07714 15.9229 4.52331 17 5.41421 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     Comprar
-                </button>
+                </a>
             </div>
         `;
 
@@ -302,8 +307,27 @@
         try {
             log.info('🔄 Carregando banners...');
 
+            // Fallback banners se não houver Supabase ou dados
+            const fallbackBanners = [
+                {
+                    id: 'fallback_1',
+                    title: 'Banner Dimar 1',
+                    image_url: 'assets/images/bannner01.png',
+                    link_url: null,
+                    is_active: true
+                },
+                {
+                    id: 'fallback_2',
+                    title: 'Banner Dimar 2',
+                    image_url: 'assets/images/bannner02.png',
+                    link_url: null,
+                    is_active: true
+                }
+            ];
+
             if (!window.supabaseClient) {
                 log.warn('⚠️ Supabase não disponível, usando banners estáticos');
+                renderBanners(fallbackBanners);
                 return;
             }
 
@@ -316,19 +340,26 @@
 
             if (error) {
                 log.error('❌ Erro ao carregar banners:', error);
+                renderBanners(fallbackBanners);
                 return;
             }
 
             if (!banners || banners.length === 0) {
-                log.warn('⚠️ Nenhum banner encontrado');
+                log.warn('⚠️ Nenhum banner encontrado no Supabase, usando fallback');
+                renderBanners(fallbackBanners);
                 return;
             }
 
-            log.success(`✅ ${banners.length} banners carregados`);
+            log.success(`✅ ${banners.length} banners carregados do Supabase`);
             renderBanners(banners);
 
         } catch (error) {
             log.error('❌ Erro ao carregar banners:', error);
+            // Usar fallback em caso de erro
+            renderBanners([
+                { id: 'err1', title: 'Banner 1', image_url: 'assets/images/bannner01.png', link_url: null },
+                { id: 'err2', title: 'Banner 2', image_url: 'assets/images/bannner02.png', link_url: null }
+            ]);
         }
     }
 
@@ -345,6 +376,12 @@
         // Limpar banners existentes
         slidesContainer.innerHTML = '';
         indicatorsContainer.innerHTML = '';
+
+        // Se não há banners, não renderizar nada
+        if (!banners || banners.length === 0) {
+            log.warn('⚠️ Lista de banners vazia');
+            return;
+        }
 
         // Renderizar novos banners
         banners.forEach((banner, index) => {
@@ -366,13 +403,19 @@
             const indicator = document.createElement('button');
             indicator.className = `indicator ${index === 0 ? 'active' : ''}`;
             indicator.setAttribute('aria-label', `Banner ${index + 1}`);
-            indicator.addEventListener('click', () => goToSlide(index));
+            indicator.setAttribute('data-slide', index);
+            // Event listener será adicionado pelo initCarousel
             indicatorsContainer.appendChild(indicator);
         });
 
-        // Reinicializar carrossel se função existir
+        // Reinicializar carrossel com os novos slides
         if (typeof window.initCarousel === 'function') {
-            window.initCarousel();
+            // Pequeno delay para garantir que DOM foi atualizado
+            setTimeout(() => {
+                window.initCarousel();
+            }, 100);
+        } else {
+            log.warn('⚠️ Função initCarousel não disponível');
         }
 
         log.success('✅ Banners renderizados');
