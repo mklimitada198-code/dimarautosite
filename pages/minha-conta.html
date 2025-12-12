@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta | Dimar Auto Peças</title>
+    <meta name="description" content="Gerencie sua conta, pedidos e endereços na Dimar Auto Peças">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/customer-auth.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <!-- Account Page -->
+    <main class="account-page">
+        <div class="account-container">
+            <!-- Sidebar -->
+            <aside class="account-sidebar">
+                <div class="account-user">
+                    <div class="account-avatar" id="userAvatar">D</div>
+                    <h3 class="account-name" id="userName">Carregando...</h3>
+                    <p class="account-email" id="userEmail">...</p>
+                </div>
+
+                <ul class="account-menu">
+                    <li>
+                        <a href="minha-conta.html" class="active">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                                    stroke="currentColor" stroke-width="2" />
+                                <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
+                                    stroke="currentColor" stroke-width="2" />
+                            </svg>
+                            Meus Dados
+                        </a>
+                    </li>
+                    <li>
+                        <a href="meus-pedidos.html">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M9 11H15M9 15H12M7 3H17C17.5523 3 18 3.44772 18 4V20C18 20.5523 17.5523 21 17 21H7C6.44772 21 6 20.5523 6 20V4C6 3.44772 6.44772 3 7 3Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                            Meus Pedidos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#enderecos">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M12 21C12 21 5 13.5 5 9C5 5.13401 8.13401 2 12 2C15.866 2 19 5.13401 19 9C19 13.5 12 21 12 21Z"
+                                    stroke="currentColor" stroke-width="2" />
+                                <circle cx="12" cy="9" r="3" stroke="currentColor" stroke-width="2" />
+                            </svg>
+                            Endereços
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="account-menu-logout">
+                    <a href="#" onclick="customerLogout(); return false;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M9 21H5C4.44772 21 4 20.5523 4 20V4C4 3.44772 4.44772 3 5 3H9M16 17L21 12M21 12L16 7M21 12H9"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Sair da conta
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Content -->
+            <section class="account-content">
+                <h2 class="account-section-title">Meus Dados</h2>
+
+                <!-- Personal Info Card -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <h3 class="info-card-title">Informações Pessoais</h3>
+                        <span class="info-card-edit" onclick="enableEditMode()">Editar</span>
+                    </div>
+                    <form id="profileForm">
+                        <div class="auth-form" style="gap: 16px;">
+                            <div class="form-group">
+                                <label for="editName">Nome completo</label>
+                                <input type="text" id="editName" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Email</label>
+                                <input type="email" id="editEmail" disabled style="background: #f5f5f5;">
+                            </div>
+                            <div class="form-group">
+                                <label for="editPhone">Telefone</label>
+                                <input type="tel" id="editPhone" disabled>
+                            </div>
+                            <button type="submit" class="btn-auth btn-auth-primary" id="saveProfileBtn"
+                                style="display: none;">
+                                <span class="btn-text">Salvar alterações</span>
+                                <span class="spinner"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Addresses Section -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <h3 class="info-card-title">Endereços de Entrega</h3>
+                        <span class="info-card-edit" onclick="openAddressModal()">+ Adicionar</span>
+                    </div>
+                    <div id="addressesList">
+                        <p style="color: #999; font-size: 14px;">Nenhum endereço cadastrado</p>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Preview -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <h3 class="info-card-title">Pedidos Recentes</h3>
+                        <a href="meus-pedidos.html" class="info-card-edit">Ver todos</a>
+                    </div>
+                    <div id="recentOrders">
+                        <p style="color: #999; font-size: 14px;">Nenhum pedido realizado</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../js/logger.js"></script>
+    <script src="../js/safe-logger.js"></script>
+    <script src="../js/navigation-fix.js"></script>
+    <script src="../js/templates.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/customer-auth.js"></script>
+    <script src="../js/customer-account.js"></script>
+    <script src="../js/global-init.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | Dimar Auto Peças</title>
+    <meta name="description" content="Faça login na sua conta Dimar Auto Peças">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/customer-auth.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <!-- Login Page -->
+    <main class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Bem-vindo de volta!</h1>
+                <p>Entre na sua conta para continuar</p>
+            </div>
+
+            <div class="auth-body">
+                <!-- Alert Messages -->
+                <div class="auth-alert auth-alert-error" id="loginError">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                        <path d="M10 6V10M10 14H10.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <span id="loginErrorText">Erro ao fazer login</span>
+                </div>
+
+                <div class="auth-alert auth-alert-success" id="loginSuccess">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                        <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Login realizado com sucesso!</span>
+                </div>
+
+                <!-- Login Form -->
+                <form class="auth-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com" required
+                            autocomplete="email">
+                        <span class="error-message">Digite um email válido</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <div class="password-field">
+                            <input type="password" id="password" name="password" placeholder="Sua senha" required
+                                autocomplete="current-password">
+                            <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"
+                                        stroke="currentColor" stroke-width="2" />
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="error-message">Digite sua senha</span>
+                    </div>
+
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Manter conectado</label>
+                    </div>
+
+                    <button type="submit" class="btn-auth btn-auth-primary" id="loginBtn">
+                        <span class="btn-text">Entrar</span>
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+
+                <div class="auth-links">
+                    <a href="recuperar-senha.html">Esqueci minha senha</a>
+                    <div class="auth-divider">ou</div>
+                    <p style="color: #666; margin: 0;">Ainda não tem conta?</p>
+                    <a href="cadastro.html" style="font-size: 16px; font-weight: 600;">Criar minha conta</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../js/logger.js"></script>
+    <script src="../js/safe-logger.js"></script>
+    <script src="../js/navigation-fix.js"></script>
+    <script src="../js/templates.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/customer-auth.js"></script>
+    <script src="../js/global-init.js"></script>
+</body>
+
+</html>

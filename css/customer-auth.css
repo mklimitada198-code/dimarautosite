@@ -1,0 +1,595 @@
+/* ==================== Customer Auth Pages ==================== */
+/* Login, Cadastro, Recuperar Senha, Minha Conta */
+
+/* ==================== Auth Container ==================== */
+.auth-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    padding: 40px 20px;
+}
+
+.auth-container {
+    max-width: 480px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #ff7700 0%, #ff6600 100%);
+    padding: 40px 30px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.auth-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.auth-body {
+    padding: 40px 30px;
+}
+
+/* ==================== Form Styles ==================== */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input {
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #ff6600;
+    box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.1);
+}
+
+.form-group input.error {
+    border-color: #dc3545;
+}
+
+.form-group input.success {
+    border-color: #28a745;
+}
+
+.form-group .error-message {
+    font-size: 12px;
+    color: #dc3545;
+    display: none;
+}
+
+.form-group.has-error .error-message {
+    display: block;
+}
+
+/* Password field with toggle */
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-right: 50px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    padding: 4px;
+}
+
+.password-toggle:hover {
+    color: #ff6600;
+}
+
+/* ==================== Auth Buttons ==================== */
+.btn-auth {
+    padding: 16px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-auth-primary {
+    background: linear-gradient(135deg, #ff7700 0%, #ff6600 100%);
+    color: #ffffff;
+}
+
+.btn-auth-primary:hover {
+    background: linear-gradient(135deg, #ff8800 0%, #ff7700 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.3);
+}
+
+.btn-auth-primary:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-auth-secondary {
+    background: #f5f5f5;
+    color: #333;
+    border: 2px solid #e0e0e0;
+}
+
+.btn-auth-secondary:hover {
+    background: #e8e8e8;
+    border-color: #ccc;
+}
+
+/* Loading spinner */
+.btn-auth .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: none;
+}
+
+.btn-auth.loading .spinner {
+    display: block;
+}
+
+.btn-auth.loading .btn-text {
+    display: none;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================== Auth Links ==================== */
+.auth-links {
+    margin-top: 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.auth-links a {
+    color: #ff6600;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.auth-links a:hover {
+    color: #ff7700;
+    text-decoration: underline;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    color: #999;
+    font-size: 13px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e0e0e0;
+}
+
+/* ==================== Remember Me / Terms ==================== */
+.form-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.form-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: #ff6600;
+    cursor: pointer;
+}
+
+.form-checkbox label {
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    line-height: 1.4;
+}
+
+.form-checkbox a {
+    color: #ff6600;
+}
+
+/* ==================== Alert Messages ==================== */
+.auth-alert {
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.auth-alert.show {
+    display: flex;
+}
+
+.auth-alert-error {
+    background: #fef2f2;
+    color: #dc3545;
+    border: 1px solid #fca5a5;
+}
+
+.auth-alert-success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #86efac;
+}
+
+.auth-alert svg {
+    flex-shrink: 0;
+}
+
+/* ==================== Account Page ==================== */
+.account-page {
+    min-height: 100vh;
+    background: #f5f5f5;
+}
+
+.account-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+}
+
+/* Account Sidebar */
+.account-sidebar {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    height: fit-content;
+}
+
+.account-user {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 20px;
+}
+
+.account-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff7700 0%, #ff6600 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 32px;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.account-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.account-email {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Account Menu */
+.account-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.account-menu li {
+    margin-bottom: 4px;
+}
+
+.account-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.account-menu a:hover {
+    background: #f5f5f5;
+    color: #ff6600;
+}
+
+.account-menu a.active {
+    background: linear-gradient(135deg, #ff7700 0%, #ff6600 100%);
+    color: #ffffff;
+}
+
+.account-menu a svg {
+    width: 20px;
+    height: 20px;
+}
+
+.account-menu-logout {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e8e8e8;
+}
+
+.account-menu-logout a {
+    color: #dc3545;
+}
+
+.account-menu-logout a:hover {
+    background: #fef2f2;
+    color: #dc3545;
+}
+
+/* Account Content */
+.account-content {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.account-section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* Info Cards */
+.info-card {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.info-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.info-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.info-card-edit {
+    color: #ff6600;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.info-card-edit:hover {
+    text-decoration: underline;
+}
+
+/* Orders List */
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.order-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.order-card-header {
+    background: #f5f5f5;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-number {
+    font-weight: 600;
+    color: #333;
+}
+
+.order-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.order-status.pending {
+    background: #fef3cd;
+    color: #856404;
+}
+
+.order-status.processing {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.order-status.shipped {
+    background: #d4edda;
+    color: #155724;
+}
+
+.order-status.delivered {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.order-status.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.order-card-body {
+    padding: 20px;
+}
+
+.order-items-preview {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.order-item-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e8e8e8;
+}
+
+.order-total {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ff6600;
+}
+
+.order-date {
+    font-size: 13px;
+    color: #666;
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 992px) {
+    .account-container {
+        grid-template-columns: 1fr;
+    }
+
+    .account-sidebar {
+        order: -1;
+    }
+
+    .account-menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .account-menu li {
+        margin: 0;
+    }
+
+    .account-menu a {
+        padding: 10px 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-page {
+        padding: 20px 15px;
+    }
+
+    .auth-header {
+        padding: 30px 20px;
+    }
+
+    .auth-header h1 {
+        font-size: 24px;
+    }
+
+    .auth-body {
+        padding: 30px 20px;
+    }
+
+    .account-container {
+        padding: 20px 15px;
+    }
+
+    .account-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        border-radius: 12px;
+    }
+
+    .form-group input {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+
+    .btn-auth {
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+}

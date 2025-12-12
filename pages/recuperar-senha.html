@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha | Dimar Auto Peças</title>
+    <meta name="description" content="Recupere sua senha na Dimar Auto Peças">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/customer-auth.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <!-- Recovery Page -->
+    <main class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Recuperar senha</h1>
+                <p>Digite seu email para receber o link de recuperação</p>
+            </div>
+
+            <div class="auth-body">
+                <!-- Alert Messages -->
+                <div class="auth-alert auth-alert-error" id="recoveryError">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                        <path d="M10 6V10M10 14H10.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <span id="recoveryErrorText">Erro ao enviar email</span>
+                </div>
+
+                <div class="auth-alert auth-alert-success" id="recoverySuccess">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                        <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Email enviado! Verifique sua caixa de entrada.</span>
+                </div>
+
+                <!-- Recovery Form -->
+                <form class="auth-form" id="recoveryForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com" required
+                            autocomplete="email">
+                        <span class="error-message">Digite um email válido</span>
+                    </div>
+
+                    <button type="submit" class="btn-auth btn-auth-primary" id="recoveryBtn">
+                        <span class="btn-text">Enviar link de recuperação</span>
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+
+                <div class="auth-links">
+                    <a href="login.html">← Voltar para o login</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../js/logger.js"></script>
+    <script src="../js/safe-logger.js"></script>
+    <script src="../js/navigation-fix.js"></script>
+    <script src="../js/templates.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/customer-auth.js"></script>
+    <script src="../js/global-init.js"></script>
+</body>
+
+</html>
