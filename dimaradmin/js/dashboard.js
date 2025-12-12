@@ -10,7 +10,8 @@ let stats = {
     products: 0,
     categories: 0,
     banners: 0,
-    brands: 0
+    brands: 0,
+    customers: 0
 };
 
 let recentProducts = [];
@@ -63,17 +64,19 @@ async function loadDashboardStats() {
             console.log('🔌 Carregando estatísticas do Supabase...');
 
             // Load from Supabase
-            const [products, categories, banners, brands] = await Promise.all([
+            const [products, categories, banners, brands, customers] = await Promise.all([
                 window.supabaseClient.from('products').select('*', { count: 'exact', head: true }),
                 window.supabaseClient.from('categories').select('*', { count: 'exact', head: true }),
                 window.supabaseClient.from('banners').select('*', { count: 'exact', head: true }),
-                window.supabaseClient.from('brands').select('*', { count: 'exact', head: true })
+                window.supabaseClient.from('brands').select('*', { count: 'exact', head: true }),
+                window.supabaseClient.from('customers').select('*', { count: 'exact', head: true })
             ]);
 
             stats.products = products.count || 0;
             stats.categories = categories.count || 0;
             stats.banners = banners.count || 0;
             stats.brands = brands.count || 0;
+            stats.customers = customers.count || 0;
 
             console.log('✅ Estatísticas carregadas:', stats);
         } else {
@@ -108,6 +111,9 @@ function updateStatsDisplay() {
     document.getElementById('statBanners').textContent = stats.banners;
     document.getElementById('statBrands').textContent = stats.brands;
 
+    const customersEl = document.getElementById('statCustomers');
+    if (customersEl) customersEl.textContent = stats.customers;
+
     // Add animation
     animateNumbers();
 }
@@ -120,7 +126,8 @@ function animateNumbers() {
         { id: 'statProducts', target: stats.products },
         { id: 'statCategories', target: stats.categories },
         { id: 'statBanners', target: stats.banners },
-        { id: 'statBrands', target: stats.brands }
+        { id: 'statBrands', target: stats.brands },
+        { id: 'statCustomers', target: stats.customers }
     ];
 
     elements.forEach(({ id, target }) => {
