@@ -204,6 +204,32 @@
                     if (data.session) {
                         console.log('✅ Login bem-sucedido!');
                         console.log('👤 Usuário:', data.user.email);
+
+                        // ==================== VERIFICAÇÃO DE ADMIN ====================
+                        // Lista de emails autorizados como admin
+                        const ADMIN_EMAILS = [
+                            'admin@dimar.com.br',
+                            'mk.cardoso198@gmail.com',
+                            // Adicione mais emails de admin conforme necessário
+                        ];
+
+                        const userEmail = data.user.email.toLowerCase().trim();
+                        const isAdmin = ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
+
+                        if (!isAdmin) {
+                            console.warn('❌ Usuário NÃO é admin:', userEmail);
+
+                            // Fazer logout imediatamente
+                            await window.supabaseClient.auth.signOut();
+
+                            showError('Acesso negado. Esta área é restrita a administradores.');
+                            setLoading(false);
+                            return;
+                        }
+
+                        console.log('✅ Usuário É admin - acesso autorizado');
+                        // ==================== FIM VERIFICAÇÃO ====================
+
                         console.log('🔑 Session:', {
                             hasAccessToken: !!data.session.access_token,
                             expiresAt: data.session.expires_at,

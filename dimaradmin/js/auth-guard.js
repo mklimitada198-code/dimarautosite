@@ -6,33 +6,63 @@
 (function () {
     'use strict';
 
-    // ==================== VERIFICAÇÃO DE AUTENTICAÇÃO ====================
+    // ==================== LISTA DE ADMINS PERMITIDOS ====================
+    // IMPORTANTE: Adicione aqui os emails que podem acessar o admin
+    const ADMIN_EMAILS = [
+        'admin@dimar.com.br',
+        'mk.cardoso198@gmail.com',
+        // Adicione mais emails de admin conforme necessário
+    ];
+
+    // ==================== VERIFICAÇÃO DE ADMIN ====================
 
     /**
-     * Verifica se usuário está autenticado via Supabase
-     * CORREÇÃO: Prioriza localStorage para evitar race condition em produção
+     * Verifica se o email é de um admin autorizado
+     */
+    function isAdminEmail(email) {
+        if (!email) return false;
+        const normalizedEmail = email.toLowerCase().trim();
+        return ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase() === normalizedEmail);
+    }
+
+    /**
+     * Verifica se usuário está autenticado E é admin
+     * CORREÇÃO: Agora verifica se é admin, não apenas se está autenticado
      */
     async function isAuthenticated() {
         try {
-            // ✅ PRIORIDADE MÁXIMA: localStorage
+            console.log('🔐 Verificando autenticação de ADMIN...');
+
+            // Verificar localStorage primeiro
             const localAuth = checkLocalStorageFallback();
 
-            console.log('🔐 Verificando autenticação...');
-            console.log('  📦 localStorage:', localAuth ? 'autenticado' : 'não autenticado');
-
-            // Se localStorage diz que está autenticado, CONFIAR!
             if (localAuth) {
-                console.log('✅ Autenticado via localStorage');
-                return true;
+                const adminEmail = localStorage.getItem('admin_email');
+                if (isAdminEmail(adminEmail)) {
+                    console.log('✅ Admin autenticado via localStorage:', adminEmail);
+                    return true;
+                } else {
+                    console.warn('❌ Email não é admin:', adminEmail);
+                    clearLocalStorage();
+                    return false;
+                }
             }
 
-            // Apenas verificar Supabase se localStorage não tem nada
+            // Verificar Supabase
             if (window.supabaseClient) {
                 const { data: { session } } = await window.supabaseClient.auth.getSession();
                 if (session && session.user) {
-                    console.log('✅ Autenticado via Supabase');
-                    syncToLocalStorage(session.user);
-                    return true;
+                    const userEmail = session.user.email;
+
+                    if (isAdminEmail(userEmail)) {
+                        console.log('✅ Admin autenticado via Supabase:', userEmail);
+                        syncToLocalStorage(session.user);
+                        return true;
+                    } else {
+                        console.warn('❌ Usuário autenticado mas NÃO é admin:', userEmail);
+                        // NÃO sincronizar - este usuário não deve ter acesso admin
+                        return false;
+                    }
                 }
             }
 
@@ -41,8 +71,9 @@
 
         } catch (err) {
             console.error('❌ Erro ao verificar autenticação:', err);
-            // Em caso de erro, confiar no localStorage
-            return checkLocalStorageFallback();
+            // Em caso de erro, verificar localStorage com verificação de admin
+            const adminEmail = localStorage.getItem('admin_email');
+            return isAdminEmail(adminEmail);
         }
     }
 
