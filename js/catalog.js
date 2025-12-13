@@ -226,8 +226,36 @@ function checkUrlParams() {
     const modeloNome = params.get('modelo_nome');
     const ano = params.get('ano');
 
+    // Se tem tipo de veículo na URL (carro ou moto), aplicar filtro
+    if (vehicleType) {
+        // Mapear tipo para valor do checkbox
+        const typeMap = {
+            'carro': 'car',
+            'car': 'car',
+            'moto': 'moto'
+        };
+        const filterType = typeMap[vehicleType.toLowerCase()];
+
+        if (filterType) {
+            currentFilters.vehicleType.push(filterType);
+
+            // Marcar checkbox correspondente
+            const checkbox = document.getElementById(filterType === 'car' ? 'filterCar' : 'filterMoto');
+            if (checkbox) checkbox.checked = true;
+
+            console.log(`🚗 Filtro de tipo de veículo via URL: ${vehicleType}`);
+
+            // Atualizar título da página
+            const typeLabel = filterType === 'car' ? 'Peças para Carro' : 'Peças para Moto';
+            const pageTitle = document.querySelector('.page-title') || document.querySelector('h1');
+            if (pageTitle && !params.get('q')) {
+                pageTitle.innerHTML = `<span style="color: #FF6B00;">${typeLabel}</span>`;
+            }
+        }
+    }
+
     if (vehicleType && marca && modelo && ano) {
-        console.log(`🚗 Filtro de veículo: ${vehicleType} ${marcaNome || marca} ${modeloNome || modelo} ${ano}`);
+        console.log(`🚗 Filtro de veículo completo: ${vehicleType} ${marcaNome || marca} ${modeloNome || modelo} ${ano}`);
 
         // Salvar filtros de veículo
         currentFilters.vehicle = {
@@ -472,6 +500,28 @@ function applyFilters() {
         // In stock filter
         if (currentFilters.inStock && product.stock <= 0) {
             return false;
+        }
+
+        // Vehicle TYPE filter (carro/moto checkbox ou URL)
+        if (currentFilters.vehicleType.length > 0) {
+            const productVehicleType = (product.vehicle_type || product.vehicleType || '').toLowerCase();
+
+            // Mapear tipos de produto para tipos de filtro
+            const typeMap = {
+                'carro': 'car',
+                'car': 'car',
+                'moto': 'moto',
+                'universal': 'universal'
+            };
+            const normalizedProductType = typeMap[productVehicleType] || productVehicleType;
+
+            // Verificar se o produto é do tipo selecionado ou universal
+            const matchesType = currentFilters.vehicleType.includes(normalizedProductType) ||
+                normalizedProductType === 'universal';
+
+            if (!matchesType) {
+                return false;
+            }
         }
 
         // Vehicle compatibility filter

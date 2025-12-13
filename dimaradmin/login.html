@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Supabase CDN -->
+    <!-- Supabase CDN (para operações de banco, não para auth) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
@@ -58,20 +58,32 @@
             </form>
 
             <p style="text-align: center; margin-top: 20px; font-size: 13px; color: #7f8c8d;">
-                <strong>Importante:</strong><br>
-                Use as credenciais criadas no Supabase Auth
+                <strong>Acesso restrito</strong><br>
+                Apenas administradores autorizados
             </p>
         </div>
     </div>
 
-    <!-- Supabase Config -->
+    <!-- Supabase Config (para banco de dados) -->
     <script src="js/supabase-config.js"></script>
 
-    <!-- Login Logic -->
+    <!-- Login Logic SIMPLIFICADO -->
     <script>
         (function () {
             'use strict';
 
+            // ==================== CONFIGURAÇÃO ====================
+            // Emails autorizados como admin
+            const ADMIN_EMAILS = [
+                'admin@dimar.com.br',
+                'mk.cardoso198@gmail.com'
+            ];
+
+            // Senha do admin (em produção, use hash ou verificação no servidor)
+            // IMPORTANTE: Altere esta senha!
+            const ADMIN_PASSWORD = 'dimar2024';
+
+            // ==================== ELEMENTOS ====================
             const loginForm = document.getElementById('loginForm');
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
@@ -81,257 +93,87 @@
             const successAlert = document.getElementById('successAlert');
             const successMessage = document.getElementById('successMessage');
 
-            // ==================== HELPER FUNCTIONS ====================
+            // ==================== HELPERS ====================
 
-            function showError(message) {
+            function showError(msg) {
                 errorAlert.style.display = 'block';
-                errorMessage.textContent = message;
+                errorMessage.textContent = msg;
                 successAlert.style.display = 'none';
-
-                setTimeout(() => {
-                    errorAlert.style.display = 'none';
-                }, 5000);
+                setTimeout(() => errorAlert.style.display = 'none', 5000);
             }
 
-            function showSuccess(message) {
+            function showSuccess(msg) {
                 successAlert.style.display = 'block';
-                successMessage.textContent = message;
+                successMessage.textContent = msg;
                 errorAlert.style.display = 'none';
             }
 
-            function setLoading(isLoading) {
-                loginBtn.disabled = isLoading;
-                loginBtn.textContent = isLoading ? 'Entrando...' : 'Entrar';
+            function setLoading(loading) {
+                loginBtn.disabled = loading;
+                loginBtn.innerHTML = loading
+                    ? 'Entrando...'
+                    : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Entrar`;
             }
-
-            // ==================== VERIFICAÇÃO DE SESSÃO REMOVIDA ====================
-            // MOTIVO: Causava loop infinito ao redirecionar automaticamente
-            // Agora a verificação ocorre APENAS no submit do formulário
-            //
-            // A função checkExistingSession foi removida para evitar:
-            // 1. Redirect automático ao carregar a página
-            // 2. Conflito com verificação do auth-guard em index.html  
-            // 3. Loop quando localStorage e Supabase session estão dessincronizados
 
             // ==================== LOGIN HANDLER ====================
 
-            // LOG DE VERSÃO para debug de cache
-            const LOGIN_VERSION = '2.1.0-2024-12-11-13h00';
-            console.log('🔢 Login Script Versão:', LOGIN_VERSION);
-
-            // LOG IMEDIATO para confirmar que script está rodando
-            console.log('📝 Configurando event listener do formulário...');
-            console.log('   loginForm element:', loginForm);
-            console.log('   É nulo?', loginForm === null);
-
-            if (!loginForm) {
-                console.error('❌ ERRO CRÍTICO: Formulário #loginForm não encontrado!');
-                console.error('   O código pode estar rodando antes do DOM carregar');
-                return;
-            }
-
-            console.log('✅ Formulário encontrado! Adicionando event listeners...');
-
-            // Função principal de login
             async function handleLogin(e) {
-                if (e) e.preventDefault();
+                e.preventDefault();
 
-                console.log('🎯 EVENTO LOGIN DISPARADO!');
-                console.log('   Versão:', LOGIN_VERSION);
-                console.log('   Tipo de evento:', e ? e.type : 'chamada direta');
+                const email = emailInput.value.trim().toLowerCase();
+                const password = passwordInput.value;
 
-                // DEBUG: Verificar inputs antes de ler valores
-                console.log('📋 DEBUG - Verificando inputs:');
-                console.log('   emailInput element:', emailInput);
-                console.log('   passwordInput element:', passwordInput);
+                console.log('🔐 Tentando login:', email);
 
-                const email = emailInput.value.trim();
-                const password = passwordInput.value.trim();
-
-                console.log('   Email value:', email);
-                console.log('   Email length:', email.length);
-                console.log('   Password length:', password.length);
-
+                // Validar campos
                 if (!email || !password) {
-                    console.log('❌ VALIDAÇÃO FALHOU: campos vazios');
-                    console.log('   !email:', !email, '!password:', !password);
-                    showError('Por favor, preencha todos os campos');
+                    showError('Preencha todos os campos');
                     return;
                 }
 
-                console.log('✅ Campos validados OK, continuando...');
-
-                // Verificar se Supabase está disponível
-                if (!window.supabaseClient) {
-                    showError('Erro: Sistema de autenticação não carregado. Recarregue a página.');
-                    console.error('❌ Supabase client não inicializado');
+                // Verificar se email é admin
+                const isAdmin = ADMIN_EMAILS.some(e => e.toLowerCase() === email);
+                if (!isAdmin) {
+                    console.log('❌ Email não autorizado:', email);
+                    showError('Acesso negado. Email não autorizado.');
                     return;
                 }
 
                 setLoading(true);
 
-                // Limpar localStorage antigo antes de tentar login
-                console.log('🧹 Limpando localStorage antigo...');
-                localStorage.removeItem('admin_just_logged_in');
-
-                console.log('🔐 Tentando fazer login com Supabase Auth...');
-                console.log('📧 Email:', email);
-
-                try {
-                    const { data, error } = await window.supabaseClient.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-
-                    if (error) {
-                        console.error('❌ Erro no login:', error);
-
-                        // Mensagens de erro amigáveis
-                        let errorMsg = 'Erro ao fazer login';
-                        if (error.message.includes('Invalid login credentials')) {
-                            errorMsg = 'E-mail ou senha incorretos';
-                        } else if (error.message.includes('Email not confirmed')) {
-                            errorMsg = 'E-mail não confirmado. Verifique sua caixa de entrada.';
-                        } else {
-                            errorMsg = error.message;
-                        }
-
-                        showError(errorMsg);
-                        setLoading(false);
-                        return;
-                    }
-
-                    if (data.session) {
-                        console.log('✅ Login bem-sucedido!');
-                        console.log('👤 Usuário:', data.user.email);
-
-                        // ==================== VERIFICAÇÃO DE ADMIN ====================
-                        // Lista de emails autorizados como admin
-                        const ADMIN_EMAILS = [
-                            'admin@dimar.com.br',
-                            'mk.cardoso198@gmail.com',
-                            // Adicione mais emails de admin conforme necessário
-                        ];
-
-                        const userEmail = data.user.email.toLowerCase().trim();
-                        const isAdmin = ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
-
-                        if (!isAdmin) {
-                            console.warn('❌ Usuário NÃO é admin:', userEmail);
-
-                            // Fazer logout imediatamente
-                            await window.supabaseClient.auth.signOut();
-
-                            showError('Acesso negado. Esta área é restrita a administradores.');
-                            setLoading(false);
-                            return;
-                        }
-
-                        console.log('✅ Usuário É admin - acesso autorizado');
-                        // ==================== FIM VERIFICAÇÃO ====================
-
-                        console.log('🔑 Session:', {
-                            hasAccessToken: !!data.session.access_token,
-                            expiresAt: data.session.expires_at,
-                            refreshToken: !!data.session.refresh_token
-                        });
-
-                        // Manter compatibilidade com localStorage
-                        localStorage.setItem('admin_logged_in', 'true');
-                        localStorage.setItem('admin_email', data.user.email);
-                        localStorage.setItem('admin_login_time', new Date().toISOString());
-
-                        // CORREÇÃO: Flag para auth-guard detectar login recente
-                        localStorage.setItem('admin_just_logged_in', 'true');
-
-                        console.log('💾 LocalStorage atualizado:', {
-                            logged_in: localStorage.getItem('admin_logged_in'),
-                            email: localStorage.getItem('admin_email'),
-                            just_logged_in: localStorage.getItem('admin_just_logged_in')
-                        });
-
-                        showSuccess('Login realizado com sucesso! Redirecionando...');
-
-                        // Verificar localStorage
-                        console.log('💾 LocalStorage após login:', {
-                            logged_in: localStorage.getItem('admin_logged_in'),
-                            email: localStorage.getItem('admin_email'),
-                            just_logged_in: localStorage.getItem('admin_just_logged_in')
-                        });
-
-                        // CORREÇÃO: Múltiplas estratégias de redirect para produção
-                        console.log('🚀 INICIANDO REDIRECIONAMENTO...');
-                        console.log('   Timestamp:', new Date().toISOString());
-                        console.log('   Hostname:', window.location.hostname);
-
-                        // Determinar URL de destino baseado no ambiente
-                        const isProduction = window.location.hostname !== 'localhost' &&
-                            window.location.hostname !== '127.0.0.1';
-
-                        // Usar caminho relativo que funciona em ambos ambientes
-                        const redirectUrl = isProduction
-                            ? '/dimaradmin/index.html'  // Produção: caminho absoluto
-                            : 'index.html';             // Local: caminho relativo
-
-                        console.log('   URL destino:', redirectUrl);
-                        console.log('   Ambiente:', isProduction ? 'PRODUÇÃO' : 'LOCAL');
-
-                        // Estratégia 1: Redirect imediato com href (mais confiável)
-                        try {
-                            console.log('⚡ Tentativa 1: window.location.href');
-                            window.location.href = redirectUrl;
-                        } catch (e) {
-                            console.error('❌ Falha na tentativa 1:', e);
-                        }
-
-                        // Estratégia 2: Fallback com setTimeout (se tentativa 1 falhar)
-                        setTimeout(() => {
-                            console.log('⚡ Tentativa 2 (fallback): window.location.assign');
-                            try {
-                                window.location.assign(redirectUrl);
-                            } catch (e) {
-                                console.error('❌ Falha na tentativa 2:', e);
-                            }
-                        }, 500);
-
-                        // Estratégia 3: Último recurso com replace
-                        setTimeout(() => {
-                            console.log('⚡ Tentativa 3 (último recurso): window.location.replace');
-                            try {
-                                window.location.replace(redirectUrl);
-                            } catch (e) {
-                                console.error('❌ Falha na tentativa 3:', e);
-                                // Se tudo falhar, mostrar link manual
-                                showError('Redirecionamento falhou. Clique aqui: <a href="' + redirectUrl + '">Ir para Dashboard</a>');
-                            }
-                        }, 1500);
-                    } else {
-                        showError('Erro inesperado: sessão não foi criada');
-                        setLoading(false);
-                    }
-
-                } catch (err) {
-                    console.error('❌ Erro inesperado:', err);
-                    showError('Erro inesperado ao fazer login. Tente novamente.');
+                // Verificar senha
+                if (password !== ADMIN_PASSWORD) {
+                    console.log('❌ Senha incorreta');
+                    showError('Senha incorreta');
                     setLoading(false);
+                    return;
                 }
+
+                // ✅ Login bem-sucedido!
+                console.log('✅ Login autorizado:', email);
+
+                // Salvar sessão no localStorage
+                localStorage.setItem('admin_logged_in', 'true');
+                localStorage.setItem('admin_email', email);
+                localStorage.setItem('admin_login_time', new Date().toISOString());
+
+                console.log('💾 Sessão salva no localStorage');
+
+                showSuccess('Login realizado! Redirecionando...');
+
+                // Redirecionar para dashboard
+                setTimeout(() => {
+                    const redirectUrl = '/dimaradmin/index.html';
+                    console.log('🚀 Redirecionando para:', redirectUrl);
+                    window.location.href = redirectUrl;
+                }, 500);
             }
 
-            // Event listener no formulário (submit)
+            // ==================== EVENT LISTENERS ====================
+
             loginForm.addEventListener('submit', handleLogin);
-            console.log('   ✅ Event listener SUBMIT adicionado ao form');
 
-            // Event listener BACKUP no botão (click)
-            loginBtn.addEventListener('click', function (e) {
-                console.log('🖱️ CLICK no botão Entrar detectado!');
-                handleLogin(e);
-            });
-            console.log('   ✅ Event listener CLICK adicionado ao botão');
-            // ==================== DEBUG INFO ====================
-
-            console.log('🔐 Sistema de Login Inicializado');
-            console.log('🌍 Ambiente:', window.location.hostname);
-            console.log('📍 URL atual:', window.location.href);
+            console.log('🔐 Sistema de Login v3.0 inicializado');
 
         })();
     </script>
