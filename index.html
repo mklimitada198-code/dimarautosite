@@ -46,6 +46,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
+    <!-- Resource Hints for Performance -->
+    <link rel="preconnect" href="https://jfiarqtqojfptdbddnvu.supabase.co">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+    <!-- Preload Critical CSS -->
+    <link rel="preload" href="css/style.css" as="style">
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
 
@@ -212,7 +219,8 @@
                     <!-- Category 1 -->
                     <div class="category-item">
                         <div class="category-image">
-                            <img src="assets/images/cat_parachoque_dianteiro.png" alt="Parachoque Dianteiro">
+                            <img src="assets/images/cat_parachoque_dianteiro.png" alt="Parachoque Dianteiro"
+                                loading="lazy" decoding="async">
                         </div>
                         <h3 class="category-name">Parachoque<br>Dianteiro</h3>
                     </div>
@@ -220,7 +228,8 @@
                     <!-- Category 2 -->
                     <div class="category-item">
                         <div class="category-image">
-                            <img src="assets/images/cat_parachoque_traseiro.png" alt="Parachoque Traseiro">
+                            <img src="assets/images/cat_parachoque_traseiro.png" alt="Parachoque Traseiro"
+                                loading="lazy" decoding="async">
                         </div>
                         <h3 class="category-name">Parachoque<br>Traseiro</h3>
                     </div>
@@ -228,7 +237,8 @@
                     <!-- Category 3 -->
                     <div class="category-item">
                         <div class="category-image">
-                            <img src="assets/images/cat_para_barro.png" alt="Para-Barro">
+                            <img src="assets/images/cat_para_barro.png" alt="Para-Barro" loading="lazy"
+                                decoding="async">
                         </div>
                         <h3 class="category-name">Para-Barro</h3>
                     </div>
@@ -236,7 +246,8 @@
                     <!-- Category 4 -->
                     <div class="category-item">
                         <div class="category-image">
-                            <img src="assets/images/cat_grade_dianteira.png" alt="Grade Dianteira">
+                            <img src="assets/images/cat_grade_dianteira.png" alt="Grade Dianteira" loading="lazy"
+                                decoding="async">
                         </div>
                         <h3 class="category-name">Grade Dianteira</h3>
                     </div>
@@ -244,7 +255,7 @@
                     <!-- Category 5 -->
                     <div class="category-item">
                         <div class="category-image">
-                            <img src="assets/images/cat_milha.png" alt="Milha">
+                            <img src="assets/images/cat_milha.png" alt="Milha" loading="lazy" decoding="async">
                         </div>
                         <h3 class="category-name">Milha</h3>
                     </div>
@@ -252,7 +263,7 @@
                     <!-- Category 6 -->
                     <div class="category-item">
                         <div class="category-image">
-                            <img src="assets/images/cat_lampadas.png" alt="Lâmpadas">
+                            <img src="assets/images/cat_lampadas.png" alt="Lâmpadas" loading="lazy" decoding="async">
                         </div>
                         <h3 class="category-name">Lâmpadas</h3>
                     </div>
@@ -329,37 +340,64 @@
             <div class="brands-carousel-row">
                 <div class="brands-carousel brands-carousel-left">
                     <!-- Set 1 -->
-                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
-                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
-                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
-                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
-                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
-                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
-                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
-                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
-                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK" loading="lazy" decoding="async">
+                    </div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco" loading="lazy"
+                            decoding="async"></div>
 
                     <!-- Set 2 (Duplicata para looping infinito) -->
-                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
-                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
-                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
-                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
-                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
-                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
-                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
-                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
-                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK" loading="lazy" decoding="async">
+                    </div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco" loading="lazy"
+                            decoding="async"></div>
 
                     <!-- Set 3 (Garantia de looping perfeito) -->
-                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
-                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
-                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
-                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
-                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
-                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
-                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
-                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
-                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK" loading="lazy" decoding="async">
+                    </div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco" loading="lazy"
+                            decoding="async"></div>
                 </div>
             </div>
 
@@ -367,37 +405,64 @@
             <div class="brands-carousel-row">
                 <div class="brands-carousel brands-carousel-right">
                     <!-- Set 1 -->
-                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
-                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
-                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
-                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
-                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
-                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
-                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
-                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
-                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK" loading="lazy" decoding="async">
+                    </div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco" loading="lazy"
+                            decoding="async"></div>
 
                     <!-- Set 2 (Duplicata para looping infinito) -->
-                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
-                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
-                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
-                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
-                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
-                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
-                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
-                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
-                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK" loading="lazy" decoding="async">
+                    </div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco" loading="lazy"
+                            decoding="async"></div>
 
                     <!-- Set 3 (Garantia de looping perfeito) -->
-                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch"></div>
-                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK"></div>
-                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota"></div>
-                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat"></div>
-                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai"></div>
-                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford"></div>
-                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete"></div>
-                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil"></div>
-                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco"></div>
+                    <div class="brand-item"><img src="assets/images/bosch.png" alt="Bosch" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ngk.png" alt="NGK" loading="lazy" decoding="async">
+                    </div>
+                    <div class="brand-item"><img src="assets/images/toyota.png" alt="Toyota" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/fiat.png" alt="Fiat" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/hyundai.png" alt="Hyundai" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/ford.png" alt="Ford" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/tete.png" alt="Tete" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/mobil.png" alt="Mobil" loading="lazy"
+                            decoding="async"></div>
+                    <div class="brand-item"><img src="assets/images/dayco.png" alt="Dayco" loading="lazy"
+                            decoding="async"></div>
                 </div>
             </div>
         </div>
