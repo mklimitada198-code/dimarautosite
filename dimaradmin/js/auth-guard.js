@@ -1,10 +1,12 @@
 /**
- * AUTH GUARD - Sistema de proteção SIMPLIFICADO
+ * AUTH GUARD v4.0 - Sistema de proteção SIMPLIFICADO
  * Usa apenas localStorage - sem dependência do Supabase Auth
  */
 
 (function () {
     'use strict';
+
+    console.log('🔒 Auth Guard v4.0 carregando...');
 
     // ==================== CONFIGURAÇÃO ====================
     const ADMIN_EMAILS = [
@@ -17,9 +19,26 @@
     // ==================== VERIFICAÇÃO ====================
 
     function isAuthenticated() {
+        console.log('🔐 Verificando autenticação...');
+
         const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
         const adminEmail = localStorage.getItem('admin_email');
         const loginTime = localStorage.getItem('admin_login_time');
+        const justLoggedIn = localStorage.getItem('admin_just_logged_in') === 'true';
+
+        console.log('📊 Estado atual:', {
+            isLoggedIn,
+            adminEmail,
+            justLoggedIn
+        });
+
+        // Se acabou de fazer login, ACEITAR sem verificar mais nada
+        if (justLoggedIn && isLoggedIn && adminEmail) {
+            console.log('✅ Login recente detectado - acesso autorizado');
+            // Limpar flag de login recente (só vale uma vez)
+            localStorage.removeItem('admin_just_logged_in');
+            return true;
+        }
 
         // Verificar se está logado
         if (!isLoggedIn || !adminEmail) {
@@ -39,7 +58,7 @@
         if (loginTime) {
             const hours = (Date.now() - new Date(loginTime).getTime()) / (1000 * 60 * 60);
             if (hours > SESSION_DURATION_HOURS) {
-                console.log('❌ Sessão expirada');
+                console.log('❌ Sessão expirada após', hours.toFixed(1), 'horas');
                 clearSession();
                 return false;
             }
@@ -53,15 +72,16 @@
         localStorage.removeItem('admin_logged_in');
         localStorage.removeItem('admin_email');
         localStorage.removeItem('admin_login_time');
+        localStorage.removeItem('admin_just_logged_in');
     }
 
     // ==================== PROTEÇÃO DE PÁGINA ====================
 
     function protectPage() {
-        const isLoginPage = window.location.pathname.includes('login.html');
+        const currentPath = window.location.pathname;
+        const isLoginPage = currentPath.includes('login.html') || currentPath.endsWith('/login');
 
-        console.log('🔒 Auth Guard v3.0');
-        console.log('📍 Página:', window.location.pathname);
+        console.log('📍 Página:', currentPath);
 
         // Não proteger página de login
         if (isLoginPage) {
@@ -71,9 +91,12 @@
 
         // Verificar autenticação
         if (!isAuthenticated()) {
-            console.log('🔀 Redirecionando para login...');
+            console.log('🔀 Não autenticado - redirecionando para login...');
             window.location.replace('/dimaradmin/login.html');
+            return;
         }
+
+        console.log('✅ Acesso autorizado à página protegida');
     }
 
     // ==================== LOGOUT ====================
@@ -111,20 +134,19 @@
 
     // ==================== INICIALIZAÇÃO ====================
 
-    function init() {
-        console.log('🚀 Auth Guard Simplificado v3.0');
-        protectPage();
+    // Executar proteção IMEDIATAMENTE
+    protectPage();
+
+    // Depois que DOM carregar, exibir info do usuário
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', displayUserInfo);
+    } else {
         displayUserInfo();
     }
 
-    // Executar
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-
     // Exports
-    window.authGuard = { isAuthenticated, protectPage, displayUserInfo };
+    window.authGuard = { isAuthenticated, protectPage, displayUserInfo, clearSession };
+
+    console.log('✅ Auth Guard v4.0 inicializado');
 
 })();
