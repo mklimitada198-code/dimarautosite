@@ -227,20 +227,72 @@ function closeBrandModal() {
 /**
  * Save brand
  */
+// Função auxiliar para gerar slug único
+async function generateUniqueSlug(baseSlug, currentId = null) {
+    let slug = baseSlug;
+    let counter = 1;
+    let isUnique = false;
+
+    while (!isUnique) {
+        // Verificar se slug existe
+        let query = supabaseClient
+            .from('brands')
+            .select('id')
+            .eq('slug', slug);
+
+        if (currentId) {
+            query = query.neq('id', currentId);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        if (data.length === 0) {
+            isUnique = true;
+        } else {
+            slug = `${baseSlug}-${counter}`;
+            counter++;
+        }
+    }
+    return slug;
+}
+
+/**
+ * Save brand
+ */
 async function saveBrand() {
     if (!selectedBrandLogo) {
         alert('Por favor, adicione um logo para a marca.');
         return;
     }
 
+    const name = document.getElementById('brandName').value.trim();
+    if (!name) {
+        alert('Por favor, informe o nome da marca.');
+        return;
+    }
+
+    // Gerar slug base
+    let baseSlug = name.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove acentos
+        .replace(/[^\w\s-]/g, '') // Remove caracteres especiais
+        .replace(/\s+/g, '-') // Substitui espaços por hífen
+        .replace(/-+/g, '-') // Remove hífens duplicados
+        .replace(/^-+|-+$/g, ''); // Remove hífen do início/fim
+
     const brandData = {
-        name: document.getElementById('brandName').value,
+        name: name,
         logo_url: selectedBrandLogo,
         is_active: document.getElementById('brandStatus').value === 'active'
     };
 
     try {
         if (checkSupabaseConfig()) {
+            // Garantir slug único
+            const uniqueSlug = await generateUniqueSlug(baseSlug, editingBrandId);
+            brandData.slug = uniqueSlug;
+
             if (editingBrandId) {
                 const { error } = await supabaseClient
                     .from('brands')
@@ -256,10 +308,14 @@ async function saveBrand() {
                 if (error) throw error;
             }
         } else {
+            // LocalStorage fallback
             if (editingBrandId) {
                 const index = brands.findIndex(b => b.id === editingBrandId);
+                // Atualizar slug também se local, mas sem verificação complexa
+                brandData.slug = baseSlug;
                 brands[index] = { ...brandData, id: editingBrandId };
             } else {
+                brandData.slug = baseSlug;
                 brandData.id = 'brand_' + Date.now();
                 brands.push(brandData);
             }
@@ -273,7 +329,12 @@ async function saveBrand() {
 
     } catch (error) {
         console.error('Erro ao salvar marca:', error);
-        alert('Erro ao salvar marca: ' + error.message);
+
+        if (error.code === '23505' || error.message.includes('duplicate key')) {
+            alert('Erro: Já existe uma marca com este nome/identificador.');
+        } else {
+            alert('Erro ao salvar marca: ' + error.message);
+        }
     }
 }
 

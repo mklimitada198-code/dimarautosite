@@ -293,7 +293,7 @@ Categorias:
 
 ### E-mail
 ```html
-<a href="mailto:contato@dimar.com.br">contato@dimar.com.br</a>
+<a href="mailto:contato@autopecasdimar.com.br">contato@autopecasdimar.com.br</a>
 ```
 
 ### Redes Sociais (Footer)
@@ -339,7 +339,7 @@ Categorias:
 - [x] Trabalhe Conosco → `#trabalhe` (âncora)
 - [x] Central de Ajuda → `#central-ajuda` (âncora)
 - [x] Telefone → `(11) 4040-9090`
-- [x] E-mail → `contato@dimar.com.br`
+- [x] E-mail → `contato@autopecasdimar.com.br`
 - [x] WhatsApp → Link externo configurado
 - [x] Redes sociais → Links configurados
 
