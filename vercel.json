@@ -109,8 +109,79 @@
       "destination": "/pages/contato.html"
     },
     {
-      "source": "/lojas",
       "destination": "/pages/lojas.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/pages/login.html"
+    },
+    {
+      "source": "/cadastro",
+      "destination": "/pages/cadastro.html"
+    },
+    {
+      "source": "/recuperar-senha",
+      "destination": "/pages/recuperar-senha.html"
+    },
+    {
+      "source": "/minha-conta",
+      "destination": "/pages/minha-conta.html"
+    },
+    {
+      "source": "/meus-pedidos",
+      "destination": "/pages/meus-pedidos.html"
+    },
+     {
+      "source": "/confirmar-email",
+      "destination": "/pages/confirmar-email.html"
+    },
+    {
+      "source": "/faq",
+      "destination": "/pages/faq.html"
+    },
+    {
+      "source": "/termos-uso",
+      "destination": "/pages/termos-uso.html"
+    },
+    {
+      "source": "/politica-privacidade",
+      "destination": "/pages/politica-privacidade.html"
+    },
+    {
+      "source": "/trocas-devolucoes",
+      "destination": "/pages/trocas-devolucoes.html"
+    },
+    {
+      "source": "/central-ajuda",
+      "destination": "/pages/central-ajuda.html"
+    },
+    {
+      "source": "/trabalhe-conosco",
+      "destination": "/pages/trabalhe-conosco.html"
+    },
+    {
+      "source": "/garantia",
+      "destination": "/pages/garantia.html"
+    },
+    {
+      "source": "/frete-entrega",
+      "destination": "/pages/frete-entrega.html"
+    },
+    {
+      "source": "/formas-pagamento",
+      "destination": "/pages/formas-pagamento.html"
+    },
+    {
+      "source": "/fornecedor",
+      "destination": "/pages/fornecedor.html"
+    },
+    {
+      "source": "/rastrear-pedido",
+      "destination": "/pages/rastrear-pedido.html"
+    },
+    {
+      "source": "/sustentabilidade",
+      "destination": "/pages/sustentabilidade.html"
     }
   ]
 }
