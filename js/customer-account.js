@@ -23,6 +23,8 @@
 
             if (!user) {
                 console.log('Usuário não logado');
+                const nameEl = document.getElementById('userName');
+                if (nameEl) nameEl.textContent = 'Visitante';
                 return;
             }
 
@@ -245,7 +247,18 @@
             await waitForSupabase();
 
             const { data: { user } } = await window.supabaseClient.auth.getUser();
-            if (!user) return;
+
+            if (!user) {
+                // Se não estiver logado, redirecionar para login
+                console.log('Usuário não logado, redirecionando...');
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (window.location.hostname !== 'localhost') {
+                    window.location.href = '/login?redirect=meus-pedidos';
+                } else {
+                    window.location.href = 'login.html?redirect=meus-pedidos.html';
+                }
+                return;
+            }
 
             // Buscar customer_id
             const { data: customer } = await window.supabaseClient
