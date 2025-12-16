@@ -75,7 +75,12 @@
             // Redirecionar após 1 segundo
             setTimeout(() => {
                 const redirectTo = getRedirectUrl();
-                window.location.href = redirectTo;
+                // Em produção, garantir path absoluto
+                if (window.location.hostname !== 'localhost' && !redirectTo.startsWith('/') && !redirectTo.startsWith('http')) {
+                    window.location.href = '/' + redirectTo.replace('pages/', '').replace('.html', '');
+                } else {
+                    window.location.href = redirectTo;
+                }
             }, 1000);
 
         } catch (error) {
@@ -194,8 +199,13 @@
                 showSuccess('registerSuccess');
 
                 // Redirecionar após 1.5 segundos
+                // Redirecionar após 1.5 segundos
                 setTimeout(() => {
-                    window.location.href = 'minha-conta.html';
+                    if (window.location.hostname !== 'localhost') {
+                        window.location.href = '/minha-conta';
+                    } else {
+                        window.location.href = 'minha-conta.html';
+                    }
                 }, 1500);
             } else {
                 // Caso inesperado
@@ -275,7 +285,12 @@
             await window.supabaseClient.auth.signOut();
 
             console.log('✅ Logout realizado');
-            window.location.href = '../index.html';
+            console.log('✅ Logout realizado');
+            if (window.location.hostname !== 'localhost') {
+                window.location.href = '/';
+            } else {
+                window.location.href = '../index.html';
+            }
         } catch (error) {
             console.error('❌ Erro no logout:', error);
         }
@@ -295,7 +310,11 @@
                 // Se está na página de login/cadastro, redirecionar
                 const currentPage = window.location.pathname;
                 if (currentPage.includes('login.html') || currentPage.includes('cadastro.html')) {
-                    window.location.href = 'minha-conta.html';
+                    if (window.location.hostname !== 'localhost') {
+                        window.location.href = '/minha-conta';
+                    } else {
+                        window.location.href = 'minha-conta.html';
+                    }
                 }
             } else {
                 console.log('👤 Usuário não logado');
@@ -305,7 +324,11 @@
                 const currentPage = window.location.pathname;
 
                 if (protectedPages.some(page => currentPage.includes(page))) {
-                    window.location.href = 'login.html';
+                    if (window.location.hostname !== 'localhost') {
+                        window.location.href = '/login';
+                    } else {
+                        window.location.href = 'login.html';
+                    }
                 }
             }
         } catch (error) {
@@ -332,11 +355,15 @@
                     <span class="action-value">${firstName}</span>
                 </div>
             `;
-            authLink.href = 'minha-conta.html';
 
-            // Ajustar path se não estiver em /pages/
-            if (!window.location.pathname.includes('/pages/')) {
-                authLink.href = 'pages/minha-conta.html';
+            if (window.location.hostname !== 'localhost') {
+                authLink.href = '/minha-conta';
+            } else {
+                authLink.href = 'minha-conta.html';
+                // Ajustar path se não estiver em /pages/
+                if (!window.location.pathname.includes('/pages/')) {
+                    authLink.href = 'pages/minha-conta.html';
+                }
             }
         }
     }
@@ -408,6 +435,9 @@
             return decodeURIComponent(redirect);
         }
 
+        if (window.location.hostname !== 'localhost') {
+            return '/minha-conta';
+        }
         return 'minha-conta.html';
     }
 

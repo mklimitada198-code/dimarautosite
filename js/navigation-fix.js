@@ -2,7 +2,7 @@
 // Corrige automaticamente paths relativos do header baseado na localização da página
 // Funciona tanto localmente quanto em produção (Vercel)
 
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -12,17 +12,17 @@
     function detectEnvironment() {
         const hostname = window.location.hostname;
         const pathname = window.location.pathname;
-        
+
         // Ambiente de produção (Vercel)
         const isProduction = hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.includes('192.168');
-        
+
         // Detecta se está em subpasta
         const isInSubfolder = pathname.includes('/pages/') || pathname.includes('/dimaradmin/');
-        
+
         // Em produção, usa paths absolutos a partir da raiz
         // Localmente, usa paths relativos
         const basePath = isProduction ? '' : (isInSubfolder ? '..' : '.');
-        
+
         return { isProduction, basePath, isInSubfolder };
     }
 
@@ -31,12 +31,12 @@
      */
     function fixNavigationLinks() {
         const env = detectEnvironment();
-        
+
         // Espera o header e footer carregarem
         const checkInterval = setInterval(() => {
             const headerLoaded = document.querySelector('.nav-menu');
             const logoLoaded = document.querySelector('.logo a');
-            
+
             if (headerLoaded && logoLoaded) {
                 clearInterval(checkInterval);
                 applyPathFixes(env);
@@ -55,8 +55,21 @@
      */
     function normalizePath(path, env) {
         if (env.isProduction) {
-            // Em produção, sempre usa path absoluto da raiz
-            return path.startsWith('/') ? path : `/${path}`;
+            // Em produção, usa URLs limpas (sem /pages/ e sem .html)
+            let cleanPath = path;
+
+            // Remove /pages/ prefix
+            if (cleanPath.includes('pages/')) {
+                cleanPath = cleanPath.replace('pages/', '');
+            }
+
+            // Remove .html extension
+            if (cleanPath.endsWith('.html')) {
+                cleanPath = cleanPath.replace('.html', '');
+            }
+
+            // Garante barra inicial
+            return cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
         } else {
             // Localmente, usa path relativo
             return `${env.basePath}/${path}`.replace(/\/+/g, '/');
@@ -121,12 +134,12 @@
         const footerLinks = document.querySelectorAll('footer a');
         footerLinks.forEach(link => {
             const href = link.getAttribute('href');
-            
+
             // Pula links externos e âncoras
             if (!href || href.startsWith('http') || href.startsWith('#')) {
                 return;
             }
-            
+
             // Corrige links para páginas
             if (href.startsWith('pages/') || href.includes('.html')) {
                 link.href = normalizePath(href, env);
