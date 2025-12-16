@@ -109,6 +109,7 @@
       "destination": "/pages/contato.html"
     },
     {
+      "source": "/lojas",
       "destination": "/pages/lojas.html"
     },
     {
@@ -131,7 +132,7 @@
       "source": "/meus-pedidos",
       "destination": "/pages/meus-pedidos.html"
     },
-     {
+    {
       "source": "/confirmar-email",
       "destination": "/pages/confirmar-email.html"
     },

@@ -320,10 +320,17 @@
                 console.log('👤 Usuário não logado');
 
                 // Proteger páginas que requerem login
-                const protectedPages = ['minha-conta.html', 'meus-pedidos.html'];
+                // Verificar tanto URLs limpas (produção) quanto .html (local)
+                const protectedPages = ['minha-conta', 'meus-pedidos'];
                 const currentPage = window.location.pathname;
 
-                if (protectedPages.some(page => currentPage.includes(page))) {
+                const isProtectedPage = protectedPages.some(page =>
+                    currentPage.includes(page + '.html') ||
+                    currentPage.endsWith('/' + page) ||
+                    currentPage === '/' + page
+                );
+
+                if (isProtectedPage) {
                     if (window.location.hostname !== 'localhost') {
                         window.location.href = '/login';
                     } else {
