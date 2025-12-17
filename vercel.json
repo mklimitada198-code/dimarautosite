@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "dimar-site",
-  "cleanUrls": true,
+  "cleanUrls": false,
   "trailingSlash": false,
   "routes": [
     {
