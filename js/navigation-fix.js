@@ -55,15 +55,23 @@
      */
     function normalizePath(path, env) {
         if (env.isProduction) {
-            // Em produção, usa URLs limpas (sem /pages/ e sem .html)
+            // Em produção, mantém paths completos com /pages/ e .html
+            // O Vercel precisa desses paths para encontrar os arquivos
             let cleanPath = path;
 
-            // Remove /pages/ prefix (both with and without leading slash)
-            cleanPath = cleanPath.replace(/^\/?pages\//, '');
+            // Garante que tenha /pages/ se for uma página
+            if (!cleanPath.startsWith('pages/') && !cleanPath.startsWith('/pages/') &&
+                !cleanPath.startsWith('assets/') && !cleanPath.startsWith('/assets/') &&
+                !cleanPath.startsWith('index') && cleanPath !== '/') {
+                // Se não tem pages/ e não é asset nem index, adiciona pages/
+                if (!cleanPath.includes('/')) {
+                    cleanPath = 'pages/' + cleanPath;
+                }
+            }
 
-            // Remove .html extension
-            if (cleanPath.endsWith('.html')) {
-                cleanPath = cleanPath.replace('.html', '');
+            // Garante extensão .html se for uma página (não asset)
+            if (!cleanPath.includes('assets/') && !cleanPath.endsWith('.html') && !cleanPath.includes('?')) {
+                cleanPath = cleanPath + '.html';
             }
 
             // Garante barra inicial
