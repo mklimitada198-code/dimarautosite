@@ -58,10 +58,8 @@
             // Em produção, usa URLs limpas (sem /pages/ e sem .html)
             let cleanPath = path;
 
-            // Remove /pages/ prefix
-            if (cleanPath.includes('pages/')) {
-                cleanPath = cleanPath.replace('pages/', '');
-            }
+            // Remove /pages/ prefix (both with and without leading slash)
+            cleanPath = cleanPath.replace(/^\/?pages\//, '');
 
             // Remove .html extension
             if (cleanPath.endsWith('.html')) {
@@ -109,24 +107,27 @@
         }
 
         // Corrigir links do header (ações)
-        const cartLink = document.querySelector('.header-action.cart');
-        if (cartLink) {
-            cartLink.href = normalizePath('pages/carrinho.html', env);
-        }
-
-        // Corrigir links das categorias
-        const categoryLinks = document.querySelectorAll('.category-links a');
-        categoryLinks.forEach(link => {
+        const headerActions = document.querySelectorAll('.header-action');
+        headerActions.forEach(link => {
             const href = link.getAttribute('href');
-            if (href && href.startsWith('#')) {
-                // Mantém âncoras como estão
+            if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('tel:')) {
                 return;
             }
-            // Se for um link relativo, corrige
-            if (href && !href.startsWith('http') && !href.startsWith('/')) {
-                if (href.includes('pages/')) {
-                    link.href = normalizePath(href, env);
-                }
+            if (href.includes('pages/') || href.includes('.html')) {
+                link.href = normalizePath(href.replace(/^\//, ''), env);
+            }
+        });
+
+        // Corrigir links das categorias
+        const categoryLinks = document.querySelectorAll('.category-links a, .categories-menu a');
+        categoryLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('tel:') || href.startsWith('mailto:')) {
+                return;
+            }
+            // Corrige links que contenham pages/ ou .html
+            if (href.includes('pages/') || href.includes('.html')) {
+                link.href = normalizePath(href.replace(/^\//, ''), env);
             }
         });
 
@@ -135,14 +136,14 @@
         footerLinks.forEach(link => {
             const href = link.getAttribute('href');
 
-            // Pula links externos e âncoras
-            if (!href || href.startsWith('http') || href.startsWith('#')) {
+            // Pula links externos, âncoras e especiais
+            if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('tel:') || href.startsWith('mailto:') || href.startsWith('wa.me')) {
                 return;
             }
 
-            // Corrige links para páginas
-            if (href.startsWith('pages/') || href.includes('.html')) {
-                link.href = normalizePath(href, env);
+            // Corrige links que contenham pages/ ou .html
+            if (href.includes('pages/') || href.includes('.html')) {
+                link.href = normalizePath(href.replace(/^\//, ''), env);
             }
         });
 
