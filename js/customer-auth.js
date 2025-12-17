@@ -75,12 +75,7 @@
             // Redirecionar após 1 segundo
             setTimeout(() => {
                 const redirectTo = getRedirectUrl();
-                // Em produção, garantir path absoluto
-                if (window.location.hostname !== 'localhost' && !redirectTo.startsWith('/') && !redirectTo.startsWith('http')) {
-                    window.location.href = '/' + redirectTo.replace('pages/', '').replace('.html', '');
-                } else {
-                    window.location.href = redirectTo;
-                }
+                window.location.href = redirectTo;
             }, 1000);
 
         } catch (error) {
@@ -202,7 +197,7 @@
                 // Redirecionar após 1.5 segundos
                 setTimeout(() => {
                     if (window.location.hostname !== 'localhost') {
-                        window.location.href = '/minha-conta';
+                        window.location.href = '/pages/minha-conta.html';
                     } else {
                         window.location.href = 'minha-conta.html';
                     }
@@ -309,9 +304,10 @@
 
                 // Se está na página de login/cadastro, redirecionar
                 const currentPage = window.location.pathname;
-                if (currentPage.includes('login.html') || currentPage.includes('cadastro.html')) {
+                if (currentPage.includes('login.html') || currentPage.includes('cadastro.html') ||
+                    currentPage.includes('/login') || currentPage.includes('/cadastro')) {
                     if (window.location.hostname !== 'localhost') {
-                        window.location.href = '/minha-conta';
+                        window.location.href = '/pages/minha-conta.html';
                     } else {
                         window.location.href = 'minha-conta.html';
                     }
@@ -332,7 +328,7 @@
 
                 if (isProtectedPage) {
                     if (window.location.hostname !== 'localhost') {
-                        window.location.href = '/login';
+                        window.location.href = '/pages/login.html';
                     } else {
                         window.location.href = 'login.html';
                     }
@@ -364,7 +360,7 @@
             `;
 
             if (window.location.hostname !== 'localhost') {
-                authLink.href = '/minha-conta';
+                authLink.href = '/pages/minha-conta.html';
             } else {
                 authLink.href = 'minha-conta.html';
                 // Ajustar path se não estiver em /pages/
@@ -439,11 +435,20 @@
         const redirect = params.get('redirect');
 
         if (redirect) {
-            return decodeURIComponent(redirect);
+            // Se o redirect já tem o path correto, usar ele
+            const decoded = decodeURIComponent(redirect);
+            // Se está em produção e não começa com /, adicionar /pages/ e .html
+            if (window.location.hostname !== 'localhost') {
+                if (!decoded.startsWith('/')) {
+                    return '/pages/' + decoded + (decoded.endsWith('.html') ? '' : '.html');
+                }
+                return decoded;
+            }
+            return decoded;
         }
 
         if (window.location.hostname !== 'localhost') {
-            return '/minha-conta';
+            return '/pages/minha-conta.html';
         }
         return 'minha-conta.html';
     }

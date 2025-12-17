@@ -342,7 +342,22 @@ class ShoppingCart {
         if (cartIcon && !cartIcon.dataset.listenerAdded) {
             cartIcon.addEventListener('click', (e) => {
                 e.preventDefault();
-                window.location.href = '/pages/carrinho.html';
+
+                // Detectar ambiente e usar o path correto
+                const isProduction = window.location.hostname !== 'localhost' &&
+                    window.location.hostname !== '127.0.0.1';
+                const isInPages = window.location.pathname.includes('/pages/');
+
+                if (isProduction) {
+                    // Em produção, usa path com /pages/ e .html
+                    window.location.href = '/pages/carrinho.html';
+                } else if (isInPages) {
+                    // Localmente em /pages/, usa path relativo
+                    window.location.href = 'carrinho.html';
+                } else {
+                    // Localmente na raiz, usa pages/
+                    window.location.href = 'pages/carrinho.html';
+                }
             });
             cartIcon.dataset.listenerAdded = 'true';
         }

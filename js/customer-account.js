@@ -23,8 +23,7 @@
 
             if (!user) {
                 console.log('Usuário não logado');
-                const nameEl = document.getElementById('userName');
-                if (nameEl) nameEl.textContent = 'Visitante';
+                // Não mostrar nada para usuário não logado (evita exibir "Visitante")
                 return;
             }
 
@@ -253,7 +252,8 @@
                 console.log('Usuário não logado, redirecionando...');
                 if (loadingEl) loadingEl.style.display = 'none';
                 if (window.location.hostname !== 'localhost') {
-                    window.location.href = '/login?redirect=meus-pedidos';
+                    // Em produção, usar paths com /pages/ e .html
+                    window.location.href = '/pages/login.html?redirect=/pages/meus-pedidos.html';
                 } else {
                     window.location.href = 'login.html?redirect=meus-pedidos.html';
                 }
