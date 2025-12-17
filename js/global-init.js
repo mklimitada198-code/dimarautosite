@@ -3,11 +3,11 @@
  * Garante que todos os sistemas estejam integrados corretamente
  */
 
-(function() {
+(function () {
     'use strict';
 
     // Aguarda tudo carregar
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
         // Pequeno delay para garantir que templates carregaram
         setTimeout(initializeGlobalSystems, 200);
     });
@@ -44,16 +44,28 @@
         const cartLinks = document.querySelectorAll('.cart-action, a[href*="carrinho"]');
         const prefix = getPathPrefix();
 
+        // Em produção, não modificar URLs absolutas
+        const isProduction = window.location.hostname !== 'localhost' &&
+            window.location.hostname !== '127.0.0.1';
+
         cartLinks.forEach(link => {
             if (!link.dataset.configured) {
                 const currentHref = link.getAttribute('href');
-                
+
                 if (currentHref && !currentHref.startsWith('http')) {
-                    // Se está em uma subpágina, ajusta o caminho
+                    // Em produção, manter URLs absolutas que começam com /
+                    if (isProduction && currentHref.startsWith('/')) {
+                        // Não modificar - URL absoluta já está correta
+                        link.dataset.configured = 'true';
+                        return;
+                    }
+
+                    // Se está em uma subpágina (ambiente local), ajusta o caminho
                     if (prefix && !currentHref.startsWith('../')) {
                         if (currentHref.startsWith('pages/')) {
                             link.setAttribute('href', currentHref);
                         } else if (currentHref.startsWith('/pages/')) {
+                            // Apenas em ambiente LOCAL, converter para relativo
                             link.setAttribute('href', '.' + currentHref);
                         } else {
                             link.setAttribute('href', prefix + 'pages/carrinho.html');
@@ -75,8 +87,8 @@
 
         if (searchButton && searchInput) {
             searchButton.addEventListener('click', performSearch);
-            
-            searchInput.addEventListener('keypress', function(e) {
+
+            searchInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     performSearch();
                 }
@@ -102,7 +114,7 @@
      */
     function adjustHeaderLinks() {
         const prefix = getPathPrefix();
-        
+
         if (!prefix) return; // Está na raiz, não precisa ajustar
 
         // Links do menu principal
@@ -129,11 +141,11 @@
      */
     function getPathPrefix() {
         const path = window.location.pathname;
-        
+
         if (path.includes('/pages/')) {
             return '../';
         }
-        
+
         return '';
     }
 })();
