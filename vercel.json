@@ -1,170 +1,8 @@
 {
   "version": 2,
   "name": "dimar-site",
-  "cleanUrls": false,
+  "cleanUrls": true,
   "trailingSlash": false,
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/index",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/home",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/sobre-nos",
-      "dest": "/pages/sobre-nos.html"
-    },
-    {
-      "src": "/sobre",
-      "dest": "/pages/sobre-nos.html"
-    },
-    {
-      "src": "/produtos",
-      "dest": "/pages/produtos.html"
-    },
-    {
-      "src": "/catalogo",
-      "dest": "/pages/produtos.html"
-    },
-    {
-      "src": "/produto",
-      "dest": "/pages/produto.html"
-    },
-    {
-      "src": "/carrinho",
-      "dest": "/pages/carrinho.html"
-    },
-    {
-      "src": "/cart",
-      "dest": "/pages/carrinho.html"
-    },
-    {
-      "src": "/busca",
-      "dest": "/pages/busca.html"
-    },
-    {
-      "src": "/search",
-      "dest": "/pages/busca.html"
-    },
-    {
-      "src": "/contato",
-      "dest": "/pages/contato.html"
-    },
-    {
-      "src": "/lojas",
-      "dest": "/pages/lojas.html"
-    },
-    {
-      "src": "/login",
-      "dest": "/pages/login.html"
-    },
-    {
-      "src": "/cadastro",
-      "dest": "/pages/cadastro.html"
-    },
-    {
-      "src": "/recuperar-senha",
-      "dest": "/pages/recuperar-senha.html"
-    },
-    {
-      "src": "/minha-conta",
-      "dest": "/pages/minha-conta.html"
-    },
-    {
-      "src": "/meus-pedidos",
-      "dest": "/pages/meus-pedidos.html"
-    },
-    {
-      "src": "/confirmar-email",
-      "dest": "/pages/confirmar-email.html"
-    },
-    {
-      "src": "/faq",
-      "dest": "/pages/faq.html"
-    },
-    {
-      "src": "/termos-uso",
-      "dest": "/pages/termos-uso.html"
-    },
-    {
-      "src": "/politica-privacidade",
-      "dest": "/pages/politica-privacidade.html"
-    },
-    {
-      "src": "/trocas-devolucoes",
-      "dest": "/pages/trocas-devolucoes.html"
-    },
-    {
-      "src": "/central-ajuda",
-      "dest": "/pages/central-ajuda.html"
-    },
-    {
-      "src": "/trabalhe-conosco",
-      "dest": "/pages/trabalhe-conosco.html"
-    },
-    {
-      "src": "/garantia",
-      "dest": "/pages/garantia.html"
-    },
-    {
-      "src": "/frete-entrega",
-      "dest": "/pages/frete-entrega.html"
-    },
-    {
-      "src": "/formas-pagamento",
-      "dest": "/pages/formas-pagamento.html"
-    },
-    {
-      "src": "/fornecedor",
-      "dest": "/pages/fornecedor.html"
-    },
-    {
-      "src": "/rastrear-pedido",
-      "dest": "/pages/rastrear-pedido.html"
-    },
-    {
-      "src": "/sustentabilidade",
-      "dest": "/pages/sustentabilidade.html"
-    },
-    {
-      "src": "/admin",
-      "dest": "/dimaradmin/login.html"
-    },
-    {
-      "src": "/dimaradmin",
-      "dest": "/dimaradmin/login.html"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/css/(.*)",
-      "dest": "/css/$1"
-    },
-    {
-      "src": "/js/(.*)",
-      "dest": "/js/$1"
-    },
-    {
-      "src": "/templates/(.*)",
-      "dest": "/templates/$1"
-    },
-    {
-      "src": "/pages/(.*)",
-      "dest": "/pages/$1"
-    },
-    {
-      "src": "/dimaradmin/(.*)",
-      "dest": "/dimaradmin/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -201,6 +39,150 @@
           "value": "public, max-age=0, must-revalidate"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/index",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/sobre",
+      "destination": "/sobre-nos",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo",
+      "destination": "/produtos",
+      "permanent": true
+    },
+    {
+      "source": "/cart",
+      "destination": "/carrinho",
+      "permanent": true
+    },
+    {
+      "source": "/search",
+      "destination": "/busca",
+      "permanent": true
+    },
+    {
+      "source": "/admin",
+      "destination": "/dimaradmin/login",
+      "permanent": false
+    },
+    {
+      "source": "/dimaradmin",
+      "destination": "/dimaradmin/login",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/sobre-nos",
+      "destination": "/pages/sobre-nos.html"
+    },
+    {
+      "source": "/produtos",
+      "destination": "/pages/produtos.html"
+    },
+    {
+      "source": "/produto",
+      "destination": "/pages/produto.html"
+    },
+    {
+      "source": "/carrinho",
+      "destination": "/pages/carrinho.html"
+    },
+    {
+      "source": "/busca",
+      "destination": "/pages/busca.html"
+    },
+    {
+      "source": "/contato",
+      "destination": "/pages/contato.html"
+    },
+    {
+      "source": "/lojas",
+      "destination": "/pages/lojas.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/pages/login.html"
+    },
+    {
+      "source": "/cadastro",
+      "destination": "/pages/cadastro.html"
+    },
+    {
+      "source": "/recuperar-senha",
+      "destination": "/pages/recuperar-senha.html"
+    },
+    {
+      "source": "/minha-conta",
+      "destination": "/pages/minha-conta.html"
+    },
+    {
+      "source": "/meus-pedidos",
+      "destination": "/pages/meus-pedidos.html"
+    },
+    {
+      "source": "/confirmar-email",
+      "destination": "/pages/confirmar-email.html"
+    },
+    {
+      "source": "/faq",
+      "destination": "/pages/faq.html"
+    },
+    {
+      "source": "/termos-uso",
+      "destination": "/pages/termos-uso.html"
+    },
+    {
+      "source": "/politica-privacidade",
+      "destination": "/pages/politica-privacidade.html"
+    },
+    {
+      "source": "/trocas-devolucoes",
+      "destination": "/pages/trocas-devolucoes.html"
+    },
+    {
+      "source": "/central-ajuda",
+      "destination": "/pages/central-ajuda.html"
+    },
+    {
+      "source": "/trabalhe-conosco",
+      "destination": "/pages/trabalhe-conosco.html"
+    },
+    {
+      "source": "/garantia",
+      "destination": "/pages/garantia.html"
+    },
+    {
+      "source": "/frete-entrega",
+      "destination": "/pages/frete-entrega.html"
+    },
+    {
+      "source": "/formas-pagamento",
+      "destination": "/pages/formas-pagamento.html"
+    },
+    {
+      "source": "/fornecedor",
+      "destination": "/pages/fornecedor.html"
+    },
+    {
+      "source": "/rastrear-pedido",
+      "destination": "/pages/rastrear-pedido.html"
+    },
+    {
+      "source": "/sustentabilidade",
+      "destination": "/pages/sustentabilidade.html"
     }
   ]
 }
