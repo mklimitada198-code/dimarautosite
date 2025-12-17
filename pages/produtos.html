@@ -4,12 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Produtos - Dimar Auto Peças & Moto Peças</title>
 
     <!-- SEO Meta Tags -->
     <meta name="description"
-        content="Encontre as melhores auto peças e moto peças com os melhores preços. Frete grátis e entrega rápida.">
-    <meta name="keywords" content="auto peças, moto peças, freios, motor, suspensão, filtros">
+        content="Catálogo completo de auto peças e moto peças. Parachoques, freios, motor, suspensão, filtros e mais. Melhores preços, frete grátis e entrega rápida.">
+    <meta name="keywords"
+        content="auto peças, moto peças, freios, motor, suspensão, filtros, parachoques, peças automotivas">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.autopecasdimar.com.br/produtos">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.autopecasdimar.com.br/produtos">
+    <meta property="og:title" content="Produtos - Dimar Auto Peças & Moto Peças">
+    <meta property="og:description"
+        content="Catálogo completo de auto peças e moto peças. Melhores preços e entrega rápida.">
+    <meta property="og:image" content="https://www.autopecasdimar.com.br/assets/images/logo-dimar.png">
+    <meta property="og:locale" content="pt_BR">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +33,28 @@
     <!-- CSS -->
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/catalog.css">
+
+    <!-- Schema.org BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.autopecasdimar.com.br/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Produtos",
+                "item": "https://www.autopecasdimar.com.br/produtos"
+            }
+        ]
+    }
+    </script>
 </head>
 
 <body>
@@ -196,38 +231,38 @@
     </a>
 
     <!-- SCRIPTS -->
-    <!-- Scripts em ordem correta -->
-    <script src="../js/navigation-fix.js"></script>
-    <!-- JavaScript - Ordem correta de carregamento -->
+    <!-- Scripts em ordem correta com defer para não bloquear renderização -->
+    <script src="../js/navigation-fix.js" defer></script>
+
     <!-- 1. Logger e utilitários base -->
     <script src="../js/logger.js"></script>
-    <script src="../js/safe-logger.js"></script>
+    <script src="../js/safe-logger.js" defer></script>
 
     <!-- 2. Templates (header/footer) -->
     <script src="../js/templates.js"></script>
 
     <!-- 3. Loading States (UX) -->
-    <script src="../js/loading-states.js"></script>
+    <script src="../js/loading-states.js" defer></script>
 
     <!-- 4. Supabase CDN + Configuração -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-config.js"></script>
 
-    <!-- 4. Carrinho (usado por outras páginas) -->
-    <script src="../js/cart.js"></script>
+    <!-- 5. Carrinho -->
+    <script src="../js/cart.js" defer></script>
 
-    <!-- 5. Dados de produtos -->
-    <script src="../js/products-data.js"></script>
-    <script src="../js/products-catalog.js"></script>
+    <!-- 6. Dados de produtos -->
+    <script src="../js/products-data.js" defer></script>
+    <script src="../js/products-catalog.js" defer></script>
 
-    <!-- 6. Busca -->
-    <script src="../js/search.js"></script>
+    <!-- 7. Busca -->
+    <script src="../js/search.js" defer></script>
 
-    <!-- 7. Catálogo (lógica específica desta página) -->
-    <script src="../js/catalog.js"></script>
+    <!-- 8. Catálogo (lógica específica desta página) -->
+    <script src="../js/catalog.js" defer></script>
 
-    <!-- 8. Inicialização global (deve ser o último) -->
-    <script src="../js/global-init.js"></script>
+    <!-- 9. Inicialização global -->
+    <script src="../js/global-init.js" defer></script>
 </body>
 
 </html>

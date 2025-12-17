@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dimaradmin/
+Disallow: /database/
+Disallow: /docs/
+
+# Resources
+Sitemap: https://www.autopecasdimar.com.br/sitemap.xml

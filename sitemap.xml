@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+    
+    <!-- Homepage -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <!-- Produtos -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/produtos</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <!-- Sobre Nós -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/sobre-nos</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Contato -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/contato</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Lojas -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/lojas</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Carrinho -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/carrinho</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Login -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/login</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Cadastro -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/cadastro</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Central de Ajuda -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/central-ajuda</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- FAQ -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/faq</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Termos de Uso -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/termos-uso</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    
+    <!-- Política de Privacidade -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/politica-privacidade</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    
+    <!-- Trocas e Devoluções -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/trocas-devolucoes</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Garantia -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/garantia</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Frete e Entrega -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/frete-entrega</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Formas de Pagamento -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/formas-pagamento</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Trabalhe Conosco -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/trabalhe-conosco</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    
+    <!-- Fornecedor -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/fornecedor</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    
+    <!-- Rastrear Pedido -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/rastrear-pedido</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Sustentabilidade -->
+    <url>
+        <loc>https://www.autopecasdimar.com.br/sustentabilidade</loc>
+        <lastmod>2024-12-17</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    
+</urlset>
