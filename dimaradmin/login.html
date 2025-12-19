@@ -7,7 +7,7 @@
     <title>Login - Dimar Admin</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="./css/admin.css">
+    <link rel="stylesheet" href="/dimaradmin/css/admin.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
     <div class="login-container">
         <div class="login-box">
             <div class="login-logo">
-                <img src="../assets/images/logo-dimar.png" alt="Dimar Logo">
+                <img src="/assets/images/logo-dimar.png" alt="Dimar Logo">
                 <h1>Painel Administrativo</h1>
                 <p>Entre com suas credenciais</p>
             </div>
@@ -134,7 +134,7 @@
 
                 // Redirect to dashboard using relative path
                 setTimeout(() => {
-                    window.location.href = './index.html';
+                    window.location.href = '/dimaradmin/index.html';
                 }, 500);
             }
 
@@ -145,7 +145,7 @@
 
                 if (isLoggedIn && email && ADMIN_CREDENTIALS[email]) {
                     // Already logged in, redirect to dashboard
-                    window.location.href = './index.html';
+                    window.location.href = '/dimaradmin/index.html';
                 }
             }
 

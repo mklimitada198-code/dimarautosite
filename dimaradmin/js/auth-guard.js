@@ -93,7 +93,7 @@
         if (!isAuthenticated()) {
             console.log('🔀 Não autenticado - redirecionando para login...');
             // Use relative path for production compatibility
-            window.location.replace('./login.html');
+            window.location.replace('/dimaradmin/login.html');
             return;
         }
 
@@ -113,7 +113,7 @@
             window.supabaseClient.auth.signOut().catch(() => { });
         }
 
-        window.location.replace('./login.html');
+        window.location.replace('/dimaradmin/login.html');
     };
 
     // ==================== USER INFO ====================
