@@ -113,14 +113,17 @@
       "source": "/admin",
       "destination": "/dimaradmin/login",
       "permanent": false
-    },
-    {
-      "source": "/dimaradmin",
-      "destination": "/dimaradmin/login",
-      "permanent": false
     }
   ],
   "rewrites": [
+    {
+      "source": "/dimaradmin/login",
+      "destination": "/dimaradmin/login.html"
+    },
+    {
+      "source": "/dimaradmin",
+      "destination": "/dimaradmin/index.html"
+    },
     {
       "source": "/sobre-nos",
       "destination": "/pages/sobre-nos.html"

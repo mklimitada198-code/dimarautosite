@@ -79,7 +79,7 @@
 
     function protectPage() {
         const currentPath = window.location.pathname;
-        const isLoginPage = currentPath.includes('login.html') || currentPath.endsWith('/login');
+        const isLoginPage = currentPath.includes('login');
 
         console.log('📍 Página:', currentPath);
 
@@ -92,7 +92,8 @@
         // Verificar autenticação
         if (!isAuthenticated()) {
             console.log('🔀 Não autenticado - redirecionando para login...');
-            window.location.replace('/dimaradmin/login.html');
+            // Use relative path for production compatibility
+            window.location.replace('./login.html');
             return;
         }
 
@@ -112,7 +113,7 @@
             window.supabaseClient.auth.signOut().catch(() => { });
         }
 
-        window.location.replace('/dimaradmin/login.html');
+        window.location.replace('./login.html');
     };
 
     // ==================== USER INFO ====================
