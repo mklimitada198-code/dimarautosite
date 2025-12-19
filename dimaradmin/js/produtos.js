@@ -126,7 +126,7 @@ function renderProducts(filteredProducts = null) {
             </td>
             <td><strong>${product.name}</strong></td>
             <td>${product.sku}</td>
-            <td><span class="badge badge-${getCategoryColor(product.category)}">${formatCategory(product.category)}</span></td>
+            <td>${formatCategoriesDisplay(product.categories || product.category)}</td>
             <td>
                 ${product.sale_price
                 ? `<span style="text-decoration: line-through; color: #999; margin-right: 8px;">R$ ${parseFloat(product.price).toFixed(2)}</span><strong style="color: var(--danger);">R$ ${parseFloat(product.sale_price).toFixed(2)}</strong>`
@@ -308,9 +308,13 @@ function setupFilters() {
             );
         }
 
-        // Category
+        // Category - agora suporta múltiplas categorias
         if (categoryFilter.value) {
-            filtered = filtered.filter(p => p.category === categoryFilter.value);
+            filtered = filtered.filter(p => {
+                // Verifica no array categories OU no campo category para compatibilidade
+                const productCategories = p.categories || [p.category];
+                return productCategories.includes(categoryFilter.value);
+            });
         }
 
         // Status
@@ -372,7 +376,8 @@ window.openProductModal = function (productId = null) {
             document.getElementById('productId').value = product.id;
             document.getElementById('productName').value = product.name;
             document.getElementById('productSku').value = product.sku;
-            document.getElementById('productCategory').value = product.category;
+            // Carregar categorias múltiplas
+            setSelectedCategories(product.categories || [product.category]);
             document.getElementById('productBrand').value = product.brand || '';
             document.getElementById('productPrice').value = product.price;
             document.getElementById('productSalePrice').value = product.sale_price || '';
@@ -435,6 +440,7 @@ window.openProductModal = function (productId = null) {
         document.getElementById('customBadgeGroup').style.display = 'none';
         clearVehicleTypeCheckboxes(); // Limpar checkboxes de tipo de veículo
         clearHomeSectionCheckboxes(); // Limpar checkboxes de seção da homepage
+        clearCategoryCheckboxes(); // Limpar checkboxes de categorias
         renderImagePreviews();
         document.querySelector('#productModal h2').textContent = 'Adicionar Produto';
         console.log('✅ Formulário limpo para novo produto');
@@ -463,7 +469,10 @@ async function saveProduct() {
     const productData = {
         name: document.getElementById('productName').value,
         sku: document.getElementById('productSku').value,
-        category: document.getElementById('productCategory').value,
+        // Categorias múltiplas como array
+        categories: getSelectedCategories(),
+        // Manter compatibilidade com category (pega primeira categoria)
+        category: getSelectedCategories()[0] || null,
         brand: document.getElementById('productBrand').value,
         price: parseFloat(document.getElementById('productPrice').value),
         sale_price: document.getElementById('productSalePrice').value ? parseFloat(document.getElementById('productSalePrice').value) : null,
@@ -895,4 +904,70 @@ function clearHomeSectionCheckboxes() {
     if (procuradosCheckbox) procuradosCheckbox.checked = false;
 }
 
+// ==================== CATEGORY HELPERS ====================
+/**
+ * Coleta as categorias selecionadas dos checkboxes
+ * @returns {Array} Array com as categorias: ['motor', 'freios', ...]
+ */
+function getSelectedCategories() {
+    const categories = [];
+    const checkboxes = document.querySelectorAll('input[name="productCategories"]:checked');
+
+    checkboxes.forEach(checkbox => {
+        categories.push(checkbox.value);
+    });
+
+    console.log('📦 Categorias selecionadas:', categories);
+    return categories;
+}
+
+/**
+ * Define os checkboxes com base no array de categorias
+ * @param {Array} categories - Array de categorias: ['motor', 'freios', ...]
+ */
+function setSelectedCategories(categories) {
+    // Primeiro, limpa todos os checkboxes
+    clearCategoryCheckboxes();
+
+    // Garante que categories é um array
+    const categoriesArray = Array.isArray(categories) ? categories : (categories ? [categories] : []);
+
+    // Marca os checkboxes correspondentes
+    categoriesArray.forEach(category => {
+        const checkbox = document.querySelector(`input[name="productCategories"][value="${category}"]`);
+        if (checkbox) {
+            checkbox.checked = true;
+        }
+    });
+
+    console.log('📦 Checkboxes de categoria definidos para:', categoriesArray);
+}
+
+/**
+ * Limpa todos os checkboxes de categoria
+ */
+function clearCategoryCheckboxes() {
+    const checkboxes = document.querySelectorAll('input[name="productCategories"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+/**
+ * Formata array de categorias para exibição na tabela
+ * @param {Array|string} categories - Array ou string de categorias
+ * @returns {string} HTML com badges de categorias
+ */
+function formatCategoriesDisplay(categories) {
+    // Se for string (compatibilidade retroativa), converte para array
+    const categoriesArray = Array.isArray(categories) ? categories : (categories ? [categories] : []);
+
+    if (categoriesArray.length === 0) return '<span class="badge badge-secondary">Sem categoria</span>';
+
+    return categoriesArray
+        .map(cat => `<span class="badge badge-${getCategoryColor(cat)}" style="margin-right: 4px;">${formatCategory(cat)}</span>`)
+        .join('');
+}
+
 console.log('✅ produtos.js totalmente carregado!');
+
