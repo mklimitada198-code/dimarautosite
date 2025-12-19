@@ -11,7 +11,8 @@
     // ==================== CONFIGURAÇÃO ====================
     const ADMIN_EMAILS = [
         'admin@dimar.com.br',
-        'mk.cardoso198@gmail.com'
+        'mk.cardoso198@gmail.com',
+        'sac.dimar@gmail.com'
     ];
 
     const SESSION_DURATION_HOURS = 24;
