@@ -127,13 +127,14 @@
                                 <tr>
                                     <th>Logo</th>
                                     <th>Nome</th>
+                                    <th>Fileira</th>
                                     <th>Status</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="brandsTableBody">
                                 <tr>
-                                    <td colspan="4" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                                    <td colspan="5" style="text-align: center; padding: 40px; color: #7f8c8d;">
                                         Carregando marcas...
                                     </td>
                                 </tr>
@@ -182,9 +183,19 @@
                 <div class="form-group">
                     <label class="form-label">Status*</label>
                     <select class="form-control" id="brandStatus" required>
-                        <option value="active">Ativa</option>
-                        <option value="inactive">Inativa</option>
+                        <option value="active">Ativa (Visível)</option>
+                        <option value="inactive">Oculta</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fileira do Carrossel*</label>
+                    <select class="form-control" id="brandRow" required>
+                        <option value="1">Fileira 1 (Superior)</option>
+                        <option value="2">Fileira 2 (Inferior)</option>
+                    </select>
+                    <small style="color: #7f8c8d; margin-top: 4px; display: block;">A seção de Marcas Parceiras possui
+                        duas fileiras de logos animados.</small>
                 </div>
 
                 <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 30px;">

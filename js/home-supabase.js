@@ -14,6 +14,7 @@
     const CONFIG = {
         maxProductsOffers: 8,     // Máximo em Principais Ofertas
         maxProductsPopular: 8,    // Máximo em Mais Procurados
+        maxProductsAll: 10,       // Máximo em Nossos Produtos (2 fileiras x 5)
         maxBanners: 4,            // Máximo de banners no carrossel
         maxBrands: 9,             // Máximo de marcas exibidas
         autoRefresh: false        // Auto-refresh (desabilitado por padrão)
@@ -39,11 +40,12 @@
                 return;
             }
 
-            // Buscar produtos com home_section = 'ofertas' ou 'ambas'
+            // Buscar produtos: com home_sections contendo 'ofertas' OU sale_price (retrocompatível com home_section)
             const { data: products, error } = await window.supabaseClient
                 .from('products')
                 .select('*')
-                .or('home_section.eq.ofertas,home_section.eq.ambas')
+                .eq('status', 'active')
+                .or('home_sections.cs.["ofertas"],home_section.eq.ofertas,home_section.eq.ambas,sale_price.not.is.null')
                 .order('featured', { ascending: false, nullsFirst: false })
                 .order('created_at', { ascending: false })
                 .limit(CONFIG.maxProductsOffers);
@@ -75,11 +77,12 @@
                 return;
             }
 
-            // Buscar produtos com home_section = 'procurados' ou 'ambas'
+            // Buscar produtos: com home_sections contendo 'procurados' OU bestsellers/featured (retrocompatível)
             const { data: products, error } = await window.supabaseClient
                 .from('products')
                 .select('*')
-                .or('home_section.eq.procurados,home_section.eq.ambas')
+                .eq('status', 'active')
+                .or('home_sections.cs.["procurados"],home_section.eq.procurados,home_section.eq.ambas,is_bestseller.eq.true,featured.eq.true')
                 .order('created_at', { ascending: false })
                 .limit(CONFIG.maxProductsPopular);
 
@@ -95,6 +98,42 @@
         } catch (error) {
             log.error('❌ Erro ao carregar mais procurados:', error);
             hideProductsSkeleton('.most-searched-grid');
+        }
+    }
+
+    // ==================== CARREGAR TODOS OS PRODUTOS (NOSSOS PRODUTOS) ====================
+    async function loadAllProducts() {
+        try {
+            log.info('🔄 Carregando Nossos Produtos...');
+            showProductsSkeleton('.all-products-grid');
+
+            if (!window.supabaseClient) {
+                log.warn('⚠️ Supabase não disponível');
+                hideProductsSkeleton('.all-products-grid');
+                return;
+            }
+
+            // Buscar TODOS os produtos ativos (10 produtos = 2 fileiras x 5)
+            const { data: products, error } = await window.supabaseClient
+                .from('products')
+                .select('*')
+                .eq('status', 'active')
+                .order('featured', { ascending: false, nullsFirst: false })
+                .order('created_at', { ascending: false })
+                .limit(CONFIG.maxProductsAll);
+
+            if (error) {
+                log.error('❌ Erro ao carregar todos os produtos:', error);
+                hideProductsSkeleton('.all-products-grid');
+                return;
+            }
+
+            log.success(`✅ ${products?.length || 0} produtos em Nossos Produtos`);
+            renderProducts(products || [], '.all-products-grid');
+
+        } catch (error) {
+            log.error('❌ Erro ao carregar todos os produtos:', error);
+            hideProductsSkeleton('.all-products-grid');
         }
     }
 
@@ -431,12 +470,12 @@
                 return;
             }
 
-            // Buscar TODAS as marcas (sem filtro de status)
+            // Buscar apenas marcas ATIVAS
             const { data: brands, error } = await window.supabaseClient
                 .from('brands')
                 .select('*')
-                .order('display_order', { ascending: true, nullsFirst: false })
-                .limit(CONFIG.maxBrands);
+                .eq('is_active', true)
+                .order('name', { ascending: true });
 
             if (error) {
                 log.error('❌ Erro ao carregar marcas:', error);
@@ -444,81 +483,70 @@
             }
 
             if (!brands || brands.length === 0) {
-                log.warn('⚠️ Nenhuma marca encontrada');
+                log.warn('⚠️ Nenhuma marca ativa encontrada');
                 return;
             }
 
-            log.success(`✅ ${brands.length} marcas carregadas`);
-            renderBrands(brands);
+            // Separar marcas por fileira
+            const row1Brands = brands.filter(b => (b.carousel_row || 1) === 1);
+            const row2Brands = brands.filter(b => b.carousel_row === 2);
+
+            log.success(`✅ ${brands.length} marcas carregadas (Fileira 1: ${row1Brands.length}, Fileira 2: ${row2Brands.length})`);
+            renderBrands(row1Brands, row2Brands);
 
         } catch (error) {
             log.error('❌ Erro ao carregar marcas:', error);
         }
     }
 
-    // ==================== MAPEAMENTO DE IMAGENS CONHECIDAS ====================
-    const KNOWN_BRAND_IMAGES = {
-        'bosch': 'assets/images/bosch.png',
-        'ngk': 'assets/images/ngk.png',
-        'toyota': 'assets/images/toyota.png',
-        'fiat': 'assets/images/fiat.png',
-        'hyundai': 'assets/images/hyundai.png',
-        'ford': 'assets/images/ford.png',
-        'tete': 'assets/images/tete.png',
-        'mobil': 'assets/images/mobil.png',
-        'dayco': 'assets/images/dayco.png'
-    };
-
     // ==================== RENDERIZAR MARCAS ====================
-    function renderBrands(brands) {
+    function renderBrands(row1Brands, row2Brands) {
         const carouselsLeft = document.querySelectorAll('.brands-carousel-left');
         const carouselsRight = document.querySelectorAll('.brands-carousel-right');
 
-        if (carouselsLeft.length === 0 || carouselsRight.length === 0) {
+        if (carouselsLeft.length === 0 && carouselsRight.length === 0) {
             log.warn('⚠️ Containers de marcas não encontrados');
             return;
         }
 
-        // Filtrar APENAS marcas que têm imagens conhecidas no mapa
-        // Isso evita erros 404 para marcas como gates.png, nakata.png que não existem
-        const validBrands = brands.filter(brand => {
-            const brandSlug = brand.name ? brand.name.toLowerCase().replace(/\s+/g, '') : '';
-            return !!KNOWN_BRAND_IMAGES[brandSlug];
-        });
+        // Função auxiliar para gerar HTML das marcas
+        function generateBrandsHTML(brands) {
+            if (!brands || brands.length === 0) return '';
 
-        log.info(`📦 ${validBrands.length}/${brands.length} marcas com imagens válidas`);
+            const brandsHTML = brands.map(brand => {
+                // Usar logo_url do banco (suporta base64 e URLs)
+                const logoUrl = brand.logo_url || 'assets/images/bosch.png';
+                return `
+                <div class="brand-item">
+                    <img src="${logoUrl}" alt="${brand.name || 'Marca'}" loading="lazy" decoding="async">
+                </div>
+            `;
+            }).join('');
 
-        // Se poucas marcas válidas (menos de 5), manter HTML estático que já funciona
-        if (validBrands.length < 5) {
-            log.warn(`⚠️ Apenas ${validBrands.length} marcas válidas, mantendo HTML estático`);
-            return;
+            // Repetir 3 vezes para looping infinito perfeito
+            return brandsHTML + brandsHTML + brandsHTML;
         }
 
-        // Criar HTML das marcas (3 sets para looping infinito)
-        // Agora usa SEMPRE a imagem do mapa, ignora logo_url do banco
-        const brandsHTML = validBrands.map(brand => {
-            const brandSlug = brand.name ? brand.name.toLowerCase().replace(/\s+/g, '') : 'brand';
-            // Usar SEMPRE a imagem conhecida do mapa
-            const logoUrl = KNOWN_BRAND_IMAGES[brandSlug] || 'assets/images/bosch.png';
+        // Só atualizar se tiver marcas suficientes (mínimo 3 para loop funcionar bem)
+        if (row1Brands && row1Brands.length >= 3) {
+            const row1HTML = generateBrandsHTML(row1Brands);
+            carouselsLeft.forEach(carousel => {
+                carousel.innerHTML = row1HTML;
+            });
+            log.success(`✅ Fileira 1 renderizada com ${row1Brands.length} marcas`);
+        } else if (row1Brands && row1Brands.length > 0) {
+            log.warn(`⚠️ Fileira 1 tem apenas ${row1Brands.length} marcas, mantendo HTML estático`);
+        }
 
-            return `
-            <div class="brand-item">
-                <img src="${logoUrl}" alt="${brand.name}">
-            </div>
-        `;
-        }).join('');
-
-        // Repetir 3 vezes para looping infinito perfeito
-        const fullHTML = brandsHTML + brandsHTML + brandsHTML;
-
-        // Atualizar carrosséis
-        carouselsLeft.forEach(carousel => {
-            carousel.innerHTML = fullHTML;
-        });
-
-        carouselsRight.forEach(carousel => {
-            carousel.innerHTML = fullHTML;
-        });
+        if (row2Brands && row2Brands.length >= 3) {
+            const row2HTML = generateBrandsHTML(row2Brands);
+            carouselsRight.forEach(carousel => {
+                carousel.innerHTML = row2HTML;
+            });
+            log.success(`✅ Fileira 2 renderizada com ${row2Brands.length} marcas`);
+        } else if (row2Brands && row2Brands.length > 0) {
+            log.warn(`⚠️ Fileira 2 tem apenas ${row2Brands.length} marcas, mantendo HTML estático`);
+        }
 
         log.success('✅ Marcas renderizadas');
     }
@@ -609,6 +637,7 @@
 
                 // Carregar todos os dados em paralelo
                 await Promise.all([
+                    loadAllProducts(),             // Nossos Produtos (TODOS)
                     loadOffersProducts(),          // Principais Ofertas
                     loadMostSearchedProducts(),    // Mais Procurados
                     loadHomeBanners(),
@@ -638,6 +667,7 @@
     // ==================== EXPORTAR FUNÇÕES ====================
     window.homeSupabase = {
         init: initializeHomePage,
+        loadAll: loadAllProducts,
         loadOffers: loadOffersProducts,
         loadMostSearched: loadMostSearchedProducts,
         loadBanners: loadHomeBanners,

@@ -372,15 +372,23 @@
 
                 <!-- Seção da Homepage -->
                 <div class="form-group">
-                    <label class="form-label">Exibir na Homepage</label>
-                    <select class="form-control" id="productHomeSection">
-                        <option value="">Não exibir na homepage</option>
-                        <option value="ofertas">📦 Principais Ofertas</option>
-                        <option value="procurados">🔥 Mais Procurados</option>
-                        <option value="ambas">⭐ Ambas as seções</option>
-                    </select>
-                    <small style="color: #7f8c8d; display: block; margin-top: 6px;">
-                        Escolha em qual seção da página inicial o produto deve aparecer
+                    <label class="form-label">Exibir na Homepage (selecione uma ou mais seções)</label>
+                    <div style="display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap;">
+                        <label
+                            style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.2s;">
+                            <input type="checkbox" id="homeSectionOfertas" value="ofertas"
+                                style="width: 18px; height: 18px;">
+                            <span style="font-size: 15px;">📦 Principais Ofertas</span>
+                        </label>
+                        <label
+                            style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.2s;">
+                            <input type="checkbox" id="homeSectionProcurados" value="procurados"
+                                style="width: 18px; height: 18px;">
+                            <span style="font-size: 15px;">🔥 Mais Procurados</span>
+                        </label>
+                    </div>
+                    <small style="color: #7f8c8d; display: block; margin-top: 8px;">
+                        ✨ Marque as seções onde o produto deve aparecer na página inicial
                     </small>
                 </div>
 
@@ -391,16 +399,25 @@
                         🚗 Compatibilidade de Veículos
                     </label>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Tipo de Veículo</label>
-                            <select class="form-control" id="productVehicleType">
-                                <option value="">Selecione...</option>
-                                <option value="carro">🚗 Carro</option>
-                                <option value="moto">🏍️ Moto</option>
-                                <option value="universal">⚙️ Universal (Ambos)</option>
-                            </select>
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Veículo (selecione um ou mais)</label>
+                        <div style="display: flex; gap: 24px; margin-top: 8px; flex-wrap: wrap;">
+                            <label
+                                style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.2s;">
+                                <input type="checkbox" id="vehicleTypeCarro" value="carro"
+                                    style="width: 18px; height: 18px;">
+                                <span style="font-size: 15px;">🚗 Carro</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.2s;">
+                                <input type="checkbox" id="vehicleTypeMoto" value="moto"
+                                    style="width: 18px; height: 18px;">
+                                <span style="font-size: 15px;">🏍️ Moto</span>
+                            </label>
                         </div>
+                        <small style="color: #7f8c8d; display: block; margin-top: 8px;">
+                            ✨ Selecione um ou ambos os tipos. Produtos podem servir para carros E motos!
+                        </small>
                     </div>
 
                     <div class="form-group">

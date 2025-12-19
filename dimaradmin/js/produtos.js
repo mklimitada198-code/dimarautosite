@@ -384,10 +384,12 @@ window.openProductModal = function (productId = null) {
             document.getElementById('productFastShipping').checked = product.fast_shipping || false;
             document.getElementById('productBadgeType').value = product.badge_type || '';
             document.getElementById('productCustomBadge').value = product.custom_badge_text || '';
-            document.getElementById('productHomeSection').value = product.home_section || '';
 
-            // Compatibilidade de veículos
-            document.getElementById('productVehicleType').value = product.vehicle_type || '';
+            // Seções da homepage - agora com checkboxes
+            setSelectedHomeSections(product.home_sections || []);
+
+            // Compatibilidade de veículos - agora com checkboxes
+            setSelectedVehicleTypes(product.vehicle_types || []);
             const compatibilityTextarea = document.getElementById('productCompatibility');
             if (compatibilityTextarea) {
                 compatibilityTextarea.value = (product.compatibility || []).join('\n');
@@ -431,6 +433,8 @@ window.openProductModal = function (productId = null) {
         document.getElementById('productForm').reset();
         document.getElementById('productId').value = '';
         document.getElementById('customBadgeGroup').style.display = 'none';
+        clearVehicleTypeCheckboxes(); // Limpar checkboxes de tipo de veículo
+        clearHomeSectionCheckboxes(); // Limpar checkboxes de seção da homepage
         renderImagePreviews();
         document.querySelector('#productModal h2').textContent = 'Adicionar Produto';
         console.log('✅ Formulário limpo para novo produto');
@@ -472,8 +476,10 @@ async function saveProduct() {
         fast_shipping: document.getElementById('productFastShipping').checked,
         badge_type: document.getElementById('productBadgeType').value || null,
         custom_badge_text: document.getElementById('productCustomBadge').value || null,
-        home_section: document.getElementById('productHomeSection').value || null,
-        vehicle_type: document.getElementById('productVehicleType').value || null,
+        // Coletar seções da homepage dos checkboxes como array
+        home_sections: getSelectedHomeSections(),
+        // Coletar tipos de veículo dos checkboxes como array
+        vehicle_types: getSelectedVehicleTypes(),
         compatibility: parseCompatibility(document.getElementById('productCompatibility').value),
         // Especificações Técnicas
         weight: document.getElementById('productWeight')?.value ? parseFloat(document.getElementById('productWeight').value) : null,
@@ -793,6 +799,100 @@ function parseCompatibility(text) {
         .split('\n')
         .map(line => line.trim())
         .filter(line => line.length > 0);
+}
+
+// ==================== VEHICLE TYPE HELPERS ====================
+/**
+ * Coleta os tipos de veículo selecionados dos checkboxes
+ * @returns {Array} Array com os tipos selecionados ['carro'], ['moto'], ou ['carro', 'moto']
+ */
+function getSelectedVehicleTypes() {
+    const types = [];
+    const carroCheckbox = document.getElementById('vehicleTypeCarro');
+    const motoCheckbox = document.getElementById('vehicleTypeMoto');
+
+    if (carroCheckbox && carroCheckbox.checked) types.push('carro');
+    if (motoCheckbox && motoCheckbox.checked) types.push('moto');
+
+    console.log('🚗 Tipos de veículo selecionados:', types);
+    return types;
+}
+
+/**
+ * Define os checkboxes com base no array de tipos
+ * @param {Array} types - Array de tipos: ['carro'], ['moto'], ou ['carro', 'moto']
+ */
+function setSelectedVehicleTypes(types) {
+    const carroCheckbox = document.getElementById('vehicleTypeCarro');
+    const motoCheckbox = document.getElementById('vehicleTypeMoto');
+
+    // Garante que types é um array
+    const typesArray = Array.isArray(types) ? types : [];
+
+    if (carroCheckbox) {
+        carroCheckbox.checked = typesArray.includes('carro');
+    }
+    if (motoCheckbox) {
+        motoCheckbox.checked = typesArray.includes('moto');
+    }
+
+    console.log('🚗 Checkboxes definidos para:', typesArray);
+}
+
+// Limpar checkboxes ao abrir modal de novo produto
+function clearVehicleTypeCheckboxes() {
+    const carroCheckbox = document.getElementById('vehicleTypeCarro');
+    const motoCheckbox = document.getElementById('vehicleTypeMoto');
+
+    if (carroCheckbox) carroCheckbox.checked = false;
+    if (motoCheckbox) motoCheckbox.checked = false;
+}
+
+// ==================== HOME SECTION HELPERS ====================
+/**
+ * Coleta as seções da homepage selecionadas dos checkboxes
+ * @returns {Array} Array com as seções: ['ofertas'], ['procurados'], ou ['ofertas', 'procurados']
+ */
+function getSelectedHomeSections() {
+    const sections = [];
+    const ofertasCheckbox = document.getElementById('homeSectionOfertas');
+    const procuradosCheckbox = document.getElementById('homeSectionProcurados');
+
+    if (ofertasCheckbox && ofertasCheckbox.checked) sections.push('ofertas');
+    if (procuradosCheckbox && procuradosCheckbox.checked) sections.push('procurados');
+
+    console.log('🏠 Seções da homepage selecionadas:', sections);
+    return sections;
+}
+
+/**
+ * Define os checkboxes com base no array de seções
+ * @param {Array} sections - Array de seções: ['ofertas'], ['procurados'], ou ['ofertas', 'procurados']
+ */
+function setSelectedHomeSections(sections) {
+    const ofertasCheckbox = document.getElementById('homeSectionOfertas');
+    const procuradosCheckbox = document.getElementById('homeSectionProcurados');
+
+    // Garante que sections é um array
+    const sectionsArray = Array.isArray(sections) ? sections : [];
+
+    if (ofertasCheckbox) {
+        ofertasCheckbox.checked = sectionsArray.includes('ofertas');
+    }
+    if (procuradosCheckbox) {
+        procuradosCheckbox.checked = sectionsArray.includes('procurados');
+    }
+
+    console.log('🏠 Checkboxes de seção definidos para:', sectionsArray);
+}
+
+// Limpar checkboxes de seção ao abrir modal de novo produto
+function clearHomeSectionCheckboxes() {
+    const ofertasCheckbox = document.getElementById('homeSectionOfertas');
+    const procuradosCheckbox = document.getElementById('homeSectionProcurados');
+
+    if (ofertasCheckbox) ofertasCheckbox.checked = false;
+    if (procuradosCheckbox) procuradosCheckbox.checked = false;
 }
 
 console.log('✅ produtos.js totalmente carregado!');

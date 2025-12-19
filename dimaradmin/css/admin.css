@@ -244,7 +244,7 @@ body {
     transition: all 0.3s ease;
 }
 
-.sidebar.collapsed ~ .main-content {
+.sidebar.collapsed~.main-content {
     margin-left: 70px;
 }
 
@@ -467,6 +467,16 @@ body {
     color: #856404;
 }
 
+.badge-primary {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.badge-info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
 /* Buttons */
 .btn-sm {
     padding: 6px 12px;
@@ -514,15 +524,15 @@ select.form-control {
     .sidebar {
         transform: translateX(-100%);
     }
-    
+
     .sidebar.active {
         transform: translateX(0);
     }
-    
+
     .main-content {
         margin-left: 0;
     }
-    
+
     .form-row {
         grid-template-columns: 1fr;
     }
@@ -532,13 +542,12 @@ select.form-control {
     .stats-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .content {
         padding: 20px 15px;
     }
-    
+
     .topbar {
         padding: 0 15px;
     }
 }
-

@@ -68,7 +68,7 @@ function renderBrands() {
     if (brands.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="4" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                <td colspan="5" style="text-align: center; padding: 40px; color: #7f8c8d;">
                     Nenhuma marca cadastrada.
                 </td>
             </tr>
@@ -76,15 +76,30 @@ function renderBrands() {
         return;
     }
 
-    tbody.innerHTML = brands.map(brand => `
+    // Sort brands by row first, then by name
+    const sortedBrands = [...brands].sort((a, b) => {
+        const rowA = a.carousel_row || 1;
+        const rowB = b.carousel_row || 1;
+        if (rowA !== rowB) return rowA - rowB;
+        return (a.name || '').localeCompare(b.name || '');
+    });
+
+    tbody.innerHTML = sortedBrands.map(brand => {
+        const row = brand.carousel_row || 1;
+        return `
         <tr>
             <td>
-                <img src="${brand.logo_url}" alt="${brand.name}" style="height: 40px; object-fit: contain;">
+                <img src="${brand.logo_url}" alt="${brand.name}" style="height: 40px; object-fit: contain; max-width: 80px;">
             </td>
             <td><strong>${brand.name}</strong></td>
             <td>
+                <span class="badge ${row === 1 ? 'badge-primary' : 'badge-info'}">
+                    Fileira ${row}
+                </span>
+            </td>
+            <td>
                 <span class="badge ${brand.is_active ? 'badge-success' : 'badge-danger'}">
-                    ${brand.is_active ? 'Ativa' : 'Inativa'}
+                    ${brand.is_active ? 'Visível' : 'Oculta'}
                 </span>
             </td>
             <td>
@@ -96,7 +111,8 @@ function renderBrands() {
                 </button>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 /**
@@ -199,6 +215,7 @@ function openBrandModal(brandId = null) {
             document.getElementById('brandId').value = brand.id;
             document.getElementById('brandName').value = brand.name;
             document.getElementById('brandStatus').value = brand.is_active ? 'active' : 'inactive';
+            document.getElementById('brandRow').value = brand.carousel_row || 1;
 
             selectedBrandLogo = brand.logo_url;
             renderBrandLogoPreview();
@@ -208,6 +225,7 @@ function openBrandModal(brandId = null) {
     } else {
         document.getElementById('brandForm').reset();
         document.getElementById('brandId').value = '';
+        document.getElementById('brandRow').value = '1'; // Default to row 1
         renderBrandLogoPreview();
         document.querySelector('#brandModal h2').textContent = 'Adicionar Marca';
     }
@@ -284,7 +302,8 @@ async function saveBrand() {
     const brandData = {
         name: name,
         logo_url: selectedBrandLogo,
-        is_active: document.getElementById('brandStatus').value === 'active'
+        is_active: document.getElementById('brandStatus').value === 'active',
+        carousel_row: parseInt(document.getElementById('brandRow').value, 10) || 1
     };
 
     try {

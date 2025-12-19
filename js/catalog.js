@@ -504,22 +504,35 @@ function applyFilters() {
 
         // Vehicle TYPE filter (carro/moto checkbox ou URL)
         if (currentFilters.vehicleType.length > 0) {
-            const productVehicleType = (product.vehicle_type || product.vehicleType || '').toLowerCase();
+            // Suportar tanto formato antigo (vehicle_type string) quanto novo (vehicle_types array)
+            let productTypes = [];
 
-            // Mapear tipos de produto para tipos de filtro
-            const typeMap = {
-                'carro': 'car',
-                'car': 'car',
-                'moto': 'moto',
-                'universal': 'universal'
-            };
-            const normalizedProductType = typeMap[productVehicleType] || productVehicleType;
+            // Novo formato: vehicle_types é um array JSONB
+            if (Array.isArray(product.vehicle_types) && product.vehicle_types.length > 0) {
+                productTypes = product.vehicle_types.map(t => t.toLowerCase());
+            }
+            // Formato antigo: vehicle_type é uma string
+            else if (product.vehicle_type || product.vehicleType) {
+                const oldType = (product.vehicle_type || product.vehicleType || '').toLowerCase();
+                if (oldType === 'universal') {
+                    productTypes = ['carro', 'moto']; // Universal = ambos
+                } else {
+                    productTypes = [oldType];
+                }
+            }
 
-            // Verificar se o produto é do tipo selecionado ou universal
-            const matchesType = currentFilters.vehicleType.includes(normalizedProductType) ||
-                normalizedProductType === 'universal';
+            // Mapear tipos para filtro (car -> carro)
+            const normalizedFilterTypes = currentFilters.vehicleType.map(t => {
+                if (t === 'car') return 'carro';
+                return t;
+            });
 
-            if (!matchesType) {
+            // Verificar se produto tem algum dos tipos selecionados
+            const matchesType = normalizedFilterTypes.some(filterType =>
+                productTypes.includes(filterType)
+            );
+
+            if (!matchesType && productTypes.length > 0) {
                 return false;
             }
         }
@@ -540,10 +553,17 @@ function applyFilters() {
                 return searchTerms.some(term => compLower.includes(term));
             });
 
-            // Verificar também no vehicle_type
-            const productVehicleType = (product.vehicle_type || '').toLowerCase();
-            const isUniversal = productVehicleType === 'universal';
-            const matchesVehicleType = productVehicleType === v.type || isUniversal;
+            // Verificar tipos de veículo (suporta formato antigo e novo)
+            let productTypes = [];
+            if (Array.isArray(product.vehicle_types) && product.vehicle_types.length > 0) {
+                productTypes = product.vehicle_types.map(t => t.toLowerCase());
+            } else if (product.vehicle_type) {
+                const oldType = product.vehicle_type.toLowerCase();
+                productTypes = oldType === 'universal' ? ['carro', 'moto'] : [oldType];
+            }
+
+            const isUniversal = productTypes.includes('carro') && productTypes.includes('moto');
+            const matchesVehicleType = productTypes.includes(v.type) || isUniversal;
 
             // Produto passa se: tem compatibilidade OU é universal
             if (!hasCompatibility && !isUniversal) {
