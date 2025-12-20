@@ -341,13 +341,13 @@
 
     // ==================== ATUALIZAR HEADER ====================
     function updateHeaderForLoggedUser(user) {
-        // Encontrar o link "Entre ou Cadastre-se" e atualizar
+        const userName = user.user_metadata?.full_name || user.email.split('@')[0];
+        const firstName = userName.split(' ')[0];
+
+        // Atualizar header desktop
         const authLink = document.querySelector('.header-action[href*="login"], .header-action[href="#login"]');
 
         if (authLink) {
-            const userName = user.user_metadata?.full_name || user.email.split('@')[0];
-            const firstName = userName.split(' ')[0];
-
             authLink.innerHTML = `
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" fill="white"/>
@@ -366,6 +366,27 @@
                 // Ajustar path se não estiver em /pages/
                 if (!window.location.pathname.includes('/pages/')) {
                     authLink.href = 'pages/minha-conta.html';
+                }
+            }
+        }
+
+        // Atualizar botão mobile drawer
+        const mobileUserBtn = document.querySelector('.mobile-user-btn');
+        if (mobileUserBtn) {
+            mobileUserBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" fill="currentColor"/>
+                    <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" fill="currentColor"/>
+                </svg>
+                <span>Olá, ${firstName}</span>
+            `;
+
+            if (window.location.hostname !== 'localhost') {
+                mobileUserBtn.href = '/pages/minha-conta.html';
+            } else {
+                mobileUserBtn.href = 'minha-conta.html';
+                if (!window.location.pathname.includes('/pages/')) {
+                    mobileUserBtn.href = 'pages/minha-conta.html';
                 }
             }
         }
