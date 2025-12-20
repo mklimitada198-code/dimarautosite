@@ -128,6 +128,41 @@ ul {
     text-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
 }
 
+/* ==================== RESPONSIVO - Top Bar ==================== */
+@media (max-width: 768px) {
+    .top-bar {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .top-bar-content {
+        padding: 0 10px;
+    }
+
+    .top-bar-content span {
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+        gap: 3px;
+        line-height: 1.4;
+    }
+
+    .highlight-orange {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-bar {
+        padding: 6px 8px;
+        font-size: 10px;
+    }
+
+    .highlight-orange {
+        font-size: 12px;
+    }
+}
+
 /* ==================== Navigation Menu ==================== */
 .nav-menu {
     background-color: #2d2d2d;
@@ -419,7 +454,7 @@ ul {
 /* Mobile */
 @media (max-width: 768px) {
     .main-header {
-        padding: 12px 0;
+        padding: 15px 0;
     }
 
     .diagonal-stripes {
@@ -430,7 +465,7 @@ ul {
     .header-container {
         flex-wrap: wrap;
         justify-content: center;
-        gap: 12px;
+        gap: 15px;
         padding: 0 15px;
     }
 
@@ -3447,7 +3482,13 @@ ul {
 
     .product-title {
         font-size: 13px;
-        min-height: 36px;
+        min-height: 40px;
+        max-height: 40px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-clamp: 2;
     }
 
     .product-price {
@@ -3598,15 +3639,15 @@ ul {
 
 @media (max-width: 480px) {
     .whatsapp-float {
-        bottom: 15px;
-        right: 15px;
-        width: 50px;
-        height: 50px;
+        bottom: 16px;
+        right: 16px;
+        width: 52px;
+        height: 52px;
     }
 
     .whatsapp-icon {
-        width: 24px;
-        height: 24px;
+        width: 26px;
+        height: 26px;
     }
 }
 
@@ -5213,34 +5254,38 @@ textarea.form-input {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
 }
 
 .mobile-categories-list li a {
-    display: inline-block;
-    padding: 8px 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px 12px;
     background: rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
+    border-radius: 8px;
     color: #cccccc;
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
     transition: all 0.3s ease;
+    min-height: 44px;
 }
 
 .mobile-categories-list li a:hover {
     background: #ff6600;
     color: #ffffff;
-    transform: translateY(-2px);
+    transform: scale(1.02);
 }
 
 /* Quick Links */
 .mobile-quick-links {
-    padding: 16px 20px;
+    padding: 16px 16px 20px;
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-shrink: 0;
 }
 
@@ -5249,16 +5294,17 @@ textarea.form-input {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 14px 12px;
+    gap: 6px;
+    padding: 12px 10px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     color: #ffffff;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     transition: all 0.3s ease;
+    min-height: 48px;
 }
 
 .mobile-quick-link:hover {
@@ -5268,7 +5314,7 @@ textarea.form-input {
 }
 
 .quick-icon {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 /* Drawer Footer */
