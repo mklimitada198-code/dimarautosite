@@ -5,6 +5,7 @@
 
 // State
 let products = [];
+let allCategories = []; // Categorias carregadas do Supabase
 let selectedImages = [];
 let editingProductId = null;
 
@@ -17,9 +18,11 @@ function waitForSupabase(callback) {
 
     const checkInterval = setInterval(() => {
         attempts++;
-        console.log(`⏳ Tentativa ${attempts}/${maxAttempts}: Aguardando Supabase...`);
+        if (attempts % 10 === 0) {
+            console.log(`⏳ Tentativa ${attempts}/${maxAttempts}: Aguardando Supabase...`);
+        }
 
-        if (window.supabaseClient) {
+        if (window.supabaseClient && typeof checkSupabaseConfig === 'function' && checkSupabaseConfig()) {
             console.log('✅ Supabase detectado! Inicializando produtos...');
             clearInterval(checkInterval);
             callback();
@@ -31,13 +34,91 @@ function waitForSupabase(callback) {
     }, 100);
 }
 
+// ==================== CARREGAR CATEGORIAS DO SUPABASE ====================
+async function loadAllCategories() {
+    console.log('📥 Carregando categorias para o formulário...');
+
+    try {
+        if (checkSupabaseConfig()) {
+            const { data, error } = await supabaseClient
+                .from('categories')
+                .select('*')
+                .eq('is_active', true)
+                .order('name', { ascending: true });
+
+            if (error) throw error;
+            allCategories = data || [];
+            console.log(`✅ ${allCategories.length} categorias carregadas do Supabase`);
+        } else {
+            console.warn('⚠️ Supabase não disponível, usando categorias padrão');
+            allCategories = [
+                { id: '1', name: 'Motor', slug: 'motor', is_active: true },
+                { id: '2', name: 'Freios', slug: 'freios', is_active: true },
+                { id: '3', name: 'Suspensão', slug: 'suspensao', is_active: true },
+                { id: '4', name: 'Elétrica', slug: 'eletrica', is_active: true },
+                { id: '5', name: 'Filtros', slug: 'filtros', is_active: true },
+                { id: '6', name: 'Iluminação', slug: 'iluminacao', is_active: true },
+                { id: '7', name: 'Acessórios', slug: 'acessorios', is_active: true }
+            ];
+        }
+        renderCategoryCheckboxes();
+    } catch (error) {
+        console.error('❌ Erro ao carregar categorias:', error);
+        allCategories = [];
+        renderCategoryCheckboxes();
+    }
+}
+
+// ==================== RENDERIZAR CHECKBOXES DE CATEGORIAS ====================
+function renderCategoryCheckboxes() {
+    const container = document.getElementById('categoriesContainer');
+    if (!container) return;
+
+    // Mapa de ícones para cada categoria
+    const iconMap = {
+        'motor': '🔧',
+        'freios': '🛞',
+        'suspensao': '🔩',
+        'eletrica': '⚡',
+        'filtros': '🌀',
+        'iluminacao': '💡',
+        'acessorios': '🎨',
+        'embreagens': '⚙️',
+        'servicos': '🛠️',
+        'oleo': '🛢️',
+        'pneus': '🛞',
+        'bateria': '🔋'
+    };
+
+    if (allCategories.length === 0) {
+        container.innerHTML = '<span style="color: #999;">Nenhuma categoria disponível</span>';
+        return;
+    }
+
+    container.innerHTML = allCategories.map(cat => {
+        const icon = iconMap[cat.slug.toLowerCase()] || '📦';
+        return `
+            <label class="category-checkbox-label">
+                <input type="checkbox" name="productCategories" value="${cat.slug}" style="width: 16px; height: 16px;">
+                <span>${icon} ${cat.name}</span>
+            </label>
+        `;
+    }).join('');
+
+    console.log('✅ Checkboxes de categorias renderizados:', allCategories.length);
+}
+
 // ==================== INICIALIZAÇÃO ====================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 DOM pronto, aguardando Supabase...');
 
     // ESPERAR Supabase estar pronto ANTES de inicializar
-    waitForSupabase(() => {
+    waitForSupabase(async () => {
         console.log('🎯 Iniciando produtos...');
+
+        // Carregar categorias primeiro
+        await loadAllCategories();
+
         setupImageUpload();
         setupFilters();
         setupProductForm();
