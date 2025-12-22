@@ -333,6 +333,7 @@ window.closeCategoryModal = function () {
 // ==================== SAVE CATEGORY ====================
 async function saveCategory() {
     console.log('💾 Salvando categoria...');
+    console.log('📝 editingCategoryId:', editingCategoryId);
 
     // Validação
     const name = document.getElementById('categoryName').value.trim();
@@ -340,6 +341,28 @@ async function saveCategory() {
 
     if (!name || !slug) {
         showCustomAlert('Erro de Validação', '⚠️ Campos obrigatórios não preenchidos!\n\n• Nome da categoria\n• Slug\n\nPor favor, preencha ambos os campos.');
+        return;
+    }
+
+    // Verificar se já existe uma categoria com este nome (exceto a que estamos editando)
+    const existingCategory = categories.find(c =>
+        c.name.toLowerCase() === name.toLowerCase() &&
+        c.id !== editingCategoryId
+    );
+
+    if (existingCategory) {
+        showCustomAlert('Nome Duplicado', `⚠️ Já existe uma categoria com o nome "${name}"!\n\nPor favor, escolha outro nome.`);
+        return;
+    }
+
+    // Verificar se já existe uma categoria com este slug (exceto a que estamos editando)
+    const existingSlug = categories.find(c =>
+        c.slug.toLowerCase() === slug.toLowerCase() &&
+        c.id !== editingCategoryId
+    );
+
+    if (existingSlug) {
+        showCustomAlert('Slug Duplicado', `⚠️ Já existe uma categoria com o slug "${slug}"!\n\nPor favor, escolha outro slug.`);
         return;
     }
 
@@ -362,18 +385,23 @@ async function saveCategory() {
             reader.readAsDataURL(imageFile);
         });
         categoryData.image_url = base64Image;
+    } else if (editingCategoryId) {
+        // Manter imagem existente se não foi alterada
+        const existingCat = categories.find(c => c.id === editingCategoryId);
+        if (existingCat && existingCat.image_url) {
+            categoryData.image_url = existingCat.image_url;
+        }
     }
 
-    console.log('📦 Dados preparados:', { ...categoryData, image_url: categoryData.image_url ? '[imagem base64]' : null });
+    console.log('📦 Dados preparados:', { ...categoryData, image_url: categoryData.image_url ? '[imagem]' : null });
 
     try {
         const useSupabase = checkSupabaseConfig();
         console.log('🔌 Usando:', useSupabase ? 'Supabase' : 'localStorage');
 
         if (useSupabase) {
-            // Supabase gera UUID automaticamente - NÃO enviar ID
             if (editingCategoryId) {
-                console.log('✏️ Atualizando categoria ID:', editingCategoryId);
+                console.log('✏️ ATUALIZANDO categoria ID:', editingCategoryId);
                 const { data, error } = await supabaseClient
                     .from('categories')
                     .update(categoryData)
@@ -383,17 +411,17 @@ async function saveCategory() {
                 if (error) throw error;
                 console.log('✅ Categoria atualizada:', data);
             } else {
-                console.log('➕ Inserindo nova categoria (UUID auto-gerado)');
+                console.log('➕ INSERINDO nova categoria');
                 const { data, error } = await supabaseClient
                     .from('categories')
-                    .insert([categoryData])  // Supabase gera o UUID
+                    .insert([categoryData])
                     .select();
 
                 if (error) throw error;
-                console.log('✅ Categoria criada com UUID:', data);
+                console.log('✅ Categoria criada:', data);
             }
         } else {
-            // ✅ FALLBACK: Usar localStorage com UUIDs válidos
+            // ✅ FALLBACK: Usar localStorage
             if (editingCategoryId) {
                 const index = categories.findIndex(c => c.id === editingCategoryId);
                 if (index !== -1) {
@@ -413,10 +441,23 @@ async function saveCategory() {
 
     } catch (error) {
         console.error('❌ ERRO ao salvar:', error);
-        let errorMsg = '❌ Erro ao salvar categoria!\n\n' + error.message;
-        if (error.code) errorMsg += '\n\nCódigo: ' + error.code;
-        if (error.hint) errorMsg += '\nDica: ' + error.hint;
-        errorMsg += '\n\n❓ Verifique:\n• Conexão com Supabase\n• Permissões do banco';
+
+        let errorMsg = '❌ Erro ao salvar categoria!\n\n';
+
+        // Tratamento específico para erros comuns
+        if (error.code === '23505') {
+            if (error.message.includes('name')) {
+                errorMsg += `O nome "${name}" já está sendo usado por outra categoria.\n\nEscolha um nome diferente.`;
+            } else if (error.message.includes('slug')) {
+                errorMsg += `O slug "${slug}" já está sendo usado por outra categoria.\n\nEscolha um slug diferente.`;
+            } else {
+                errorMsg += 'Já existe uma categoria com esses dados.\n\nVerifique nome e slug.';
+            }
+        } else {
+            errorMsg += error.message;
+            if (error.code) errorMsg += '\n\nCódigo: ' + error.code;
+        }
+
         showCustomAlert('Erro', errorMsg);
     }
 }
