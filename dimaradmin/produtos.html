@@ -453,45 +453,84 @@
                     </small>
                 </div>
 
-                <!-- Compatibilidade de Veículos -->
+                <!-- Compatibilidade de Veículos - SELETOR ESTRUTURADO -->
                 <div class="form-group"
                     style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 20px;">
                     <label class="form-label" style="font-size: 16px; margin-bottom: 16px;">
-                        🚗 Compatibilidade de Veículos
+                        🚗 Veículos Compatíveis
                     </label>
 
-                    <div class="form-group">
-                        <label class="form-label">Tipo de Veículo (selecione um ou mais)</label>
-                        <div style="display: flex; gap: 24px; margin-top: 8px; flex-wrap: wrap;">
-                            <label
-                                style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.2s;">
-                                <input type="checkbox" id="vehicleTypeCarro" value="carro"
-                                    style="width: 18px; height: 18px;">
-                                <span style="font-size: 15px;">🚗 Carro</span>
-                            </label>
-                            <label
-                                style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.2s;">
-                                <input type="checkbox" id="vehicleTypeMoto" value="moto"
-                                    style="width: 18px; height: 18px;">
-                                <span style="font-size: 15px;">🏍️ Moto</span>
-                            </label>
+                    <div id="vehicleSelectorContainer">
+                        <!-- Tabs Carro/Moto -->
+                        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                            <button type="button" class="vehicle-selector-tab active" data-type="car"
+                                style="padding: 10px 20px; border: 2px solid #ff6600; background: #ff6600; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">
+                                🚗 Carro
+                            </button>
+                            <button type="button" class="vehicle-selector-tab" data-type="moto"
+                                style="padding: 10px 20px; border: 2px solid #17a2b8; background: white; color: #17a2b8; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">
+                                🏍️ Moto
+                            </button>
                         </div>
-                        <small style="color: #7f8c8d; display: block; margin-top: 8px;">
-                            ✨ Selecione um ou ambos os tipos. Produtos podem servir para carros E motos!
-                        </small>
+
+                        <!-- Seletores em Cascata -->
+                        <div class="form-row" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label class="form-label">Marca</label>
+                                <select class="form-control" id="vehicleBrandSelect">
+                                    <option value="">Selecione a marca</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label class="form-label">Modelo</label>
+                                <select class="form-control" id="vehicleModelSelect" disabled>
+                                    <option value="">Selecione o modelo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Anos -->
+                        <div class="form-group">
+                            <label class="form-label">Anos compatíveis</label>
+                            <div id="vehicleYearsContainer" style="opacity: 0.5;">
+                                <!-- Preenchido dinamicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Botão Adicionar -->
+                        <button type="button" id="addVehicleBtn" class="btn btn-primary"
+                            style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
+                            ➕ Adicionar Veículo
+                        </button>
+
+                        <!-- Lista de Veículos Selecionados -->
+                        <div style="margin-top: 20px; border-top: 1px solid #dee2e6; padding-top: 16px;">
+                            <label class="form-label" style="font-weight: 600;">Veículos adicionados:</label>
+                            <div id="selectedVehiclesList" style="margin-top: 8px;">
+                                <p style="color: #999; font-size: 14px; margin: 0;">Nenhum veículo adicionado</p>
+                            </div>
+                        </div>
+
+                        <!-- Campo Manual (para casos especiais) -->
+                        <div style="margin-top: 20px; border-top: 1px solid #dee2e6; padding-top: 16px;">
+                            <details>
+                                <summary style="cursor: pointer; color: #666; font-size: 14px; font-weight: 500;">
+                                    ⬇️ Compatibilidade manual (para veículos não listados)
+                                </summary>
+                                <textarea class="form-control" id="manualCompatibility" rows="3"
+                                    placeholder="Para veículos que não estão na lista acima (importados, antigos, etc.)&#10;Digite um veículo por linha. Ex: Subaru Impreza 2015"
+                                    style="margin-top: 12px; font-size: 13px;"></textarea>
+                                <small style="color: #7f8c8d; display: block; margin-top: 6px;">
+                                    Use apenas para veículos não disponíveis no seletor acima
+                                </small>
+                            </details>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Veículos Compatíveis</label>
-                        <textarea class="form-control" id="productCompatibility" rows="4" placeholder="Digite um veículo por linha. Ex:
-Chevrolet Onix 2020
-Chevrolet Onix 2021
-Chevrolet Onix Plus 2022
-Fiat Argo 2019"></textarea>
-                        <small style="color: #7f8c8d; display: block; margin-top: 6px;">
-                            📝 <strong>Formato:</strong> Marca + Modelo + Ano (um por linha)<br>
-                            Esses dados serão usados na busca por veículo da homepage
-                        </small>
+                    <!-- Tipo de Veículo (checkboxes mantidos para retrocompatibilidade) -->
+                    <div style="margin-top: 20px; display: none;">
+                        <input type="checkbox" id="vehicleTypeCarro" value="carro">
+                        <input type="checkbox" id="vehicleTypeMoto" value="moto">
                     </div>
                 </div>
 
@@ -606,6 +645,12 @@ Ex:
 
     <!-- UI Components - Loading States & Toasts -->
     <script src="/dimaradmin/js/ui-components.js"></script>
+
+    <!-- Vehicle Data - Dados de marcas/modelos de veículos -->
+    <script src="/js/vehicle-data.js"></script>
+
+    <!-- Vehicle Selector - Componente de seleção de veículos -->
+    <script src="/dimaradmin/js/vehicle-selector.js"></script>
 
     <!-- produtos.js - AGORA carrega DEPOIS do Supabase estar pronto -->
     <script src="/dimaradmin/js/produtos.js"></script>

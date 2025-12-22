@@ -42,6 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setupFilters();
         setupProductForm();
         setupBadgeTypeListener();
+        // Inicializar seletor de veículos
+        if (typeof initVehicleSelector === 'function') {
+            initVehicleSelector();
+            console.log('✅ Seletor de veículos inicializado');
+        }
         loadProducts();
         console.log('✅ Produtos inicializados');
     });
@@ -393,11 +398,23 @@ window.openProductModal = function (productId = null) {
             // Seções da homepage - agora com checkboxes
             setSelectedHomeSections(product.home_sections || []);
 
-            // Compatibilidade de veículos - agora com checkboxes
+            // Compatibilidade de veículos - carregar no seletor estruturado
             setSelectedVehicleTypes(product.vehicle_types || []);
-            const compatibilityTextarea = document.getElementById('productCompatibility');
-            if (compatibilityTextarea) {
-                compatibilityTextarea.value = (product.compatibility || []).join('\n');
+
+            // Carregar veículos no novo seletor estruturado
+            if (typeof setSelectedVehicles === 'function') {
+                const vehicleData = {
+                    structured: product.compatibility_structured?.structured || [],
+                    manual: product.compatibility_structured?.manual || []
+                };
+
+                // Se não tem dados estruturados, tentar converter do formato antigo (texto)
+                if (vehicleData.structured.length === 0 && product.compatibility && product.compatibility.length > 0) {
+                    // Mover para campo manual como fallback
+                    vehicleData.manual = product.compatibility.map(text => ({ text }));
+                }
+
+                setSelectedVehicles(vehicleData);
             }
 
             // Especificações Técnicas
@@ -441,6 +458,10 @@ window.openProductModal = function (productId = null) {
         clearVehicleTypeCheckboxes(); // Limpar checkboxes de tipo de veículo
         clearHomeSectionCheckboxes(); // Limpar checkboxes de seção da homepage
         clearCategoryCheckboxes(); // Limpar checkboxes de categorias
+        // Limpar seletor de veículos estruturado
+        if (typeof clearAllVehicles === 'function') {
+            clearAllVehicles();
+        }
         renderImagePreviews();
         document.querySelector('#productModal h2').textContent = 'Adicionar Produto';
         console.log('✅ Formulário limpo para novo produto');
@@ -489,7 +510,10 @@ async function saveProduct() {
         home_sections: getSelectedHomeSections(),
         // Coletar tipos de veículo dos checkboxes como array
         vehicle_types: getSelectedVehicleTypes(),
-        compatibility: parseCompatibility(document.getElementById('productCompatibility').value),
+        // Coletar veículos do seletor estruturado
+        compatibility_structured: typeof getSelectedVehicles === 'function' ? getSelectedVehicles() : null,
+        // Manter retrocompatibilidade com formato antigo (array de strings)
+        compatibility: buildCompatibilityArray(),
         // Especificações Técnicas
         weight: document.getElementById('productWeight')?.value ? parseFloat(document.getElementById('productWeight').value) : null,
         dimensions: document.getElementById('productDimensions')?.value || null,
@@ -808,6 +832,57 @@ function parseCompatibility(text) {
         .split('\n')
         .map(line => line.trim())
         .filter(line => line.length > 0);
+}
+
+// ==================== BUILD COMPATIBILITY ARRAY ====================
+/**
+ * Constrói um array de strings de compatibilidade para retrocompatibilidade
+ * Combina dados estruturados do seletor + dados manuais
+ * @returns {Array} Array de strings no formato "Marca Modelo Anos"
+ */
+function buildCompatibilityArray() {
+    const result = [];
+
+    // Obter dados do seletor estruturado
+    if (typeof getSelectedVehicles === 'function') {
+        const vehicles = getSelectedVehicles();
+
+        // Processar veículos estruturados
+        if (vehicles.structured && Array.isArray(vehicles.structured)) {
+            vehicles.structured.forEach(v => {
+                // Gerar string para cada combinação marca/modelo/ano
+                if (v.years === 'all') {
+                    // Para "todos os anos", adicionar string genérica
+                    result.push(`${v.brandName} ${v.modelName}`);
+                } else if (Array.isArray(v.years)) {
+                    // Para cada ano, adicionar uma string
+                    v.years.forEach(year => {
+                        result.push(`${v.brandName} ${v.modelName} ${year}`);
+                    });
+                }
+            });
+        }
+
+        // Processar dados manuais
+        if (vehicles.manual && Array.isArray(vehicles.manual)) {
+            vehicles.manual.forEach(v => {
+                if (v.text) {
+                    result.push(v.text);
+                }
+            });
+        }
+    }
+
+    // Fallback: se não há dados do seletor, usar campo manual antigo
+    if (result.length === 0) {
+        const manualInput = document.getElementById('manualCompatibility');
+        if (manualInput && manualInput.value.trim()) {
+            return parseCompatibility(manualInput.value);
+        }
+    }
+
+    console.log('🚗 Compatibilidade construída:', result.length, 'entradas');
+    return result;
 }
 
 // ==================== VEHICLE TYPE HELPERS ====================

@@ -540,18 +540,63 @@ function applyFilters() {
         // Vehicle compatibility filter
         if (currentFilters.vehicle) {
             const v = currentFilters.vehicle;
-            const searchTerms = [
-                `${v.brandName} ${v.modelName}`,
-                `${v.brandName} ${v.modelName} ${v.year}`,
-                v.modelName
-            ].map(term => term.toLowerCase());
 
-            // Verificar no campo compatibility (array de strings)
-            const compatibility = product.compatibility || [];
-            const hasCompatibility = compatibility.some(comp => {
-                const compLower = (comp || '').toLowerCase();
-                return searchTerms.some(term => compLower.includes(term));
-            });
+            // Normalizar dados do filtro para comparação
+            const filterBrand = v.brand.toLowerCase();
+            const filterModel = v.model.toLowerCase();
+            const filterYear = parseInt(v.year);
+            const filterType = v.type.toLowerCase();
+
+            let matchFound = false;
+
+            // 1. PRIMEIRO: Buscar em dados estruturados (novo formato)
+            if (product.compatibility_structured && product.compatibility_structured.structured) {
+                const structuredData = product.compatibility_structured.structured;
+                matchFound = structuredData.some(vehicle => {
+                    // Verificar marca e modelo
+                    const matchesBrand = vehicle.brand.toLowerCase() === filterBrand;
+                    const matchesModel = vehicle.model.toLowerCase() === filterModel;
+
+                    // Verificar ano (pode ser 'all' ou array de anos)
+                    let matchesYear = false;
+                    if (vehicle.years === 'all') {
+                        matchesYear = true;
+                    } else if (Array.isArray(vehicle.years)) {
+                        matchesYear = vehicle.years.includes(filterYear);
+                    }
+
+                    return matchesBrand && matchesModel && matchesYear;
+                });
+            }
+
+            // 2. FALLBACK: Buscar em dados manuais estruturados
+            if (!matchFound && product.compatibility_structured && product.compatibility_structured.manual) {
+                const manualData = product.compatibility_structured.manual;
+                const searchTerms = [
+                    `${v.brandName} ${v.modelName} ${v.year}`,
+                    `${v.brandName} ${v.modelName}`,
+                    v.modelName
+                ].map(term => term.toLowerCase());
+
+                matchFound = manualData.some(item => {
+                    const text = (item.text || item).toLowerCase();
+                    return searchTerms.some(term => text.includes(term));
+                });
+            }
+
+            // 3. FALLBACK: Buscar no formato antigo (array de strings)
+            if (!matchFound && product.compatibility && product.compatibility.length > 0) {
+                const searchTerms = [
+                    `${v.brandName} ${v.modelName}`,
+                    `${v.brandName} ${v.modelName} ${v.year}`,
+                    v.modelName
+                ].map(term => term.toLowerCase());
+
+                matchFound = product.compatibility.some(comp => {
+                    const compLower = (comp || '').toLowerCase();
+                    return searchTerms.some(term => compLower.includes(term));
+                });
+            }
 
             // Verificar tipos de veículo (suporta formato antigo e novo)
             let productTypes = [];
@@ -563,12 +608,18 @@ function applyFilters() {
             }
 
             const isUniversal = productTypes.includes('carro') && productTypes.includes('moto');
-            const matchesVehicleType = productTypes.includes(v.type) || isUniversal;
+            const matchesVehicleType = productTypes.includes(filterType) || isUniversal;
 
             // Produto passa se: tem compatibilidade OU é universal
-            if (!hasCompatibility && !isUniversal) {
+            if (!matchFound && !isUniversal) {
                 // Se não tem compatibilidade definida, mostrar apenas por tipo
-                if (compatibility.length === 0 && matchesVehicleType) {
+                const hasNoCompatibility = (
+                    (!product.compatibility || product.compatibility.length === 0) &&
+                    (!product.compatibility_structured ||
+                        (!product.compatibility_structured.structured?.length &&
+                            !product.compatibility_structured.manual?.length))
+                );
+                if (hasNoCompatibility && matchesVehicleType) {
                     return true; // Mostrar produtos sem compatibilidade definida mas do mesmo tipo
                 }
                 return false;
