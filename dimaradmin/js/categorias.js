@@ -38,6 +38,29 @@ function validateCategoryID(id, operation) {
 
 console.log('📦 categorias.js carregado (VERSÃO CORRIGIDA COM UUID VALIDATION)!');
 
+// ==================== WAIT FOR SUPABASE ====================
+function waitForSupabase(callback) {
+    let attempts = 0;
+    const maxAttempts = 30; // 3 seconds max
+
+    const checkInterval = setInterval(() => {
+        attempts++;
+        if (attempts % 10 === 0) {
+            console.log(`⏳ Tentativa ${attempts}/${maxAttempts}: Aguardando Supabase...`);
+        }
+
+        if (window.supabaseClient && typeof checkSupabaseConfig === 'function' && checkSupabaseConfig()) {
+            console.log('✅ Supabase detectado! Carregando categorias...');
+            clearInterval(checkInterval);
+            callback();
+        } else if (attempts >= maxAttempts) {
+            console.warn('⚠️ Timeout aguardando Supabase, usando localStorage');
+            clearInterval(checkInterval);
+            callback(); // Continue anyway with fallback
+        }
+    }, 100);
+}
+
 // ==================== INICIALIZAÇÃO ====================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Inicializando categorias...');
@@ -47,10 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSlugGenerator();
     setupImagePreview();
 
-    // Carregar categorias
-    loadCategories();
-
-    console.log('✅ Categorias inicializadas');
+    // Aguardar Supabase antes de carregar categorias
+    waitForSupabase(async () => {
+        await loadCategories();
+        console.log('✅ Categorias inicializadas');
+    });
 });
 
 // ==================== CARREGAR CATEGORIAS ====================
